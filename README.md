@@ -1,6 +1,6 @@
 # Next-Rules · 未来分流
 
-面向 Mihomo 内核的分流规则项目，由 **JJorigin** 设计维护。
+面向 3X-UI 面板用户与 Mihomo 内核客户端的分流规则，支持远程下发与本地扩展，由 **JJorigin** 设计维护。
 
 **Next-Rules** 只负责分流：把不同类型的网络请求交给对应的策略组和节点。节点订阅、DNS、TUN、端口和客户端运行设置继续由 3X-UI、原始订阅或客户端负责。
 
@@ -21,7 +21,7 @@
 
 ### 3X-UI 全局路由规则 → Mihomo
 
-打开 3X-UI 的 **订阅设置 → Clash / Mihomo**，先打开 **启用路由**，再在 **全局路由规则** 中填写下面两个地址中的任意一个：
+打开 3X-UI 面板的 **订阅设置 → Clash / Mihomo**，先打开 **启用路由**，再在 **全局路由规则** 中填写下面两个地址中的任意一个：
 
 **GitHub Raw：**
 
@@ -35,7 +35,7 @@ https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/next-rules.yaml
 https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/rules/next-rules.yaml
 ```
 
-上述地址**二选一**填写。填写完成后保存 3X-UI 设置，并更新客户端订阅。
+上述地址**二选一**填写。填写完成后保存设置并重启面板，更新客户端订阅。
 
 3X-UI 会将远程路由规则合并到生成的 Mihomo / Clash 订阅中，节点仍由你的 3X-UI 面板提供。
 
@@ -58,8 +58,6 @@ https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/rules/next-rules.yaml
 **Next-Rules** 会根据请求类型自动进行分流，覆盖国内网站、海外服务、AI 服务、流媒体、软件服务、广告和局域网等常见场景。
 
 你只需要在策略组中选择合适的节点或地区，规则会按照优先级匹配；没有命中特定规则的流量，会交给默认策略组处理。
-
-AI 服务规则使用 [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) 的 Global Clash 规则，并优先于中国大陆直连规则匹配。
 
 ## DNS 与分流
 
