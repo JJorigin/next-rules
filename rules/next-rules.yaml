@@ -1,6 +1,6 @@
-# Next-Rules 1.0
+# Next-Rules 1.1
 # 供 3X-UI「订阅设置 → Clash / Mihomo → 全局路由规则」使用。
-# 本文件只提供策略组、规则提供者和分流规则，不修改 DNS、TUN、IPv6、Sniffer、Hosts、端口或运行模式。
+# 本文件不创建国家/地区策略组，也不修改 DNS、TUN、IPv6、Sniffer、Hosts、端口或运行模式。
 
 rule-providers:
   next-rules-ads:
@@ -61,44 +61,63 @@ rule-providers:
     interval: 86400
 
 proxy-groups:
-  # ---------- 用户自选组 ----------
+  # ---------- 用户默认组 ----------
+  # 未命中特定规则的请求使用代理，不提供 DIRECT 选项。
   - name: "🚀 默认代理 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]"]
+
+  # ---------- 用户场景组 ----------
+  # 场景组直接展开当前订阅中的有效节点；地区名称只作为节点原名显示。
+  # include-all-proxies 不包含其他策略组，DIRECT 是 Mihomo 内置直连出口。
   - name: "🤖 AI服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "🔍 谷歌服务(含油管) [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "🎬 流媒体 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "💬 电报专用 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "Ⓜ️ 微软服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "🍎 苹果服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "💰 币圈专用 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
+    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "🖥️ 软件分流 [自选]"
     type: select
-    proxies: ["🚀 默认代理 [自选]", "♻️ 自动选择 [系统]", "🇺🇸 美国节点 [系统]", "🇲🇾 马来西亚节点 [系统]", "🇭🇰 香港节点 [系统]", "🇯🇵 日本节点 [系统]", "🇸🇬 新加坡节点 [系统]", "🇩🇪 德国节点 [系统]", "🌍 其他地区 [系统]", "🌐 全部节点 [系统]", "直连(DIRECT)"]
-
-  # ---------- 中文别名 ----------
-  - name: "直连(DIRECT)"
-    type: select
-    hidden: true
-    proxies: [DIRECT]
-  - name: "禁止广告(REJECT)"
-    type: select
-    hidden: true
-    proxies: [REJECT]
+    proxies: ["🚀 默认代理 [自选]", "♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
 
   # ---------- 系统组 ----------
   - name: "🌐 全部节点 [系统]"
@@ -116,86 +135,17 @@ proxy-groups:
     tolerance: 50
     lazy: true
 
-  # ---------- 地区节点 ----------
-  - name: "🇺🇸 美国节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇺🇸|美国|美利坚|United[ -]?States|America|Los[ -]?Angeles|San[ -]?Jose|Seattle|Dallas|New[ -]?York|San[ -]?Francisco|\\bUS\\b|\\bUSA\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-  - name: "🇲🇾 马来西亚节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇲🇾|马来西亚|馬來西亞|Malaysia|Kuala[ -]?Lumpur|\\bMY\\b|\\bMYS\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-  - name: "🇭🇰 香港节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇭🇰|香港|Hong[ -]?Kong|\\bHK\\b|\\bHKG\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-  - name: "🇯🇵 日本节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇯🇵|日本|Japan|Tokyo|Osaka|\\bJP\\b|\\bJPN\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-  - name: "🇸🇬 新加坡节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇸🇬|新加坡|新国|Singapore|\\bSG\\b|\\bSGP\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-  - name: "🇩🇪 德国节点 [系统]"
-    type: url-test
-    include-all-proxies: true
-    filter: "(?i)🇩🇪|德国|德國|Germany|Frankfurt|Berlin|\\bDE\\b|\\bDEU\\b"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-    url: https://cp.cloudflare.com/generate_204
-    interval: 300
-    tolerance: 50
-    lazy: true
-
-  # ---------- 其他地区 ----------
-  - name: "🌍 其他地区 [系统]"
-    type: select
-    include-all-proxies: true
-    filter: "(?i)^(?!.*(?:🇺🇸|🇲🇾|🇭🇰|🇯🇵|🇸🇬|🇩🇪|美国|美利坚|United[ -]?States|America|Los[ -]?Angeles|San[ -]?Jose|Seattle|Dallas|New[ -]?York|San[ -]?Francisco|马来西亚|馬來西亞|Malaysia|Kuala[ -]?Lumpur|香港|Hong[ -]?Kong|日本|Japan|Tokyo|Osaka|新加坡|新国|Singapore|德国|德國|Germany|Frankfurt|Berlin|\\bUS\\b|\\bUSA\\b|\\bMY\\b|\\bMYS\\b|\\bHK\\b|\\bHKG\\b|\\bJP\\b|\\bJPN\\b|\\bSG\\b|\\bSGP\\b|\\bDE\\b|\\bDEU\\b)).*"
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
-    exclude-type: Direct
-
   # ---------- 广告拦截 ----------
   - name: "🛑 广告拦截 [系统]"
     type: select
-    proxies: ["禁止广告(REJECT)", "直连(DIRECT)"]
+    proxies: [REJECT, DIRECT]
 
 rules:
   - "RULE-SET,next-rules-software,🖥️ 软件分流 [自选]"
-  - "GEOSITE,private,直连(DIRECT)"
-  - "GEOIP,private,直连(DIRECT),no-resolve"
+  - "GEOSITE,private,DIRECT"
+  - "GEOIP,private,DIRECT,no-resolve"
   - "RULE-SET,next-rules-ads,🛑 广告拦截 [系统]"
+  # AI 规则必须在直连规则之前，避免专用服务被直连规则提前截断。
   - "RULE-SET,next-rules-ai,🤖 AI服务 [自选]"
   - "RULE-SET,next-rules-youtube,🔍 谷歌服务(含油管) [自选]"
   - "RULE-SET,next-rules-google,🔍 谷歌服务(含油管) [自选]"
@@ -205,6 +155,8 @@ rules:
   - "RULE-SET,next-rules-apple,🍎 苹果服务 [自选]"
   - "GEOSITE,telegram,💬 电报专用 [自选]"
   - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
-  - "GEOSITE,CN,直连(DIRECT)"
-  - "GEOIP,CN,直连(DIRECT),no-resolve"
+  # 命中直连规则且未命中特定规则的普通流量直连。
+  - "GEOSITE,CN,DIRECT"
+  - "GEOIP,CN,DIRECT,no-resolve"
   - "MATCH,🚀 默认代理 [自选]"
+
