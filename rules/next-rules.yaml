@@ -62,74 +62,72 @@ rule-providers:
 
 proxy-groups:
   # ---------- 用户默认组 ----------
-  # 未命中特定规则的请求使用代理，不提供 DIRECT 选项。
+  # 未命中特定规则的请求默认使用代理；自动选择和当前订阅中的有效节点可手动选择。
   - name: "🚀 默认代理 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]"]
+    proxies: ["♻️ 自动选择 [系统]"]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
 
   # ---------- 用户场景组 ----------
-  # 场景组直接展开当前订阅中的有效节点；地区名称只作为节点原名显示。
-  # include-all-proxies 不包含其他策略组，DIRECT 是 Mihomo 内置直连出口。
+  # 场景组直接展开当前订阅中的有效代理节点。
+  # include-all-proxies 不包含其他策略组；DIRECT 是 Mihomo 内置直连出口。
   - name: "🤖 AI服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "🔍 谷歌服务(含油管) [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "🎬 流媒体 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "💬 电报专用 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "Ⓜ️ 微软服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "🍎 苹果服务 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "💰 币圈专用 [自选]"
     type: select
-    proxies: ["♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
   - name: "🖥️ 软件分流 [自选]"
     type: select
-    proxies: ["🚀 默认代理 [自选]", "♻️ 自动选择 [系统]", "🌐 全部节点 [系统]", DIRECT]
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
 
   # ---------- 系统组 ----------
-  - name: "🌐 全部节点 [系统]"
-    type: select
-    include-all-proxies: true
-    exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
   - name: "♻️ 自动选择 [系统]"
     type: url-test
     include-all-proxies: true
     exclude-type: Direct
-    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website"
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
     url: https://cp.cloudflare.com/generate_204
     interval: 300
     tolerance: 50

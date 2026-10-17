@@ -14,7 +14,6 @@ const METADATA_FILTER = "(?i)官网|官方|流量|剩余|到期|过期|套餐|�
 
 // 脚本会统一生成以下策略组；更新订阅时会替换同名旧组。
 const OWNED_GROUPS = new Set([
-  "🌐 全部节点 [系统]",
   "♻️ 自动选择 [系统]",
   "🛑 广告拦截 [系统]",
   "🖥️ 软件分流 [自选]",
@@ -31,6 +30,7 @@ const OWNED_GROUPS = new Set([
 const LEGACY_GROUPS = new Set([
   "直连(DIRECT)",
   "禁止广告(REJECT)",
+  "🌐 全部节点 [系统]",
   "🌍 其他地区 [系统]",
   "🇺🇸 美国节点 [系统]",
   "🇲🇾 马来西亚节点 [系统]",
@@ -64,7 +64,7 @@ function sourceFor(nodes, providerNames, excludeFilter) {
   if (nodes.length) source.proxies = nodes;
   if (providerNames.length) {
     source.use = providerNames;
-    // 使用节点提供者的订阅也保留提供者节点，供系统组和场景组使用。
+    // 使用节点提供者的订阅也保留提供者节点，供自动选择和场景组使用。
     source["include-all-proxies"] = true;
     source["exclude-type"] = "Direct";
     // 提供者中可能包含订阅说明或 DIRECT 条目，这些不会作为代理节点显示。
@@ -75,7 +75,7 @@ function sourceFor(nodes, providerNames, excludeFilter) {
 
 function withSceneSource(nodes, providerNames, extraProxies) {
   const source = sourceFor(nodes, providerNames, METADATA_FILTER);
-  source.proxies = unique([...(source.proxies || []), ...extraProxies]);
+  source.proxies = unique([...extraProxies, ...(source.proxies || [])]);
   return source;
 }
 
@@ -101,27 +101,29 @@ function main(config) {
   if (!inlineNodes.length && !providerNames.length) return config;
 
   const existingGroups = Array.isArray(config["proxy-groups"]) ? config["proxy-groups"] : [];
-  const groups = existingGroups.filter((group) => (
+  const retainedGroups = existingGroups.filter((group) => (
     !(group && (OWNED_GROUPS.has(group.name) || LEGACY_GROUPS.has(group.name)))
   ));
+  const groups = [];
   const addGroup = (group) => groups.push(group);
 
-  const allGroup = "🌐 全部节点 [系统]";
   const autoGroup = "♻️ 自动选择 [系统]";
   const defaultGroup = "🚀 默认代理 [自选]";
 
   // 默认代理组不含 DIRECT，未命中规则的流量默认使用代理。
+  const defaultSource = sourceFor(inlineNodes, providerNames, METADATA_FILTER);
   addGroup({
     name: defaultGroup,
     type: "select",
-    proxies: [autoGroup, allGroup]
+    ...defaultSource,
+    proxies: unique([autoGroup, ...(defaultSource.proxies || [])])
   });
 
-  // 业务场景组直接承载所有可用节点；地区名称只作为节点原名显示。
+  // 业务场景组直接承载当前订阅中的所有可用代理节点。
   const sceneSource = () => withSceneSource(
     inlineNodes,
     providerNames,
-    [autoGroup, allGroup, "DIRECT"]
+    [autoGroup, "DIRECT"]
   );
   const sceneGroup = (name) => addGroup({
     name,
@@ -140,14 +142,7 @@ function main(config) {
   addGroup({
     name: "🖥️ 软件分流 [自选]",
     type: "select",
-    ...withSceneSource(inlineNodes, providerNames, [defaultGroup, autoGroup, allGroup, "DIRECT"])
-  });
-
-  // 系统组只包含有效代理节点，显式排除 Direct 和订阅信息节点。
-  addGroup({
-    name: allGroup,
-    type: "select",
-    ...sourceFor(inlineNodes, providerNames, METADATA_FILTER)
+    ...withSceneSource(inlineNodes, providerNames, [autoGroup, "DIRECT"])
   });
 
   addGroup({
@@ -165,6 +160,9 @@ function main(config) {
     type: "select",
     proxies: ["REJECT", "DIRECT"]
   });
+
+  // Next-Rules 自有组排在前面，原订阅中未被接管的策略组继续保留在后面。
+  groups.push(...retainedGroups);
 
   const providers = Object.assign({}, config["rule-providers"] || {});
   for (const legacyName of LEGACY_PROVIDER_NAMES) delete providers[legacyName];
