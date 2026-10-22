@@ -12,8 +12,8 @@
 
 | 客户端 / 接入方式                | 状态   | 适合场景                                |
 | ------------------------- | ---- | ----------------------------------- |
-| **3X-UI 全局路由规则 → Mihomo** | ✅ 推荐  | 使用自建 3X-UI 面板，向 Clash Verge Rev、FlClash 等 Mihomo 内核客户端下发路由规则 |
-| **Clash Verge Rev**       | ✅ 推荐  | 已有机场或节点订阅，希望在本地叠加 `Next-Rules` 分流规则 |
+| **3X-UI 全局路由规则 → Mihomo** | ✅ 推荐   | 使用自建 3X-UI 面板，向 Clash Verge Rev、FlClash 等 Mihomo 内核客户端下发路由规则 |
+| **Clash Verge Rev**       | ✅ 推荐   | 已有机场或节点订阅，希望在本地叠加 `Next-Rules` 分流规则 |
 
 自建 3X-UI 面板推荐通过订阅功能自动下发，可使用 **Clash Verge Rev** 或 **FlClash Windows**。其他使用 Mihomo 内核并支持相应订阅配置的客户端理论上也可接入，具体以客户端支持情况为准。
 
