@@ -1,176 +1,69 @@
 # Next-Rules · 未来分流
 
-面向 3X-UI 面板用户与 Mihomo 内核客户端的分流规则，支持远程下发与本地扩展，由 **JJorigin** 设计维护。
+面向 3X-UI 面板和 Mihomo 客户端的分流规则，由 **JJorigin** 维护。支持 **3X-UI 远程下发**到 Clash Verge Rev 和 FlClash Windows，也支持 **Clash Verge Rev 本地扩展脚本**。
 
-**Next-Rules** 只负责分流：把不同类型的网络请求交给对应的策略组和节点。节点订阅、DNS、TUN、端口和客户端运行设置继续由 3X-UI、原始订阅或客户端负责。
+**当前版本：2.0**。国内目标优先直连，海外服务分别选择代理线路。每个海外场景组保留手动 `DIRECT`。
 
-**当前版本：1.3**
+## 从 1.3 升级
 
-> **推荐方式：** 如果你使用自建 3X-UI 面板，优先选择 **3X-UI 全局路由规则 → Mihomo** 自动下发；如果你已经有机场或节点订阅，再选择 **Clash Verge Rev** 手工叠加。
+1. 先挑一台样机。在当前线路上验证实际出口，将确认可用的海外节点在订阅源中改名，在名称里加上 **`[海外]`**，例如 `[海外] 东京 01`。使用半角方括号。只有确认属于海外代理的真实节点才加这个标记。
+2. 按下方接入方式切到 **2.0 地址或脚本**，使用**规则模式**。在自动选择和各场景组中核对候选节点。自动选择没有可用候选时会拒绝连接，国内流量仍按直连规则处理。
+3. 验证国内网站与应用确实直连，并检查海外各组的实际出口。使用 AI 前，核对该组及其登录依赖所用的组。如果客户端记住了旧版手动选择的 `DIRECT`，请在需要代理的组重新选择代理。
+4. 样机的网页、应用、IPv6 和语音等实际使用场景验证通过后，再按同样设置批量部署。
 
-## 选择接入方式
+已有 1.3 用户可继续使用原来的 `main/rules/next-rules.yaml` 和 `main/rules/next-rules.js` 地址。2.0 使用独立的 `main/v2/` 路径。需要将装机版本固定为 2.0 时，使用 [v2.0 发布页](https://github.com/JJorigin/next-rules/releases/tag/v2.0) 的文件，或将下面地址中的 `main` 换成 `v2.0`。
 
-| 客户端 / 接入方式                | 状&#8288;态   | 适合场景                                |
-| ------------------------- | ---- | ----------------------------------- |
-| **3X-UI 全局路由规则 → Mihomo** | ✅   | 使用自建 3X-UI 面板，向 Clash Verge Rev、FlClash 等 Mihomo 内核客户端下发路由规则 |
-| **Clash Verge Rev**       | ✅   | 已有机场或节点订阅，希望在本地叠加 `Next-Rules` 分流规则 |
+## 接入
 
-自建 3X-UI 面板推荐通过订阅功能自动下发，可使用 **Clash Verge Rev** 或 **FlClash Windows**。其他使用 Mihomo 内核并支持相应订阅配置的客户端理论上也可接入，具体以客户端支持情况为准。
+### 3X-UI 远程下发
 
-## 文件与地址（使用方法）
+1. 打开面板的 **订阅设置 → Clash / Mihomo**，启用路由。
+2. 在 **全局路由规则** 粘贴以下地址之一并保存。
 
-### 3X-UI 全局路由规则 → Mihomo
+   ```text
+   https://raw.githubusercontent.com/JJorigin/next-rules/main/v2/next-rules.yaml
+   https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/v2/next-rules.yaml
+   ```
 
-打开 3X-UI 面板的 **订阅设置 → Clash / Mihomo**，先打开 **启用路由**，再在 **全局路由规则** 中填写下面两个地址中的任意一个：
+3. 在 Clash Verge Rev 或 FlClash Windows 导入面板生成的 **Mihomo 完整订阅**，刷新并切换为规则模式。远程路由地址填在面板，客户端使用面板生成的订阅地址。
 
-**GitHub Raw：**
+### Clash Verge Rev 本地扩展
 
-```text
-https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/next-rules.yaml
-```
+导入节点订阅后，在该订阅的 **订阅扩展脚本**中复制并保存 [2.0 JS](https://raw.githubusercontent.com/JJorigin/next-rules/main/v2/next-rules.js)，然后刷新订阅。一个订阅选一种接入方式。已经使用面板远程下发时，请勿再叠加同一套本地脚本。
 
-**jsDelivr 加速：**
+## 出口选择与匹配顺序
 
-```text
-https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/rules/next-rules.yaml
-```
+| 策略组 | 可选出口 |
+| --- | --- |
+| 默认代理 | 自动选择、已标记的海外代理节点 |
+| AI、Google/YouTube、Apple、流媒体、Telegram、Microsoft、币圈、软件分流 | 自动选择、已标记的海外代理节点、手动 `DIRECT` |
+| 广告拦截 | `REJECT`、`DIRECT` |
 
-上述地址**二选一**填写完成后，保存 3X-UI 设置，并更新客户端订阅。
+自动选择从标记过的真实代理节点中测速。标记是管理员对线路出口的确认。请核对节点的实际出口，尤其是线路、订阅源或出口 IP 变更后。手动选择 `DIRECT` 会让该组走本机出口，适合确需直连的特殊场景。AI 组手动选择 `DIRECT` 时，服务也会看到本机公网出口。默认代理和自动选择不提供 `DIRECT`，节点失效时不自动转直连。节点不支持 UDP 时，对应场景会拒绝该请求。
 
-首次设置或规则更新后，如果暂未出现 Next-Rules 策略组，请稍后再次更新客户端订阅。
+局域网和明确的国内目标优先直连。Apple 地区服务、Microsoft 地区服务、Steam 的国内下载分类用各自的 GeoSite 子集识别。Google 与 YouTube 共用一组。普通国内域名和已知国内 IP 不被进程兜底抢先匹配。广告匹配在国内直连之后，因此已命中直连的广告域名会按直连走。最后仍未分类的请求走默认代理。
 
-3X-UI 会将远程路由规则合并到生成的 Mihomo / Clash 订阅中，节点仍由你的 3X-UI 面板提供。在 **Clash Verge Rev** 或 **FlClash Windows** 中导入面板提供的 **Mihomo 完整订阅地址**，并使用**规则模式**。
+AI 以审核过的专用域名、明确的租户地址和厂商专用网段为主。共享云网段、宽泛关键词和通用遥测不作为 AI 分流条件。ChatGPT 语音的官方地址只在 **UDP 3478** 匹配，其他请求按目标分流。识别到 AI 客户端进程时，进程规则可以为仍未分类的连接补充匹配。软件和 AI 的进程补充规则需要客户端能识别进程，未开启时域名和 IP 规则仍可用。新服务的专用域名或依赖发生变化时，可根据连接记录更新范围。
 
-上面的 YAML 地址填写在 **3X-UI 面板**中；客户端导入的是面板生成的**节点订阅地址**。
+## 批量安装与更新
 
-### Clash Verge Rev
+- Telegram 的独立网段由 Mihomo 每 **86400 秒**检查上游更新。尚未下载规则时，可用客户端已有的 Telegram GeoIP 分类补充匹配。Netflix 的纯 IP 连接使用客户端 GeoIP。Google、YouTube 和 Apple 直接使用客户端 GeoSite。这些内置分类跟随客户端的 GeoIP 或 GeoSite 数据库更新。
+- [v2.0 发布附件](https://github.com/JJorigin/next-rules/releases/tag/v2.0)有可选的 `BundleMRS.7z`。首装网络不稳定时，可以预放到 **Mihomo 内核的工作目录**，首次加载会提取用 Telegram 公布的网段编译的初始缓存。面板仅下发配置，压缩包由装机流程放置。若目录里已有同名包，请先保留原包，并在部署时合并所需文件。附件的 SHA-256 可在发布页核对。
+- 3X-UI 用户在 2.0 地址启用后，更新客户端订阅即可获取同一路径的改动。手动使用 JS 的用户要重新复制脚本。独立规则集在客户端单独更新，内置的审核名单和语音地址快照随版本发布。
 
-适用于已有机场或节点订阅，希望在本地叠加 **Next-Rules** 分流规则的场景。
+## DNS、IPv6 与浏览器
 
-1. 在 Clash Verge Rev 中导入并确认节点订阅可以正常使用。
-2. 打开该订阅的 **订阅扩展脚本**编辑入口。
-3. 点击下面的链接，打开并复制完整脚本：
+Next-Rules 的接入文件只配置路由、策略组和规则集。DNS、TUN、IPv6 和运行模式由原订阅与客户端管理。
 
-   [打开 / 复制 JS](https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/next-rules.js)
-4. 将脚本粘贴到编辑器中，保存并重新更新订阅。
-5. 使用**规则模式**，回到代理组页面，检查策略组和节点是否正常出现。
+Windows 样机建议在客户端启用 **TUN**、**自动设置路由**和**严格路由**。启用后，应在真实网络上测试 IPv4、IPv6 和 DNS。对需要隐藏本机公网 IP 的 AI 浏览器场景，使用单独的浏览器配置或隔离环境，限制 WebRTC 的非代理 UDP，并用实际测试确认。受管理的 Chrome 可按 AI 站点配置 `WebRtcIPHandlingUrl` 的 `disable_non_proxied_udp`。[Chromium 策略说明](https://chromium.googlesource.com/chromium/src/components/policy/+/c2d823006122fdaf9947de020737c04391a3ada5/resources/templates/policy_definitions/WebRtc/WebRtcIPHandlingUrl.yaml)将 AI、登录服务及必要依赖的出口一并检查；域名命中日志和节点测速只能证明其中一部分。账号、设备和浏览器提供的其他地区信息由相应服务与客户端处理。
 
-首次接入或批量部署前，先在一台设备确认 Next-Rules 策略组已出现、外部规则集已加载，再用几个常用网站检查连接命中的规则和出口。若外部规则集加载失败，先更新规则集并确认加载成功。
+测试配置以 **Mihomo 1.19.33（Clash Verge Rev）和 FlClash Windows 0.9.3** 为基准。2.0 使用完整 GeoSite / GeoIP 的分类与内核空组拒绝功能。自定义数据库需要提供这些分类。离线包功能从 Mihomo 1.19.27 起提供。
 
-同一个订阅只使用一种接入方式。已经通过 3X-UI 下发 `next-rules.yaml` 时，不要再对同一个订阅叠加 `next-rules.js`。
+## 数据来源与鸣谢
 
-## Next-Rules 解决什么问题
+- [MetaCubeX / Mihomo](https://github.com/MetaCubeX/mihomo) 与 [MetaCubeX 规则数据库](https://github.com/MetaCubeX/meta-rules-dat)提供分类、规则集格式与离线包机制。
+- [VPSDance AI Proxy Rules](https://github.com/VPSDance/ai-proxy-rules)提供 AI 名单审核的上游。使用的版本和原文件校验值见 [AI 数据说明](v2/data/ai-domains.txt)，许可证见 [VPSDance-LICENSE](v2/data/VPSDance-LICENSE)。
+- [OpenAI 网络配置](https://help.openai.com/en/articles/9247338-network-recommendations-for-chatgpt-errors-on-web-and-apps)与 [Claude Code 网络配置](https://code.claude.com/docs/en/network-config)用于核对服务端点。
+- [Perfect-Rules](https://github.com/n0de-sudo/Perfect-Rules)、[Hrules](https://github.com/hcloudlab/Hrules)与 [Custom OpenClash Rules](https://github.com/Aethersailor/Custom_OpenClash_Rules)提供策略组织、手动出口与地区例外的参考。
 
-**Next-Rules** 会根据请求类型自动进行分流，覆盖常见网络服务、AI 服务、流媒体、软件服务、广告和局域网等场景。
-
-你可以为不同场景分别选择节点。例如，AI 服务使用一条线路，Google/YouTube 使用另一条线路，流媒体再使用其他线路。规则会自动识别请求并交给对应场景组，实现**按服务分流、分别选择出口**。Telegram 的域名和官方地址范围均交给电报专用组。
-
-### 节点选择方式
-
-| 策略组 | 可选出口 | 用途 |
-| --- | --- | --- |
-| `🚀 默认代理 [自选]` | 自动选择、订阅节点 | 处理未命中前面规则的请求，即“漏网之鱼” |
-| AI、Google/YouTube、流媒体等场景组 | 自动选择、`DIRECT`、订阅节点 | 为不同服务分别选择出口 |
-| `🛑 广告拦截 [系统]` | `REJECT`、`DIRECT` | 默认拦截广告，也可手动放行 |
-
-**`DIRECT` 表示直连，流量不经过代理节点；`REJECT` 表示拒绝连接。** 选择具体节点时，对应场景固定使用该节点；选择自动选择时，则交给客户端测速选路。
-
-`♻️ 自动选择 [系统]` 通过健康检查地址测试节点是否可用以及响应延迟，优先选择可用且延迟较低的节点。对于直接写入订阅的节点，检查间隔为 **300 秒**，切换容差为 **50 毫秒**，以减少小幅延迟波动引起的频繁切换；启用按需测速，未被使用时跳过定时检测。测速延迟不等于下载速度，也不代表某个服务一定可用。
-
-规则从上到下匹配，命中后使用对应策略。软件进程规则优先，其次按私有地址、广告和各类服务规则处理，再由直连规则及默认代理兜底。未命中特定软件或服务规则、且命中直连规则的域名和 IP 使用直连；其余请求交给 `🚀 默认代理 [自选]`。
-
-当选中的节点不支持 UDP 时，对应代理策略会拒绝该 UDP 请求。需要使用 UDP 的场景，请选择支持 UDP 的节点。默认代理和自动选择在没有候选节点时会拒绝连接，可先检查订阅节点是否已加载。
-
-### 软件进程分流
-
-软件进程分流需要客户端能够识别发起连接的进程。**FlClash Windows** 默认关闭此功能；需要按软件分流时，请打开 **工具 → 常规 → 连接 → 查找进程**。未开启时，域名和 IP 规则仍会正常匹配。
-
-开启进程识别后，匹配 Steam、WhatsApp、Discord、Epic 等软件进程的请求会优先交给 `🖥️ 软件分流 [自选]`，包括这些进程访问原本可直连的目标。需要让匹配软件直连时，可在软件分流组中选择 `DIRECT`。
-
-## DNS 与分流
-
-DNS 和代理路由是两个不同的部分：
-
-- **DNS** 决定域名通过什么路径解析；
-- **分流规则** 决定请求最终进入直连、代理或具体策略组。
-
-**Next-Rules** 提供路由规则，不接管客户端的 DNS 基线。
-
-### Windows 客户端设置
-
-推荐在客户端手动开启 **TUN（虚拟网卡模式）**和**严格路由**：
-
-- **Clash Verge Rev：** 在 **设置**中打开**虚拟网卡模式**，点击旁边的齿轮，开启**自动设置全局路由**和**严格路由**并保存。有 **DNS 模式** 选项时保持 **Auto**。
-- **FlClash Windows：** 打开虚拟网卡，再进入 **工具 → 进阶配置 → 网络 → 虚拟网卡 → 添加覆写项 → 严格路由**，添加该覆写项后，将开关设为开启。
-
-这些开关由客户端管理，导入 Next-Rules 不会自动开启。不同版本的设置入口可能略有差异。开启后请在实际使用的浏览器和网络环境中重新检测 DNS；严格路由用于减少请求绕过 TUN 的情况，检测结果仍以实际解析路径和出口为准。
-
-### 3X-UI 远程路由
-
-远程 YAML 只负责分流策略和规则集，不修改 DNS、TUN、IPv6、端口等客户端运行设置。这些设置继续由 3X-UI 生成的基础订阅和客户端负责。
-
-### Clash Verge Rev 扩展脚本
-
-扩展脚本只修改策略组、规则提供者和分流规则，保留原订阅以及 Clash Verge 的 DNS、TUN、IPv6、Sniffer、Hosts、端口和运行模式设置。
-
-如果出现“节点可以测速但网站打不开”或 DNS 检测异常，请按以下顺序检查：
-
-```text
-域名解析 → 规则命中 → 策略组 → 最终节点 → 实际出口
-```
-
-DNS 检测应在客户端启用订阅并开始运行后进行，结果以实际解析请求和最终出口为准。网页 WebRTC 的出口保护需要在浏览器或隔离网络中设置。
-
-## 规则更新
-
-外部规则由 Mihomo 的规则提供者下载并缓存到本地，并按照发布文件中设置的更新间隔由客户端自动更新。当前外部规则集的更新间隔为 **86400 秒（24 小时）**。内置的 Telegram 地址范围随 Next-Rules 版本更新。GitHub 或 jsDelivr 不会主动向客户端推送更新。
-
-当 **Next-Rules** 更新后，不需要更换订阅地址：
-
-- **3X-UI 用户**继续使用原地址，并更新客户端订阅；
-- **Clash Verge Rev 本地脚本用户**重新打开 [脚本链接](https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/next-rules.js)，复制最新内容替换原脚本，保存后更新订阅。只更新订阅不会自动替换已粘贴的脚本；
-- 外部规则集按照各自的更新间隔独立更新。
-
-**Next-Rules 会持续维护。** 如果发现规则存在问题，欢迎提交 [Issue](https://github.com/JJorigin/next-rules/issues)。
-
-## 兼容性与边界
-
-**Next-Rules** 提供 **Clash Verge Rev / FlClash Windows 的 3X-UI 远程订阅接入**，以及 **Clash Verge Rev 的本地扩展脚本接入**。FlClash Windows 的设置说明以 **v0.9.1** 为基准；本项目不提供 FlClash 的 JS 脚本导入方式。
-
-其他 Mihomo 客户端的兼容性取决于其订阅处理与配置支持。空节点组的拒绝行为需要 Mihomo **1.19.27 或更新版本**，或已支持该功能的客户端内核。请使用规则模式；另外添加的规则或脚本可能改变原有分流结果。
-
-远程下发时，节点名称应与本项目的策略组名称区分，避免同名冲突。本地脚本会保留原节点名称和原订阅使用的规则集，在发生策略组、规则集名称或缓存路径冲突时为新增项分配独立名称。
-
-**Next-Rules** 不提供代理节点，也不会改变节点的协议、线路、出口 IP 或网络质量。它负责规则识别、策略组组织和出口选择，不能保证第三方服务的账号、认证、地区资格或风控结果。
-
-如果订阅通过 `proxy-providers` 提供节点，健康检查由节点提供者执行，其原有的检测周期和按需设置可能影响实际测速行为。
-
-## 规则来源与鸣谢
-
-本项目参考了以下开源项目和官方文档：
-
-- [Perfect-Rules](https://github.com/n0de-sudo/Perfect-Rules)：参考其规则提供者组织、规则顺序和场景策略组设计。
-- [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules)：提供 AI 服务 Global Clash 规则集。
-- [MetaCubeX/mihomo 文档](https://wiki.metacubex.one/)：用于核对 Mihomo 的策略组、规则提供者和 DNS 配置语义。
-- [Clash Verge Rev 文档](https://www.clashverge.dev/guide/extend.html)：用于核对订阅扩展脚本和配置合并优先级。
-- [FlClash](https://github.com/chen08209/FlClash)：用于核对 Windows 客户端的订阅处理和设置入口。
-- [Telegram 官方地址范围](https://core.telegram.org/resources/cidr.txt) 提供电报专用组使用的 IPv4 和 IPv6 范围。
-
-感谢上述项目的维护者和贡献者。
-
-## 支持项目
-
-如果 **Next-Rules** 对你有帮助，欢迎在 [GitHub 项目主页](https://github.com/JJorigin/next-rules) 点 Star，也欢迎提交 [Issue](https://github.com/JJorigin/next-rules/issues) 帮助改进规则。
-
-## 免责声明
-
-**Next-Rules** 仅用于网络技术研究、学习和配置交流。
-
-请遵守所在地法律法规，以及相关软件、网络服务和平台的使用规则。使用本项目产生的任何结果和风险由使用者自行承担。
-
-## 作者
-
-**JJorigin**
-
-项目名称：**Next-Rules（未来分流）**
-
+如遇分流问题，欢迎提交 [Issue](https://github.com/JJorigin/next-rules/issues)。请提供客户端版本、命中的规则和策略组，提交前删除订阅链接、节点地址、账户信息和出口 IP。

@@ -1,0 +1,23 @@
+
+name: Verify rules
+on:
+  push:
+    paths:
+      - 'v2/**'
+      - 'tools/**'
+      - '.github/workflows/verify-v2.yml'
+  pull_request:
+    paths:
+      - 'v2/**'
+      - 'tools/**'
+      - '.github/workflows/verify-v2.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: node tools/build-v2.cjs --check
+      - run: node --check v2/next-rules.js
+      - run: node tools/check-v2.cjs
