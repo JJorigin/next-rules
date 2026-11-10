@@ -1,4 +1,4 @@
-# Next-Rules 1.2
+# Next-Rules 1.3
 # 供 3X-UI「订阅设置 → Clash / Mihomo → 全局路由规则」使用。
 # 节点由订阅提供；DNS、TUN、IPv6、Sniffer、Hosts、端口和运行模式由客户端或原订阅管理。
 
@@ -60,11 +60,33 @@ rule-providers:
     path: ./providers/next-rules-software.yaml
     interval: 86400
 
+  # Telegram 官方公布的地址范围，供只显示 IP 的连接使用。
+  # https://core.telegram.org/resources/cidr.txt
+  next-rules-telegram-ip:
+    type: inline
+    behavior: ipcidr
+    payload:
+      - 91.108.56.0/22
+      - 91.108.4.0/22
+      - 91.108.8.0/22
+      - 91.108.16.0/22
+      - 91.108.12.0/22
+      - 149.154.160.0/20
+      - 91.105.192.0/23
+      - 91.108.20.0/22
+      - 185.76.151.0/24
+      - 2001:b28:f23d::/48
+      - 2001:b28:f23f::/48
+      - 2001:67c:4e8::/48
+      - 2001:b28:f23c::/48
+      - 2a0a:f280::/32
+
 proxy-groups:
   # ---------- 用户默认组 ----------
   # 未命中特定规则的请求默认使用代理；自动选择和当前订阅中的有效节点可手动选择。
   - name: "🚀 默认代理 [自选]"
     type: select
+    empty-fallback: REJECT
     proxies: ["♻️ 自动选择 [系统]"]
     include-all-proxies: true
     exclude-type: Direct
@@ -117,6 +139,7 @@ proxy-groups:
   # ---------- 系统组 ----------
   - name: "♻️ 自动选择 [系统]"
     type: url-test
+    empty-fallback: REJECT
     include-all-proxies: true
     exclude-type: Direct
     exclude-filter: "(?i)(?:^|[|｜])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])|^DIRECT$"
@@ -131,22 +154,37 @@ proxy-groups:
     proxies: [REJECT, DIRECT]
 
 rules:
+  # 专用策略若无法转发 UDP，拒绝该请求，避免继续匹配到其他出口。
   - "RULE-SET,next-rules-software,🖥️ 软件分流 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-software)),REJECT"
   - "GEOSITE,private,DIRECT"
   - "GEOIP,private,DIRECT,no-resolve"
   - "RULE-SET,next-rules-ads,🛑 广告拦截 [系统]"
   # 专用服务按以下顺序匹配，AI 优先于 Google/YouTube；未命中时继续匹配后续规则。
   - "RULE-SET,next-rules-ai,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-ai)),REJECT"
   - "RULE-SET,next-rules-youtube,🔍 谷歌服务(含油管) [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-youtube)),REJECT"
   - "RULE-SET,next-rules-google,🔍 谷歌服务(含油管) [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-google)),REJECT"
   - "RULE-SET,next-rules-crypto,💰 币圈专用 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-crypto)),REJECT"
   - "RULE-SET,next-rules-disney,🎬 流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-disney)),REJECT"
   - "GEOSITE,netflix,🎬 流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,netflix)),REJECT"
   - "RULE-SET,next-rules-apple,🍎 苹果服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-apple)),REJECT"
   - "GEOSITE,telegram,💬 电报专用 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,telegram)),REJECT"
+  - "RULE-SET,next-rules-telegram-ip,💬 电报专用 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-telegram-ip,no-resolve)),REJECT"
   - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,microsoft)),REJECT"
   # 命中直连规则且未命中特定规则的普通流量直连。
   - "GEOSITE,CN,DIRECT"
   - "GEOIP,CN,DIRECT,no-resolve"
+  # 未匹配的 UDP 先尝试默认代理，无法转发时拒绝。
+  - "NETWORK,UDP,🚀 默认代理 [自选]"
+  - "NETWORK,UDP,REJECT"
   - "MATCH,🚀 默认代理 [自选]"
-

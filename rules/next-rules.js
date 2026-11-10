@@ -1,12 +1,12 @@
 // ============================================================
-// Next-Rules 1.2
+// Next-Rules 1.3
 // Clash Verge Rev 订阅扩展脚本
 //
 // 本脚本只负责策略组、规则集和分流顺序。
 // DNS、TUN、IPv6、Sniffer、Hosts、端口和运行模式继续由原订阅或客户端负责。
 // ============================================================
 
-const NEXT_RULES_VERSION = "1.2";
+const NEXT_RULES_VERSION = "1.3";
 
 // 过滤以说明标签开头的订阅信息；线路名称中的“流量”或 Bandwidth 等字样正常保留。
 const METADATA_FILTER = "(?i)(?:^|[|｜])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])";
@@ -45,16 +45,23 @@ const LEGACY_GROUPS = new Set([
 
 // 未被其他配置引用的旧版策略组会在更新时清理，不会重新生成。
 
-// 未被原订阅子规则引用的旧版规则集会在更新时清理。
-const LEGACY_PROVIDER_NAMES = [
-  "next-ads",
-  "next-ai",
-  "next-youtube",
-  "next-crypto",
-  "next-disney",
-  "next-apple",
-  "next-google",
-  "next-software"
+// Telegram 官方公布的地址范围，供只显示 IP 的连接使用。
+// https://core.telegram.org/resources/cidr.txt
+const TELEGRAM_IP_RANGES = [
+  "91.108.56.0/22",
+  "91.108.4.0/22",
+  "91.108.8.0/22",
+  "91.108.16.0/22",
+  "91.108.12.0/22",
+  "149.154.160.0/20",
+  "91.105.192.0/23",
+  "91.108.20.0/22",
+  "185.76.151.0/24",
+  "2001:b28:f23d::/48",
+  "2001:b28:f23f::/48",
+  "2001:67c:4e8::/48",
+  "2001:b28:f23c::/48",
+  "2a0a:f280::/32"
 ];
 
 const unique = (items) => [...new Set(items.filter(Boolean))];
@@ -157,8 +164,64 @@ function allocateGroupNames(config, retainedGroups) {
   return names;
 }
 
+function cachePathKey(path) {
+  if (typeof path !== "string") return "";
+  const parts = [];
+  for (const part of path.replace(/\\/g, "/").toLowerCase().split("/")) {
+    if (!part || part === ".") continue;
+    if (part === ".." && parts.length && parts[parts.length - 1] !== "..") parts.pop();
+    else parts.push(part === ".." ? part : part.replace(/[. ]+$/, ""));
+  }
+  return parts.join("/");
+}
+
+function sameProvider(existing, expected) {
+  return existing && Object.keys(existing).length === Object.keys(expected).length &&
+    Object.entries(expected).every(([key, value]) => {
+      if (!Array.isArray(value)) return existing[key] === value;
+      const actual = existing[key];
+      return Array.isArray(actual) && actual.length === value.length &&
+        value.every((item, index) => item === actual[index]);
+    });
+}
+
+function ruleProviderRegistry(config) {
+  const providers = { ...(config["rule-providers"] || {}) };
+  const occupiedNames = new Map(Object.keys(providers).map((name) => [name.toLowerCase(), name]));
+  const paths = [
+    ...Object.entries(providers).map(([name, provider]) => [name, cachePathKey(provider && provider.path)]),
+    ...Object.values(config["proxy-providers"] || {}).map((provider) => [null, cachePathKey(provider && provider.path)])
+  ];
+  const names = new Map();
+
+  // 原订阅可在 DNS、子规则等位置引用这些规则集。发生冲突时只更改新规则集的名称和缓存路径。
+  const add = (base, definition) => {
+    for (let suffix = 1; ; suffix += 1) {
+      const name = suffix === 1 ? base : base + "-" + suffix;
+      const desired = definition.type === "http"
+        ? { ...definition, path: "./providers/" + name + ".yaml" }
+        : definition;
+      const occupied = occupiedNames.get(name);
+      if (occupied && (occupied !== name || !sameProvider(providers[occupied], desired))) continue;
+      const cachePath = cachePathKey(desired.path);
+      // 本地脚本无法得知内核工作目录，绝对路径使用相同后缀时也保留原缓存。
+      if (cachePath && paths.some(([owner, used]) =>
+        owner !== name && (used === cachePath || used.endsWith("/" + cachePath))
+      )) continue;
+      if (!occupied) {
+        providers[name] = desired;
+        occupiedNames.set(name, name);
+        if (cachePath) paths.push([name, cachePath]);
+      }
+      names.set(base, name);
+      return;
+    }
+  };
+  return { providers, names, add };
+}
+
 function main(config) {
-  if (!config || typeof config !== "object") return config;
+  if (!config || typeof config !== "object" || Array.isArray(config)) return config;
 
   const inlineNodes = Array.isArray(config.proxies)
     ? config.proxies
@@ -176,25 +239,14 @@ function main(config) {
     ? Object.keys(config["proxy-providers"])
     : [];
 
-  if (!inlineNodes.length && !providerNames.length) return config;
-
-  const providers = { ...(config["rule-providers"] || {}) };
-  // 子规则继续使用的旧规则集须保留，避免原订阅中的子规则失效。
-  const subRulesText = JSON.stringify(config["sub-rules"] || {});
-  for (const legacyName of LEGACY_PROVIDER_NAMES) {
-    if (!subRulesText.includes(legacyName)) delete providers[legacyName];
-  }
-
-  const provider = (name, url) => {
-    providers[name] = {
-      type: "http",
-      behavior: "classical",
-      format: "yaml",
-      url,
-      path: `./providers/${name}.yaml`,
-      interval: 86400
-    };
-  };
+  const { providers, names: ruleProviderNames, add } = ruleProviderRegistry(config);
+  const provider = (name, url) => add(name, {
+    type: "http",
+    behavior: "classical",
+    format: "yaml",
+    url,
+    interval: 86400
+  });
 
   provider("next-rules-ads", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml");
   provider("next-rules-ai", "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml");
@@ -204,6 +256,12 @@ function main(config) {
   provider("next-rules-apple", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml");
   provider("next-rules-google", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml");
   provider("next-rules-software", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/software.yaml");
+
+  add("next-rules-telegram-ip", {
+    type: "inline",
+    behavior: "ipcidr",
+    payload: TELEGRAM_IP_RANGES
+  });
 
   const retainedGroups = retainSubscriptionGroups(config, providers);
   const groupNames = allocateGroupNames(config, retainedGroups);
@@ -221,6 +279,7 @@ function main(config) {
   addGroup({
     name: defaultGroup,
     type: "select",
+    "empty-fallback": "REJECT",
     ...defaultSource,
     proxies: unique([autoGroup, ...(defaultSource.proxies || [])])
   });
@@ -251,10 +310,13 @@ function main(config) {
     ...withSceneSource(inlineNodes, providerNames, [autoGroup, "DIRECT"])
   });
 
+  const autoSource = sourceFor(inlineNodes, providerNames);
+  if (!inlineNodes.length && !providerNames.length) autoSource.proxies = ["REJECT"];
   addGroup({
     name: autoGroup,
     type: "url-test",
-    ...sourceFor(inlineNodes, providerNames),
+    ...autoSource,
+    "empty-fallback": "REJECT",
     url: "https://cp.cloudflare.com/generate_204",
     interval: 300,
     tolerance: 50,
@@ -273,32 +335,32 @@ function main(config) {
   config["proxy-groups"] = groups;
   config["rule-providers"] = providers;
 
-  // 软件进程优先进入软件分流；命中直连规则且未命中特定规则的普通流量直连。
-  config.rules = [
-    "RULE-SET,next-rules-software,🖥️ 软件分流 [自选]",
-    "GEOSITE,private,DIRECT",
-    "GEOIP,private,DIRECT,no-resolve",
-    "RULE-SET,next-rules-ads,🛑 广告拦截 [系统]",
-    "RULE-SET,next-rules-ai,🤖 AI服务 [自选]",
-    "RULE-SET,next-rules-youtube,🔍 谷歌服务(含油管) [自选]",
-    "RULE-SET,next-rules-google,🔍 谷歌服务(含油管) [自选]",
-    "RULE-SET,next-rules-crypto,💰 币圈专用 [自选]",
-    "RULE-SET,next-rules-disney,🎬 流媒体 [自选]",
-    "GEOSITE,netflix,🎬 流媒体 [自选]",
-    "RULE-SET,next-rules-apple,🍎 苹果服务 [自选]",
-    "GEOSITE,telegram,💬 电报专用 [自选]",
-    "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]",
-    "GEOSITE,CN,DIRECT",
-    "GEOIP,CN,DIRECT,no-resolve",
-    "MATCH,🚀 默认代理 [自选]"
-  ].map((rule) => {
-    const parts = rule.split(",");
-    const target = parts[0] === "MATCH" ? 1 : 2;
-    if (groupNames.has(parts[target])) parts[target] = groupNames.get(parts[target]);
-    return parts.join(",");
-  });
+  const rules = [];
+  const ruleSet = (name) => "RULE-SET," + ruleProviderNames.get("next-rules-" + name);
+  const route = (condition, group) => rules.push(condition + "," + groupNames.get(group));
+  const scene = (condition, group, option = "") => {
+    rules.push(condition + "," + groupNames.get(group) + option);
+    // 策略无法转发 UDP 时拒绝同一请求，避免继续匹配到其他出口。
+    rules.push("AND,((NETWORK,UDP),(" + condition + option + ")),REJECT");
+  };
+
+  // 软件进程优先。未命中特定规则的请求再由直连规则和默认代理处理。
+  scene(ruleSet("software"), "🖥️ 软件分流 [自选]");
+  rules.push("GEOSITE,private,DIRECT", "GEOIP,private,DIRECT,no-resolve");
+  route(ruleSet("ads"), "🛑 广告拦截 [系统]");
+  scene(ruleSet("ai"), "🤖 AI服务 [自选]");
+  scene(ruleSet("youtube"), "🔍 谷歌服务(含油管) [自选]");
+  scene(ruleSet("google"), "🔍 谷歌服务(含油管) [自选]");
+  scene(ruleSet("crypto"), "💰 币圈专用 [自选]");
+  scene(ruleSet("disney"), "🎬 流媒体 [自选]");
+  scene("GEOSITE,netflix", "🎬 流媒体 [自选]");
+  scene(ruleSet("apple"), "🍎 苹果服务 [自选]");
+  scene("GEOSITE,telegram", "💬 电报专用 [自选]");
+  scene(ruleSet("telegram-ip"), "💬 电报专用 [自选]", ",no-resolve");
+  scene("GEOSITE,microsoft", "Ⓜ️ 微软服务 [自选]");
+  rules.push("GEOSITE,CN,DIRECT", "GEOIP,CN,DIRECT,no-resolve");
+  rules.push("NETWORK,UDP," + defaultGroup, "NETWORK,UDP,REJECT", "MATCH," + defaultGroup);
+  config.rules = rules;
 
   return config;
 }
-
-
