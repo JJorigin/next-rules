@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "sources": {
+    "ai": {
+      "url": "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml",
+      "sha256": "322b913039bb5edc6a8309032775ff68a776308fd6ebf79aa4723732aff931a3",
+      "commit": "b9a81ef1702941a07d2cdb924a3eb8c3499780ad"
+    },
+    "ai-ip": {
+      "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
+      "sha256": "0a302fbee593dca126b1bbc2f8921ba3a0afbe4e6c9aefb30909550e18945f01"
+    },
+    "voice": {
+      "url": "https://openai.com/chatgpt-voice.json",
+      "sha256": "0852b8be430cb4ae4a68ff8c0169f05bcdc5ce2ab6649cb3fc02d057a50612e7"
+    },
+    "crypto": {
+      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
+      "sha256": "c14aedfab4b73bcde0ca8a8d10a51b4353b26bf13ecc55c062f8b49ce26aee2f"
+    },
+    "media-channel4": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml",
+      "sha256": "7160d5263a0223e6a65e0e0645d69b2854c63f531089745c358d7996e3aef1ad"
+    },
+    "media-itv": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml",
+      "sha256": "1914c946a81781fc09f034c1d293b7c61f76cc26c9c6af443249b152e8d15c96"
+    },
+    "media-fubo": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml",
+      "sha256": "749ef214c594dd74cdbf7f9ddcdcccf5cee126c02b90a6d38e0bc733ba3feea3"
+    },
+    "media-crunchyroll": {
+      "url": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list",
+      "sha256": "e627a06e33126a0ca323137d5e77f106f3c0cc99cca439690062986243ae2bda"
+    },
+    "media-linetv": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml",
+      "sha256": "e85e152823cb484c027d1f93bd047d7adbd2bfa4220009604e2686de45627064"
+    },
+    "media-friday": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml",
+      "sha256": "77a7a12a8e8d448d6b067c2bc469096cabcbe276f62465bfb6c6f79637f0b5cc"
+    },
+    "media-hulujp": {
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml",
+      "sha256": "121fa0f111cbe802c3f828d2e5b1477439947d780ac13bd3cfd9858cef1a0fe9"
+    }
+  },
+  "counts": {
+    "ai_total": 349,
+    "ai_exact": 311,
+    "ai_regex": 1,
+    "ai_deferred": 37,
+    "voice_official": 411,
+    "ai_ip": 411
+  }
+}

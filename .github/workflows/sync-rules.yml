@@ -1,0 +1,74 @@
+name: Sync maintained rule sources
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: source-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+      - run: python -m pip install --requirement tools/requirements-sync.txt
+      - name: Fetch, validate and rebuild
+        run: |
+          python test/sync-validation.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/sync-rules.py --fetch
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/build-v2.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/build-v2.cjs --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/check-v2.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/sync-rules.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python test/check-yaml.py
+      - name: Check for updated data
+        id: changes
+        run: |
+          git diff --quiet
+          if ($LASTEXITCODE -eq 1) {
+            'changed=true' >> $env:GITHUB_OUTPUT
+          } elseif ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+          exit 0
+      - name: Check source and test resources
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          python test/check-panel-source.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go build -o .cache/panel-merge.exe ./test/panel-merge.go
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python test/fetch-resources.py
+      - name: Verify before committing data
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
+            node test/regression.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          foreach ($variant in @('1.19.33', '1.19.34')) {
+            node test/http-update.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Commit verified public data
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rules/ai rules/media rules/sources.json v2/data/source-cache.json v2/next-rules.yaml v2/next-rules.js test/fixtures
+          git commit -m 'chore: refresh verified upstream rule data'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git push origin HEAD:main

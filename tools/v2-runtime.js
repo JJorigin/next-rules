@@ -1,19 +1,19 @@
-// Next-Rules 2.0 · Clash Verge Rev 订阅扩展脚本
-// 由 node tools/build-v2.cjs 生成。发布说明和迁移步骤见 README。
+// Next-Rules 2.1 · Clash Verge Rev 订阅扩展脚本
+// 用于订阅的扩展脚本；DNS、TUN 和 IPv6 沿用原订阅及客户端设置。
 
 const POLICY = /* GENERATED POLICY */ null;
 const OWNED_GROUPS = new Set(Object.values(POLICY.group));
 const unique = (items) => [...new Set(items.filter(Boolean))];
 const asRecord = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
-const VERIFIED_NODE = /\[海外\]/;
 const BLOCKED_TYPES = "Pass|Compatible|Dns|Reject|RejectDrop";
-const NON_PROXY_TYPES = new Set(["direct", ...BLOCKED_TYPES.toLowerCase().split("|")]);
+const BLOCKED_NODE_TYPES = new Set(BLOCKED_TYPES.toLowerCase().split("|"));
 
 const METADATA_FILTER = "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])";
 const METADATA_RE = new RegExp(METADATA_FILTER.replace(/^\(\?i\)/, ""), "i");
-const NODE_FILTER = "(?i)^(?!.*(?:" + METADATA_FILTER.slice(4) + ")).*" + VERIFIED_NODE.source;
 
 const LEGACY_GROUPS = new Set([
+  "🔍 谷歌服务(含油管) [自选]",
+  "🎬 流媒体 [自选]",
   "直连(DIRECT)",
   "禁止广告(REJECT)",
   "🌐 全部节点 [系统]",
@@ -31,7 +31,7 @@ const LEGACY_GROUPS = new Set([
 
 function ownedGroupBase(name) {
   if (typeof name !== "string") return null;
-  for (const base of OWNED_GROUPS) {
+  for (const base of [...OWNED_GROUPS, ...LEGACY_GROUPS]) {
     const alias = base + " · Next-Rules";
     if (name === base || name === alias) return base;
     if (name.startsWith(alias + " ") && /^(?:[2-9]|[1-9][0-9]+)$/.test(name.slice(alias.length + 1))) return base;
@@ -75,7 +75,7 @@ function retainSubscriptionGroups(config, providers) {
   for (const [key, value] of Object.entries(config)) {
     if (!["proxy-groups", "rules", "rule-providers"].includes(key)) inspect(value);
   }
-  inspect(providers);
+  inspect(Object.fromEntries(Object.entries(providers).filter(([name, definition]) => !isOwnedProvider(name, definition))));
   // 多级依赖一并保留，避免更新后出现找不到策略组或链式连接循环的错误。
   for (const name of required) inspect(managed.get(name));
 
@@ -118,8 +118,15 @@ function cachePathKey(path) {
 }
 
 function sameProvider(existing, expected) {
-  return existing && Object.keys(existing).length === Object.keys(expected).length &&
-    Object.entries(expected).every(([key, value]) => {
+  if (!existing) return false;
+  // HTTP 备用内容随构建更新；相同来源仍复用同一缓存文件。
+  const keys = (item) => Object.keys(item).filter((key) => !(item.type === "http" && key === "payload"));
+  return keys(existing).length === keys(expected).length &&
+    keys(expected).every((key) => {
+      const value = expected[key];
+      if (key === "proxy" && ownedGroupBase(value) && ownedGroupBase(existing[key])) {
+        return ownedGroupBase(value) === ownedGroupBase(existing[key]);
+      }
       if (!Array.isArray(value)) return existing[key] === value;
       const actual = existing[key];
       return Array.isArray(actual) && actual.length === value.length &&
@@ -127,7 +134,14 @@ function sameProvider(existing, expected) {
     });
 }
 
-function ruleProviderRegistry(config) {
+function isOwnedProvider(name, definition) {
+  return Object.entries(POLICY.providers).some(([base, source]) =>
+    (name === base || (name.startsWith(base + "-") && /^(?:[2-9]|[1-9][0-9]+)$/.test(name.slice(base.length + 1)))) &&
+    sameProvider(definition, providerDefinition(name, source))
+  );
+}
+
+function ruleProviderRegistry(config, groupNames) {
   const providers = { ...(asRecord(config["rule-providers"])) };
   const occupiedNames = new Map(Object.keys(providers).map((name) => [name.toLowerCase(), name]));
   const paths = [
@@ -140,7 +154,7 @@ function ruleProviderRegistry(config) {
   const add = (base, definition) => {
     for (let suffix = 1; ; suffix += 1) {
       const name = suffix === 1 ? base : base + "-" + suffix;
-      const desired = providerDefinition(name, definition);
+      const desired = providerDefinition(name, definition, groupNames);
       const occupied = occupiedNames.get(name);
       if (occupied && (occupied !== name || !sameProvider(providers[occupied], desired))) continue;
       const cachePath = cachePathKey(desired.path);
@@ -149,10 +163,10 @@ function ruleProviderRegistry(config) {
         owner !== name && (used === cachePath || used.endsWith("/" + cachePath))
       )) continue;
       if (!occupied) {
-        providers[name] = desired;
         occupiedNames.set(name, name);
         if (cachePath) paths.push([name, cachePath]);
       }
+      providers[name] = desired;
       names.set(base, name);
       return;
     }
@@ -160,9 +174,9 @@ function ruleProviderRegistry(config) {
   return { providers, names, add };
 }
 
-function providerDefinition(name, definition) {
+function providerDefinition(name, definition, groupNames = new Map()) {
   if (definition.type === "http") {
-    return { ...definition, path: "./providers/" + name + "." + definition.format };
+    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: "./providers/" + name + "." + definition.format };
   }
   return { ...definition, payload: [...definition.payload] };
 }
@@ -172,22 +186,21 @@ function buildGroups(groupNames, inlineNodes, providerNames = []) {
   const nameOf = (name) => groupNames.get(name) || name;
   const auto = nameOf(g.auto);
   const source = {
-    filter: NODE_FILTER,
     "exclude-filter": METADATA_FILTER
   };
   // 远程入口从面板订阅读取节点。本地入口筛选内嵌节点，并沿用原来的节点提供者。
   if (inlineNodes === undefined) source["include-all"] = true;
   if (providerNames.length) source.use = providerNames;
 
-  function selector(base, manualDirect) {
+  function selector(base, manualDirect, preferred = auto) {
     return {
       name: nameOf(base),
       type: "select",
-      "default-selected": auto,
+      "default-selected": preferred,
       "empty-fallback": "REJECT",
       ...source,
       "exclude-type": manualDirect ? BLOCKED_TYPES : "Direct|" + BLOCKED_TYPES,
-      proxies: unique([auto, ...(manualDirect ? ["DIRECT"] : []), ...(inlineNodes || [])])
+      proxies: unique([preferred, auto, ...(manualDirect ? ["DIRECT"] : []), ...(inlineNodes || [])])
     };
   }
 
@@ -208,8 +221,8 @@ function buildGroups(groupNames, inlineNodes, providerNames = []) {
 
   return [
     selector(g.default, false),
-    ...[g.ai, g.google, g.media, g.telegram, g.microsoft, g.apple, g.crypto, g.software]
-      .map((base) => selector(base, true)),
+    ...[g.ai, g.google, g.youtube, g.media, g.mediaAsia, g.telegram, g.microsoft, g.apple, g.crypto, g.software]
+      .map((base) => selector(base, true, base === g.youtube ? nameOf(g.google) : auto)),
     autoGroup,
     { name: nameOf(g.ads), type: "select", proxies: ["REJECT", "DIRECT"] }
   ];
@@ -259,16 +272,16 @@ function main(config) {
   const inlineNodes = Array.isArray(config.proxies)
     ? config.proxies.filter((node) => (
       node && typeof node.name === "string" &&
-      VERIFIED_NODE.test(node.name) && !METADATA_RE.test(node.name) &&
-      !NON_PROXY_TYPES.has(String(node.type || "").toLowerCase())
+      !METADATA_RE.test(node.name) &&
+      !BLOCKED_NODE_TYPES.has(String(node.type || "").toLowerCase())
     )).map((node) => node.name)
     : [];
   const providerNames = Object.keys(asRecord(config["proxy-providers"]));
-  const { providers, names: ruleProviderNames, add } = ruleProviderRegistry(config);
+  const retained = retainSubscriptionGroups(config, asRecord(config["rule-providers"]));
+  const groupNames = allocateGroupNames(config, retained);
+  const { providers, names: ruleProviderNames, add } = ruleProviderRegistry(config, groupNames);
   for (const [name, definition] of Object.entries(POLICY.providers)) add(name, definition);
 
-  const retained = retainSubscriptionGroups(config, providers);
-  const groupNames = allocateGroupNames(config, retained);
   config["proxy-groups"] = [...buildGroups(groupNames, inlineNodes, providerNames), ...retained];
   config["rule-providers"] = providers;
   config.rules = renderRules(ruleProviderNames, groupNames);

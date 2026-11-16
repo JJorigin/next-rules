@@ -1,0 +1,4 @@
+# AI 服务域名匹配
+# 来源：https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml
+payload:
+  - "DOMAIN-REGEX,^chatgpt-async-webps-prod-\\S+-\\d+\\.webpubsub\\.azure\\.com$"

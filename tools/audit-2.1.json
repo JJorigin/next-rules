@@ -1,0 +1,99 @@
+{
+  "version": "2.1",
+  "date": "2026-11-17",
+  "reviewed_published_commit": "81443547320892293f7fee85f5b5a80a70d0f835",
+  "entries": [
+    "3X-UI v3.11.0 merged YAML",
+    "Clash Verge subscription JS"
+  ],
+  "native_results": [
+    {
+      "variant": "1.19.33",
+      "version": "v1.19.33",
+      "checks": 577,
+      "failed": false
+    },
+    {
+      "variant": "1.19.34",
+      "version": "v1.19.34",
+      "checks": 577,
+      "failed": false
+    },
+    {
+      "variant": "flclash",
+      "version": "FlClash Windows 0.9.3 release core",
+      "checks": 501,
+      "failed": false
+    },
+    {
+      "variant": "1.19.33",
+      "version": "v1.19.33",
+      "checks": 16,
+      "failed": false
+    },
+    {
+      "variant": "1.19.34",
+      "version": "v1.19.34",
+      "checks": 16,
+      "failed": false
+    }
+  ],
+  "total_native_assertions": 1687,
+  "source_counts": {
+    "ai_total": 349,
+    "ai_exact": 311,
+    "ai_regex": 1,
+    "ai_deferred": 37,
+    "voice_official": 411,
+    "ai_ip": 411
+  },
+  "test_resources": {
+    "files": {
+      "geosite.dat": {
+        "sha256": "03996897044b01466b85c6f109f47b9d10405b80aa02aaca56e1624be7257d2a",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+      },
+      "geoip.dat": {
+        "sha256": "304ac8a1cbcc8166e4f5a4f32955e4d0fb77a1bd713583e371b30ee27f3659d8",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
+      },
+      "ASN.mmdb": {
+        "sha256": "3dceeef0f161aee0b48a3e71dd538798f5d95e9f4c2e0bc35f1c62874e22a4d5",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+      },
+      "Country.mmdb": {
+        "sha256": "bbedba6ef8584c484e35acdee4153ecf4bc9aa5e22b25d3982870ec1e780f681",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+      },
+      "telegram.mrs": {
+        "sha256": "d121af95b9aeca3d8c29b2112d5e6685b2a6716383df8ae31b5fbb3408c527b3",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/c50286e52b8f6497af083871747d4b49a4bb77a2/geo/geoip/telegram.mrs"
+      }
+    },
+    "cores": {
+      "1.19.33": {
+        "file": "mihomo-1.19.33.exe",
+        "sha256": "926bfea2ce48a247d6a7ce4cf641980e416202d5e40fe4ee5c949089ace0e197",
+        "archive_sha256": "7aaf636a4f2172dcd8ec34ac4f52797b059195e5afd6409508c963e545f8864d",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.33/mihomo-windows-amd64-compatible-v1.19.33.zip"
+      },
+      "1.19.34": {
+        "file": "mihomo-1.19.34.exe",
+        "sha256": "5a0231811a80b27477ebdee15684b41946d01afbd2114534e9a4b256125ca147",
+        "archive_sha256": "cd6738d4648cc1a5f48049a1343b697ab510889d648f045c5c780fc1ab443a79",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.34/mihomo-windows-amd64-compatible-v1.19.34.zip"
+      },
+      "flclash": {
+        "file": "FlClashCore.exe",
+        "sha256": "d5097d4ea34f2975a7a7188dac9554d6b309c2abbf21a94c0a4111aca23bb8d0",
+        "archive_sha256": "e3c3c839784c50bbe406f2946f4f52147d418b3c28842ae8eb40404929490216",
+        "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.3/FlClash-0.9.3-windows-amd64.zip"
+      }
+    }
+  },
+  "generated_sha256": {
+    "v2/next-rules.yaml": "69f58eda3234c5a62b91b1d6f0d92a758475d8f0384af3ec77b0c9abccad6fe2",
+    "v2/next-rules.js": "e3de41f95682c6a0a0cf143c47fd400b59b835ab57b1c5aa23c5837246ace233"
+  },
+  "scope": "Isolated loopback routing, controlled DNS and actual process-name tests. No user subscription, actual node or user IP was used. Public exit, TUN capture, service login/playback and comprehensive WebRTC protection are outside this test scope."
+}

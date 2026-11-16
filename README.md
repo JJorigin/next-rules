@@ -1,8 +1,8 @@
 # Next-Rules · 未来分流
 
-Next-Rules 帮你给 AI、Google / YouTube、流媒体等服务分别选线路。节点由你自己的订阅提供。
+Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路。节点由你自己的订阅提供。
 
-**当前版本 2.0**
+**当前版本 2.1**
 
 ## 选择接入方式
 
@@ -12,8 +12,6 @@ Next-Rules 帮你给 AI、Google / YouTube、流媒体等服务分别选线路�
 | **Clash Verge Rev** | ✅ | 已有机场或节点订阅，想在本地叠加分流规则 |
 
 ## 文件与地址（使用方法）
-
-接入前，给**已确认使用海外出口**的代理节点在名称里加上 `[海外]`，例如 `[海外] 节点 A`。请用半角方括号。使用 3X-UI 时可在面板改名。使用其他订阅时，请确认客户端收到的节点名称带有这个标记。
 
 ### 3X-UI 全局路由规则 → Mihomo
 
@@ -44,7 +42,9 @@ Next-Rules 帮你给 AI、Google / YouTube、流媒体等服务分别选线路�
 
 ## Next-Rules 解决什么问题
 
-访问服务时，客户端会按规则找到对应的策略组，并使用你为该组选定的线路。比如，在 **AI服务**组选择节点 A，在 **谷歌服务(含油管)**组选择节点 B，匹配到的请求就会分别走 A 和 B。
+访问服务时，客户端会按规则找到对应的策略组，并使用你为该组选定的线路。比如，在 **AI服务**组选择节点 A，在 **谷歌服务**组选择节点 B，匹配到的请求就会分别走 A 和 B。
+
+**YouTube** 可以单独选线路，默认跟随 Google 组。**全球流媒体**和**亚太流媒体**也可以分别选线路，后者包含香港、台湾及其他已收录的亚太平台。TikTok 沿用常规规则。[查看流媒体平台清单](v2/MEDIA.md)
 
 规则会优先识别局域网和常见国内站点，匹配到的流量直接连接。客户端能识别软件进程时，部分未归类的连接会交给**软件分流**。仍未匹配的请求交给**默认代理**。
 
@@ -52,13 +52,14 @@ Next-Rules 帮你给 AI、Google / YouTube、流媒体等服务分别选线路�
 
 | 策略组 | 可选出口 |
 | --- | --- |
-| `🚀 默认代理 [自选]` | 自动选择、带 `[海外]` 的代理节点 |
-| AI、Google / YouTube、流媒体等场景组 | 自动选择、带 `[海外]` 的代理节点、手动 `DIRECT` |
+| `🚀 默认代理 [自选]` | 自动选择、订阅中的节点 |
+| AI、Google、全球流媒体、亚太流媒体等场景组 | 自动选择、订阅中的节点、手动 `DIRECT` |
+| `📺 YouTube [自选]` | 跟随 Google（默认）、自动选择、订阅中的节点、手动 `DIRECT` |
 | `🛑 广告拦截 [系统]` | `REJECT`（默认拦截）、`DIRECT`（放行） |
 
-- **自动选择**会测速，优先使用可用且延迟较低的节点。也可以为某个场景手动选定节点。
+- **自动选择**会检测节点连接测试地址的连通性和延迟，使用期间约每 5 分钟检测一次，优先选择延迟较低的可用节点。需要固定线路时，直接选择具体节点。
 - **`DIRECT` 是直连**，该组会使用本机网络。AI 服务需要走代理时，请在 AI 组选择代理节点或自动选择。
-- **代理组里找不到节点**时，先检查节点名称里的 `[海外]` 标记，再刷新订阅。没有符合条件的节点时，默认代理和自动选择会拒绝连接。
+- **代理组里找不到节点**时，请先确认已导入有效的节点订阅，再刷新订阅。没有代理节点时，默认代理和自动选择会拒绝连接。
 
 ## DNS 与分流
 
@@ -73,17 +74,21 @@ DNS、TUN（虚拟网卡模式）和 IPv6 由原订阅和客户端管理。Windo
 
 - 使用 **3X-UI** 时，保留上面的规则地址，在客户端更新订阅。
 - 使用 **Clash Verge Rev 本地脚本**时，从上面的链接重新复制脚本，替换并保存后刷新订阅。
-- 客户端运行时每 **24 小时**检查一次外部规则集。需要固定使用 **2.0** 时，可下载发布文件。 [2.0 发布页](https://github.com/JJorigin/next-rules/releases/tag/v2.0)
+- 请保持客户端及其服务分类数据库更新。客户端运行时每 **24 小时**检查一次外部规则集；首次下载失败时，会使用随配置提供的备用规则。
+- 需要固定使用 **2.1** 时，可下载发布文件。 [2.1 发布页](https://github.com/JJorigin/next-rules/releases/tag/v2.1)
 
 ## 兼容性与边界
 
-已使用 Clash Verge Rev 自带的 Mihomo 1.19.33 和 FlClash Windows 0.9.3 的内核验证分流。其他客户端能否使用，取决于它的 Mihomo 内核和订阅支持。
+已使用 Mihomo 1.19.33、1.19.34 和 FlClash Windows 0.9.3 的内核验证分流。其他客户端能否使用，取决于它的 Mihomo 内核和订阅支持。
 
 ## 规则来源与鸣谢
 
 - 服务分类和地址数据参考了规则库及服务商公开资料。 [MetaCubeX 规则库](https://github.com/MetaCubeX/meta-rules-dat)
-- AI 名单参考了开源规则和服务商公布的地址。 [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) · [OpenAI 网络说明](https://help.openai.com/en/articles/9247338-network-recommendations-for-chatgpt-errors-on-web-and-apps)
+- AI 名单引用以下项目；地址补充也覆盖语音连接。 [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) · [Sukka AI IP](https://ruleset.skk.moe/Clash/ip/ai.txt) · [OpenAI 网络说明](https://help.openai.com/en/articles/9247338-network-recommendations-for-chatgpt-errors-on-web-and-apps)
 - 分流设计参考了以下项目。 [Perfect-Rules](https://github.com/n0de-sudo/Perfect-Rules) · [Hrules](https://github.com/hcloudlab/Hrules) · [Custom OpenClash Rules](https://github.com/Aethersailor/Custom_OpenClash_Rules)
+- 部分流媒体规则引用或参考了以下项目。 [blackmatrix7](https://github.com/blackmatrix7/ios_rule_script) · [liandu2024](https://github.com/liandu2024/clash) · [Sukka](https://github.com/SukkaW/Surge)
+
+规则数据的来源和许可见[来源说明](rules/NOTICE.md)。
 
 ## 支持项目
 

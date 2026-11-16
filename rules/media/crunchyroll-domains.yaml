@@ -1,0 +1,6 @@
+# Crunchyroll 域名
+# 来源：https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list
+payload:
+  - "DOMAIN-SUFFIX,crunchyroll.com"
+  - "DOMAIN-SUFFIX,crunchyrollcdn.com"
+  - "DOMAIN-SUFFIX,crunchyrollsvc.com"

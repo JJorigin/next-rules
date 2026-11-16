@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.mrs binary
+rules/ai/upstream-global.yaml -text
+test/fixtures/** -text
+rules/licenses/** -text

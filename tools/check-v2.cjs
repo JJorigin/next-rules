@@ -3,7 +3,6 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const net = require("node:net");
 const policy = require("./v2-policy.cjs");
 
 const script = fs.readFileSync(path.join(__dirname, "../v2/next-rules.js"), "utf8");
@@ -39,13 +38,17 @@ for (const config of [remote, local]) {
     if (key === "auto" || key === "default") {
       assert.ok(!entry.proxies?.includes("DIRECT"), name);
       assert.ok(entry["exclude-type"].split("|").includes("Direct"), name);
+    } else if (key === "youtube") {
+      assert.deepEqual(entry.proxies.slice(0, 3), [group.google, group.auto, "DIRECT"], name);
+      assert.equal(entry["default-selected"], group.google, name);
     } else {
       assert.deepEqual(entry.proxies.slice(0, 2), [group.auto, "DIRECT"], name);
       assert.equal(entry["default-selected"], group.auto, name);
     }
   }
 }
-assert.deepEqual(groups(local)[group.ai].proxies.slice(2), ["[海外] Verified"]);
+assert.deepEqual(groups(local)[group.ai].proxies.slice(2), proxies.map((node) => node.name), "ordinary node names and manual direct aliases survive");
+assert.ok(!groups(remote)[group.ai].filter, "remote subscriptions do not require a name marker");
 assert.deepEqual(groups(normalize(ctx.main({})))[group.auto].proxies, ["REJECT"]);
 assert.deepEqual(normalize(ctx.main(normalize(local))), local, "script idempotence");
 
@@ -69,27 +72,128 @@ const rules = remote.rules;
 const direct = rules.indexOf("GEOSITE,CN,DIRECT");
 const resolvedIp = rules.indexOf("GEOIP,CN,DIRECT,no-resolve");
 const aiIndex = rules.indexOf("RULE-SET,next-rules-v2-ai," + group.ai);
-const processIndex = rules.indexOf("RULE-SET,next-rules-v2-ai-process," + group.ai);
-assert.ok(direct >= 0 && direct < aiIndex && aiIndex < resolvedIp && resolvedIp < processIndex);
+const domesticIp = rules.indexOf("GEOIP,CN,DIRECT");
+const domainIndex = rules.indexOf("RULE-SET,next-rules-v2-ai-domain," + group.ai);
+assert.equal(resolvedIp, -1, "unclassified domestic domains must resolve before process fallback");
+assert.ok(domainIndex >= 0 && domainIndex < direct && direct < domesticIp && domesticIp < aiIndex);
+assert.ok(rules.indexOf("GEOSITE,category-ads-all," + group.ads) < direct, "ads precede generic domestic direct rules");
 assert.ok(direct < rules.indexOf("RULE-SET,next-rules-v2-software," + group.software));
-assert.ok(rules.includes("GEOSITE,youtube," + group.google));
+const youtubeIndex = rules.indexOf("GEOSITE,youtube," + group.youtube);
+const googleIndex = rules.indexOf("GEOSITE,google," + group.google);
+assert.ok(youtubeIndex >= 0 && youtubeIndex < googleIndex, "YouTube must precede the broader Google category");
 assert.ok(rules.includes("GEOSITE,google," + group.google));
 assert.ok(rules.includes("GEOSITE,apple," + group.apple));
+for (const category of ["hbo", "primevideo", "spotify", "twitch", "apple-tvplus"]) {
+  const condition = "GEOSITE," + category;
+  assert.ok(rules.includes(condition + "," + group.media), category + " belongs to the media selector");
+  assert.ok(rules.includes("AND,((NETWORK,UDP),(" + condition + ")),REJECT"), category + " UDP guard");
+}
+const media = require("../v2/data/media-platforms.json");
+const mediaCategories = [...media.global, ...media.apac].filter((item) => item.geosite).map((item) => item.geosite);
+const mediaProviderIds = [...media.global, ...media.apac].filter((item) => item.id).map((item) => item.id);
+assert.equal(new Set(mediaCategories).size, mediaCategories.length, "each service category has one media owner");
+assert.equal(new Set(mediaProviderIds).size, mediaProviderIds.length, "supplementary provider ids are unique");
+for (const [section, owner] of [["global", group.media], ["apac", group.mediaAsia]]) {
+  for (const item of media[section]) {
+    if (item.geosite) assert.ok(rules.includes("GEOSITE," + item.geosite + "," + owner), item.name);
+    else {
+      const provider = remote["rule-providers"]["next-rules-v2-media-" + item.id];
+      assert.equal(provider.type, "http", item.name);
+      assert.equal(provider.url, item.url, item.name);
+      assert.equal(provider.interval, 86400, item.name);
+      assert.ok(rules.some((rule) => rule.includes("RULE-SET,next-rules-v2-media-" + item.id) && rule.endsWith("," + owner)), item.name);
+    }
+  }
+}
+const disneyIndex = rules.indexOf("GEOSITE,disney," + group.media);
+assert.ok(rules.indexOf("GEOSITE,hotstar," + group.mediaAsia) < disneyIndex);
+assert.ok(rules.indexOf("RULE-SET,next-rules-v2-media-hulujp-domain," + group.mediaAsia) < disneyIndex);
+for (const condition of ["GEOSITE,youtube", "GEOSITE,google", "GEOSITE,apple-tvplus", "GEOSITE,hbo", "GEOSITE,viu"]) {
+  assert.ok(rules.findIndex((row) => row.startsWith(condition + ",")) < domesticIp, condition + " must precede generic IP direct");
+}
+for (const category of ["bilibili@!cn", "iqiyi@!cn", "niconico"]) {
+  const index = rules.indexOf("GEOSITE," + category + "," + group.mediaAsia);
+  assert.ok(index >= 0 && index < direct, "explicit international editions precede a broader domestic brand classification");
+}
+assert.ok(!rules.includes("GEOSITE,bilibili," + group.mediaAsia));
+assert.ok(!rules.includes("GEOSITE,iqiyi," + group.mediaAsia));
+assert.ok(!rules.some((rule) => /tiktok|category-entertainment|GEOSITE,(naver|coupang|dmm),/i.test(rule)), "unrequested broad classifications are absent");
+assert.ok(rules.indexOf("GEOSITE,apple-tvplus," + group.media) < rules.indexOf("GEOSITE,apple," + group.apple));
+
+const legacyName = "🔍 谷歌服务(含油管) [自选]";
+const migrated = normalize(ctx.main({
+  proxies,
+  "proxy-groups": [
+    { name: legacyName, type: "select", proxies: ["DIRECT"] },
+    { name: legacyName + " · Next-Rules 2", type: "select", proxies: ["DIRECT"] }
+  ]
+}));
+assert.ok(!migrated["proxy-groups"].some((entry) => entry.name.startsWith(legacyName)), "unused combined selectors are removed");
+const oldMedia = normalize(ctx.main({proxies, "proxy-groups": [{name: "🎬 流媒体 [自选]", type: "select", proxies: ["DIRECT"]}]}));
+assert.ok(!groups(oldMedia)["🎬 流媒体 [自选]"], "the obsolete single media selector is removed");
+const dependent = normalize(ctx.main({
+  proxies,
+  dns: { nameserver: ["https://example.test/dns-query#" + encodeURIComponent(legacyName)] },
+  "proxy-groups": [{ name: legacyName, type: "select", proxies: ["DIRECT"] }]
+}));
+assert.ok(groups(dependent)[legacyName], "existing resolver dependencies keep the original selector");
+const renamed = normalize(ctx.main({
+  proxies: [...proxies, { ...proxies[0], name: group.google }, { ...proxies[0], name: group.youtube }]
+}));
+const renamedYoutube = groups(renamed)[group.youtube + " · Next-Rules"];
+assert.equal(renamedYoutube["default-selected"], group.google + " · Next-Rules");
+assert.equal(renamedYoutube.proxies[0], group.google + " · Next-Rules", "the follow reference uses the allocated group name");
+const supplementaryConflict = normalize(ctx.main({
+  proxies,
+  "rule-providers": {"next-rules-v2-media-linetv": {type: "inline", behavior: "classical", payload: ["DOMAIN,legacy.example"]}}
+}));
+assert.ok(supplementaryConflict.rules.includes(
+  "AND,((RULE-SET,next-rules-v2-media-linetv-2),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net))))," + group.mediaAsia
+), "nested media rules retain the renamed provider and shared-CDN exclusions");
 assert.deepEqual(rules.slice(-3), ["NETWORK,UDP," + group.default, "NETWORK,UDP,REJECT", "MATCH," + group.default]);
 
-const ai = remote["rule-providers"]["next-rules-v2-ai"].payload;
+const sourceCache = require("../v2/data/source-cache.json");
+const aiProvider = remote["rule-providers"]["next-rules-v2-ai"];
+const ai = aiProvider.payload;
+assert.equal(aiProvider.type, "http");
+assert.equal(aiProvider.url, "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml");
+assert.deepEqual(ai, sourceCache.providers.ai.payload, "the complete AI source is preserved");
 for (const host of ["openai.com", "chatgpt.com", "claude.ai", "gemini.google.com", "cursor.com", "copilot.microsoft.com"]) {
   assert.ok(ai.includes("DOMAIN-SUFFIX," + host));
 }
-for (const host of ["storage.googleapis.com", "api.cloudflare.com", "stripe.com", "sentry.io", "auth0.com", "doubao.com", "deepseek.com"]) {
-  assert.ok(!ai.some((rule) => rule.split(",")[1] === host), host);
+assert.deepEqual(remote["rule-providers"]["next-rules-v2-ai-domain"].payload, ai.filter((row) => /^(DOMAIN|DOMAIN-SUFFIX),/.test(row)));
+assert.deepEqual(remote["rule-providers"]["next-rules-v2-ai-regex"].payload, ai.filter((row) => row.startsWith("DOMAIN-REGEX,")));
+assert.ok(!remote["rule-providers"]["next-rules-v2-ai-voice"], "no frozen voice-only provider");
+assert.ok(!remote["rule-providers"]["next-rules-v2-ai-process"], "process rules come from the complete maintained source");
+const aiIp = remote["rule-providers"]["next-rules-v2-ai-ip"];
+assert.equal(aiIp.type, "http");
+assert.equal(aiIp.url, "https://ruleset.skk.moe/Clash/ip/ai.txt");
+assert.ok(rules.includes("RULE-SET,next-rules-v2-ai-ip," + group.ai + ",no-resolve"));
+for (const [name, provider] of Object.entries(remote["rule-providers"])) {
+  if (provider.type !== "http") continue;
+  assert.equal(provider.proxy, group.default, name + " download uses the explicit proxy");
+  assert.equal(provider.interval, 86400);
+  if (provider.format !== "mrs") assert.ok(provider.payload.length > 0, name + " cold start backup");
 }
-assert.ok(ai.every((rule) => /^(DOMAIN(-SUFFIX)?|IP-CIDR6?),/.test(rule)));
-const voice = remote["rule-providers"]["next-rules-v2-ai-voice"].payload;
-assert.ok(voice.length && voice.every((value) => {
-  const [address, mask] = value.split("/");
-  return (net.isIP(address) === 4 && mask === "32") || (net.isIP(address) === 6 && mask === "128");
+// Changing the embedded backup must reuse the HTTP cache and keep script updates idempotent.
+const outdated = normalize(local);
+outdated["rule-providers"]["next-rules-v2-ai"].payload = ["DOMAIN,old.example"];
+assert.deepEqual(normalize(ctx.main(outdated)), local);
+const downloadConflict = normalize(ctx.main({
+  proxies: [...proxies, {...proxies[0], name: group.default}]
 }));
-assert.ok(rules.includes("AND,((NETWORK,UDP),(DST-PORT,3478),(RULE-SET,next-rules-v2-ai-voice,no-resolve))," + group.ai));
+const allocatedDefault = group.default + " · Next-Rules";
+for (const provider of Object.values(downloadConflict["rule-providers"])) {
+  if (provider.type === "http") assert.equal(provider.proxy, allocatedDefault);
+}
+assert.deepEqual(normalize(ctx.main(normalize(downloadConflict))), downloadConflict, "download proxy remapping is idempotent");
+const preservedDownload = normalize(ctx.main({
+  proxies,
+  "proxy-groups": [{name: group.default, type: "select", proxies: [proxies[0].name]}],
+  "rule-providers": {original: {type: "http", behavior: "domain", format: "text", url: "https://example.test/list", path: "./original.txt", proxy: group.default}}
+}));
+assert.equal(groups(preservedDownload)[group.default].proxies[0], proxies[0].name, "original download dependencies are retained");
+assert.equal(preservedDownload["rule-providers"].original.proxy, group.default);
+assert.equal(preservedDownload["rule-providers"]["next-rules-v2-ai"].proxy, allocatedDefault);
 
-console.log("Next-Rules 2.0 policy checks passed.");
+console.log("Next-Rules 2.1 policy checks passed.");

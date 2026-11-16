@@ -1,23 +1,46 @@
-
 name: Verify rules
 on:
   push:
-    paths:
-      - 'v2/**'
-      - 'tools/**'
-      - '.github/workflows/verify-v2.yml'
+    paths: ['v2/**', 'rules/ai/**', 'rules/media/**', 'rules/sources.json', 'test/**', 'tools/**', '.github/workflows/**']
   pull_request:
-    paths:
-      - 'v2/**'
-      - 'tools/**'
-      - '.github/workflows/verify-v2.yml'
+    paths: ['v2/**', 'rules/ai/**', 'rules/media/**', 'rules/sources.json', 'test/**', 'tools/**', '.github/workflows/**']
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - run: node tools/build-v2.cjs --check
-      - run: node --check v2/next-rules.js
-      - run: node tools/check-v2.cjs
+      - run: python -m pip install --requirement tools/requirements-sync.txt
+      - name: Validate sources and both generated entry points
+        run: |
+          python tools/sync-rules.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python test/sync-validation.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/build-v2.cjs --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --check v2/next-rules.js
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/check-v2.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python test/check-yaml.py
+      - name: Validate panel merge implementation
+        run: |
+          python test/check-panel-source.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go build -o .cache/panel-merge.exe ./test/panel-merge.go
+      - name: Fetch verified official test resources
+        run: python test/fetch-resources.py
+      - name: Test real Windows cores
+        run: |
+          foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
+            node test/regression.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          foreach ($variant in @('1.19.33', '1.19.34')) {
+            node test/http-update.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
