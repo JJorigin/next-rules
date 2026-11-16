@@ -33,6 +33,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           go build -o .cache/panel-merge.exe ./test/panel-merge.go
       - name: Fetch verified official test resources
+        env:
+          NEXT_RULES_GITHUB_TOKEN: ${{ github.token }}
         run: python test/fetch-resources.py
       - name: Test real Windows cores
         run: |

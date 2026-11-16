@@ -8,10 +8,11 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import ipaddress
 import json
+import os
 from pathlib import Path
 import tempfile
-from urllib.parse import quote
-from urllib.request import Request, urlopen
+from urllib.parse import quote, urlsplit
+from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 import yaml
 
@@ -48,6 +49,17 @@ def unique_mapping(loader, node, deep=False):
 UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
 
 
+class SafeRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected and urlsplit(req.full_url).hostname != urlsplit(newurl).hostname:
+            redirected.remove_header("Authorization")
+        return redirected
+
+
+opener = build_opener(SafeRedirect())
+
+
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -59,8 +71,12 @@ def json_bytes(value: object) -> bytes:
 def fetch(url: str) -> bytes:
     if not url.startswith("https://"):
         raise ValueError("Upstream requests must use HTTPS")
-    request = Request(url, headers={"User-Agent": "Next-Rules-source-sync/2.1"})
-    with urlopen(request, timeout=25) as response:
+    headers = {"User-Agent": "Next-Rules-source-sync/2.1"}
+    token = os.environ.get("NEXT_RULES_GITHUB_TOKEN")
+    if token and urlsplit(url).hostname == "api.github.com":
+        headers["Authorization"] = "Bearer " + token
+    request = Request(url, headers=headers)
+    with opener.open(request, timeout=25) as response:
         if response.status != 200 or not response.url.startswith("https://"):
             raise ValueError("Invalid upstream response")
         data = response.read(MAX_BYTES + 1)

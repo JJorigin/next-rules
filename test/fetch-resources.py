@@ -2,8 +2,10 @@
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
-from urllib.request import Request, urlopen
+from urllib.parse import urlsplit
+from urllib.request import Request, build_opener, HTTPRedirectHandler
 import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -11,8 +13,23 @@ DEST = ROOT / ".cache/resources"
 DEST.mkdir(parents=True, exist_ok=True)
 
 
+class SafeRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected and urlsplit(req.full_url).hostname != urlsplit(newurl).hostname:
+            redirected.remove_header("Authorization")
+        return redirected
+
+
+opener = build_opener(SafeRedirect())
+
+
 def fetch(url):
-    with urlopen(Request(url, headers={"User-Agent": "Next-Rules-regression/2.1"}), timeout=90) as response:
+    headers = {"User-Agent": "Next-Rules-regression/2.1"}
+    token = os.environ.get("NEXT_RULES_GITHUB_TOKEN")
+    if token and urlsplit(url).hostname == "api.github.com":
+        headers["Authorization"] = "Bearer " + token
+    with opener.open(Request(url, headers=headers), timeout=90) as response:
         return response.read()
 
 
