@@ -85,11 +85,18 @@ async function vergeController() {
           if(response.ok){
             version=(await response.json()).version;
             if (cfg['mixed-port']) {
+              const testURL = cfg['proxy-groups']?.map(group => group.url).find(url => typeof url === 'string' && url.startsWith('http://127.0.0.1:'));
+              if (!testURL) throw Error('Missing loopback readiness destination');
+              const readinessTarget = new URL(testURL);
+              // Listeners open during OnInnerLoading. A CONNECT handshake also verifies OnRunning.
               const ready = await new Promise(resolve => {
-                const probe = net.createConnection({host, port: cfg['mixed-port']});
-                probe.once('connect', () => {probe.destroy();resolve(true);});
+                const probe = http.request({hostname: host, port: cfg['mixed-port'], method: 'CONNECT',
+                  path: host + ':' + readinessTarget.port, agent: false, timeout: 500});
+                probe.once('connect', (response, socket) => {socket.destroy();resolve(response.statusCode === 200);});
+                probe.once('response', response => {response.resume();resolve(false);});
                 probe.once('error', () => resolve(false));
-                probe.setTimeout(500, () => {probe.destroy();resolve(false);});
+                probe.once('timeout', () => {probe.destroy();resolve(false);});
+                probe.end();
               });
               if (!ready) {await wait(80);continue;}
             }
