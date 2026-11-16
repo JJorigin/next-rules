@@ -240,7 +240,7 @@ async function fakeOutbound(label) {
 function requestThrough(port, target, executable) {
   if (executable) {
     const program = `const http = require('node:http');
-      const request = http.get({hostname:'127.0.0.1',port:${port},path:${JSON.stringify('http://' + target + '/audit')},headers:{Host:${JSON.stringify(target)},Connection:'close'},timeout:4000}, response => {
+      const request = http.get({hostname:'127.0.0.1',port:${port},agent:false,path:${JSON.stringify('http://' + target + '/audit')},headers:{Host:${JSON.stringify(target)},Connection:'close'},timeout:4000}, response => {
         let body=''; response.on('data',chunk=>body+=chunk); response.on('end',()=>process.stdout.write(body));
       });
       request.on('timeout',()=>request.destroy()); request.on('error',()=>process.stdout.write('blocked'));`;
@@ -254,13 +254,13 @@ function requestThrough(port, target, executable) {
     });
   }
   return new Promise((resolve) => {
-    const request = http.get({ hostname: host, port, path: 'http://' + target + '/audit',
+    const request = http.get({ hostname: host, port, agent: false, path: 'http://' + target + '/audit',
       headers: { Host: target, Connection: 'close' }, timeout: 4000 }, (response) => {
       let body = '';
       response.on('data', (chunk) => body += chunk);
       response.on('end', () => resolve(body || 'blocked'));
     });
-    request.on('error', () => resolve('blocked'));
+    request.on('error', (error) => {logs += '\nMock request ' + target + ': ' + error.code;resolve('blocked');});
     request.on('timeout', () => request.destroy());
   });
 }

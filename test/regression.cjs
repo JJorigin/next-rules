@@ -267,6 +267,7 @@ async function run() {
     withProvider['rule-providers'][name] = supplied['rule-providers'][name];
   }
   withProvider['proxy-groups'].find(g => g.name === group.auto).url = 'http://' + host + ':' + healthPort;
+  withProvider['log-level'] = 'debug';
   await controller.setup(withProvider);
   const providerState = await controller.all();
   check(providerState[group.ai].all.includes(nodeName('ai')), true, 'file node provider visible');
