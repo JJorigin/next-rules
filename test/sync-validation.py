@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+from urllib.request import Request
 
 spec = importlib.util.spec_from_file_location("source_sync", Path(__file__).resolve().parent.parent / "tools/sync-rules.py")
 sync = importlib.util.module_from_spec(spec)
@@ -9,6 +10,16 @@ spec.loader.exec_module(sync)
 
 
 class SourceValidation(unittest.TestCase):
+    def test_authentication_is_not_forwarded_to_another_origin(self):
+        request = Request("https://api.github.com/original", headers={"Authorization": "Bearer fixture-value"})
+        redirect = sync.SafeRedirect()
+        for destination in ["http://api.github.com/other", "https://api.github.com:444/other", "https://example.com/other"]:
+            with self.subTest(destination=destination):
+                changed = redirect.redirect_request(request, None, 302, "Found", {}, destination)
+                self.assertIsNone(changed.get_header("Authorization"))
+        same = redirect.redirect_request(request, None, 302, "Found", {}, "https://api.github.com/renamed")
+        self.assertEqual(same.get_header("Authorization"), "Bearer fixture-value")
+
     def test_duplicate_key_cannot_silently_replace_rules(self):
         with self.assertRaises(ValueError):
             sync.parse_rows(b"payload: [DOMAIN,one.example]\npayload: []\n", "yaml", sync.AI_TYPES)

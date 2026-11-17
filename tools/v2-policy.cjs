@@ -17,8 +17,11 @@ const group = {
 const prefix = "next-rules-v2-";
 const cache = require("../v2/data/source-cache.json");
 const media = require("../v2/data/media-platforms.json");
+// 主配置只保留远程引用；清单保存在独立规则文件与测试样本中。
 const http = (source) => ({
-  type: "http", ...source, interval: 86400, proxy: group.default
+  type: "http", behavior: source.behavior, format: source.format, url: source.url,
+  interval: 86400, proxy: group.default,
+  ...(source["path-in-bundle"] ? {"path-in-bundle": source["path-in-bundle"]} : {})
 });
 const providers = Object.fromEntries(Object.entries(cache.providers)
   .filter(([, item]) => item.payload.length)
@@ -38,10 +41,7 @@ function mediaRoutes(items, target, full = false) {
   return items.flatMap((item) => {
     const condition = item.geosite ? "GEOSITE," + item.geosite : use("media-" + item.id + (full ? "" : "-domain"));
     const conditions = [condition, ...(item.excludeSuffixes || []).map((domain) => "NOT,((DOMAIN-SUFFIX," + domain + "))")];
-    return [
-      [conditions.length === 1 ? condition : conditions, target, true],
-      ...(item.geoip ? [["GEOIP," + item.geoip + ",no-resolve", target, true]] : [])
-    ];
+    return [[conditions.length === 1 ? condition : conditions, target, true]];
   });
 }
 
@@ -66,11 +66,13 @@ const routes = [
   ...mediaRoutes(media.global, group.media),
   ["GEOSITE,apple", group.apple, true],
   ["GEOSITE,telegram", group.telegram, true],
+  ["GEOSITE,microsoft", group.microsoft, true],
+  // 对尚未归类的域名解析一次，并先处理局域网地址，再检查专用服务网段。
+  ["GEOIP,private", "DIRECT"],
+  [use("ai-ip") + ",no-resolve", group.ai, true],
   [use("telegram-ip") + ",no-resolve", group.telegram, true],
   ["GEOIP,telegram,no-resolve", group.telegram, true],
-  ["GEOSITE,microsoft", group.microsoft, true],
-  // 动态 AI 地址集也覆盖语音连接，不仅限于某个 UDP 端口。
-  [use("ai-ip") + ",no-resolve", group.ai, true],
+  ...media.global.filter(item => item.geoip).map(item => ["GEOIP," + item.geoip + ",no-resolve", group.media, true]),
   // 未归类域名允许解析，以免国内地址被后面的进程兜底送往代理。
   ["GEOIP,CN", "DIRECT"],
   // 保留完整上游中的关键词、地址和进程条件，普通国内目标已经先行直连。

@@ -158,6 +158,7 @@ async function flController() {
       assert.equal(await call('listener.start',null),null);
     },
     async all() { return (await call('proxy.list',null)).proxies; },
+    async providers() { return await call('provider.list',null); },
     async get(name) { return (await call('proxy.list',null)).proxies[name].now; },
     async select(name,item) {
       assert.equal((await call('proxy.select',{'group-name':name,'proxy-name':item})).message,'');

@@ -154,15 +154,15 @@ assert.deepEqual(rules.slice(-3), ["NETWORK,UDP," + group.default, "NETWORK,UDP,
 
 const sourceCache = require("../v2/data/source-cache.json");
 const aiProvider = remote["rule-providers"]["next-rules-v2-ai"];
-const ai = aiProvider.payload;
+const ai = sourceCache.providers.ai.payload;
 assert.equal(aiProvider.type, "http");
 assert.equal(aiProvider.url, "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml");
-assert.deepEqual(ai, sourceCache.providers.ai.payload, "the complete AI source is preserved");
+assert.ok(!Object.hasOwn(aiProvider, "payload"), "the AI list is fetched remotely instead of embedded in the template");
 for (const host of ["openai.com", "chatgpt.com", "claude.ai", "gemini.google.com", "cursor.com", "copilot.microsoft.com"]) {
   assert.ok(ai.includes("DOMAIN-SUFFIX," + host));
 }
-assert.deepEqual(remote["rule-providers"]["next-rules-v2-ai-domain"].payload, ai.filter((row) => /^(DOMAIN|DOMAIN-SUFFIX),/.test(row)));
-assert.deepEqual(remote["rule-providers"]["next-rules-v2-ai-regex"].payload, ai.filter((row) => row.startsWith("DOMAIN-REGEX,")));
+assert.deepEqual(sourceCache.providers["ai-domain"].payload, ai.filter((row) => /^(DOMAIN|DOMAIN-SUFFIX),/.test(row)));
+assert.deepEqual(sourceCache.providers["ai-regex"].payload, ai.filter((row) => row.startsWith("DOMAIN-REGEX,")));
 assert.ok(!remote["rule-providers"]["next-rules-v2-ai-voice"], "no frozen voice-only provider");
 assert.ok(!remote["rule-providers"]["next-rules-v2-ai-process"], "process rules come from the complete maintained source");
 const aiIp = remote["rule-providers"]["next-rules-v2-ai-ip"];
@@ -173,9 +173,13 @@ for (const [name, provider] of Object.entries(remote["rule-providers"])) {
   if (provider.type !== "http") continue;
   assert.equal(provider.proxy, group.default, name + " download uses the explicit proxy");
   assert.equal(provider.interval, 86400);
-  if (provider.format !== "mrs") assert.ok(provider.payload.length > 0, name + " cold start backup");
+  assert.ok(!Object.hasOwn(provider, "payload"), name + " must not embed domain or IP snapshots");
 }
-// Changing the embedded backup must reuse the HTTP cache and keep script updates idempotent.
+const resolutionIndex = rules.indexOf("GEOIP,private,DIRECT");
+for (const condition of ["RULE-SET,next-rules-v2-ai-ip," + group.ai + ",no-resolve", "RULE-SET,next-rules-v2-telegram-ip," + group.telegram + ",no-resolve", "GEOIP,netflix," + group.media + ",no-resolve"]) {
+  assert.ok(resolutionIndex >= 0 && resolutionIndex < rules.indexOf(condition) && rules.indexOf(condition) < domesticIp, "resolve before dedicated IP matching: " + condition);
+}
+// Updating a profile from the published seeded form must remove its old HTTP payload.
 const outdated = normalize(local);
 outdated["rule-providers"]["next-rules-v2-ai"].payload = ["DOMAIN,old.example"];
 assert.deepEqual(normalize(ctx.main(outdated)), local);

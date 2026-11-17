@@ -119,7 +119,7 @@ function cachePathKey(path) {
 
 function sameProvider(existing, expected) {
   if (!existing) return false;
-  // HTTP 备用内容随构建更新；相同来源仍复用同一缓存文件。
+  // 相同来源复用缓存，更新脚本时一并去除旧版本的内置副本。
   const keys = (item) => Object.keys(item).filter((key) => !(item.type === "http" && key === "payload"));
   return keys(existing).length === keys(expected).length &&
     keys(expected).every((key) => {

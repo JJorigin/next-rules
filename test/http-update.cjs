@@ -92,7 +92,8 @@ async function run() {
     if (downloaded.includes(name)) provider.url = 'http://' + host + ':' + fixturePort + '/' + name;
     else {
       provider.type = 'file';delete provider.url;delete provider.proxy;delete provider.interval;
-      fs.writeFileSync(provider.path, provider.format === 'text' ? provider.payload.join('\n') + '\n' : 'payload:\n' + provider.payload.map(row => '  - ' + JSON.stringify(row)).join('\n') + '\n');
+      const rows = cache[name.replace('next-rules-v2-', '')].payload;
+      fs.writeFileSync(provider.path, provider.format === 'text' ? rows.join('\n') + '\n' : 'payload:\n' + rows.map(row => '  - ' + JSON.stringify(row)).join('\n') + '\n');
     }
   }
   const controller = await harness.vergeController();
@@ -104,7 +105,7 @@ async function run() {
     if ((await providerInfo(downloaded[0])).ruleCount === cache['ai-domain'].payload.length + 1) break;
     await harness.wait(50);
   }
-  check((await providerInfo(downloaded[0])).ruleCount, cache['ai-domain'].payload.length + 1, 'downloaded YAML replaces backup');
+  check((await providerInfo(downloaded[0])).ruleCount, cache['ai-domain'].payload.length + 1, 'downloaded YAML loads without embedded data');
   check((await providerInfo(downloaded[1])).ruleCount, cache['ai-ip'].payload.length, 'downloaded text parses every row');
   check((await providerInfo(downloaded[2])).ruleCount > 0, true, 'downloaded Telegram MRS parses');
   check(state.relays >= 3, true, 'all HTTP formats download via configured proxy');

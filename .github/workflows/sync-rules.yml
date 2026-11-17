@@ -62,6 +62,14 @@ jobs:
           foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
             node test/regression.cjs $variant
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --metadb
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --ipv6
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --metadb --ipv6
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
           foreach ($variant in @('1.19.33', '1.19.34')) {
             node test/http-update.cjs $variant

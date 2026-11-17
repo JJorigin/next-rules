@@ -172,13 +172,23 @@ async function run() {
     await wait(180);
     return labels.filter(label => mocks[label].packets.has(marker.toString('hex')));
   }
+  async function ruleStates() {
+    if (controller.api) return (await controller.api('/providers/rules')).json().providers;
+    return Object.fromEntries((await controller.providers()).map(item => [item.name ?? item.Name, {ruleCount: item.count ?? item.Count}]));
+  }
+  async function loadedFileRules() {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      const loaded = await ruleStates();
+      if (Object.entries(sourceCache.providers).filter(([, item]) => item.payload.length).every(([id]) => loaded['next-rules-v2-' + id]?.ruleCount > 0)) return loaded;
+      await wait(50);
+    }
+    throw Error('file rule providers did not finish loading');
+  }
   for (const source of ['panel', 'js']) {
     await controller.setup(profile(source));
-    if (controller.api) {
-      const loaded = (await controller.api('/providers/rules')).json().providers;
-      for (const [id, entry] of Object.entries(sourceCache.providers)) {
-        if (entry.payload.length) check(loaded['next-rules-v2-' + id].ruleCount, entry.payload.length, source + ': all source rows parsed ' + id);
-      }
+    const loaded = await loadedFileRules();
+    for (const [id, entry] of Object.entries(sourceCache.providers)) {
+      if (entry.payload.length) check(loaded['next-rules-v2-' + id].ruleCount, entry.payload.length, source + ': all source rows parsed ' + id);
     }
     const state = await controller.all();
     for (const key of Object.keys(group).filter(key => !['ads', 'auto'].includes(key))) {
@@ -233,7 +243,7 @@ async function run() {
     check(empty[group.auto].all, ['REJECT'], source + ': empty auto');
     check(empty[group.auto].now, 'REJECT', source + ': empty auto exit');
     check(empty[group.default].all, [group.auto], source + ': empty default');
-    // A fresh cache and failed HTTP download must retain the automatically generated backup.
+    // Pure remote references have no built-in data: record empty providers on a failed cold start.
     const cold = profile(source);
     for (const [name, provider] of Object.entries(cold['rule-providers'])) {
       if (provider.type !== 'file') continue;
@@ -243,18 +253,15 @@ async function run() {
     }
     await controller.setup(cold);
     await selectAll();
-    if (controller.api) {
-      const loaded = (await controller.api('/providers/rules')).json().providers;
-      for (const [id, entry] of Object.entries(sourceCache.providers)) {
-        if (entry.payload.length) check(loaded['next-rules-v2-' + id].ruleCount, entry.payload.length, source + ': backup row count ' + id);
-      }
+    const unavailable = await ruleStates();
+    for (const id of Object.keys(sourceCache.providers).filter(id => sourceCache.providers[id].payload.length)) {
+      check(unavailable['next-rules-v2-' + id].ruleCount, 0, source + ': failed first download leaves provider empty ' + id);
     }
-    for (const [target, expected] of [['chatgpt.com', 'ai'], ['www.linetv.tw', 'apac'], ['www.hulu.jp', 'apac'], ['www.channel4.com', 'media'], ['domestic-probe.audit.iana.org', 'direct']]) {
-      check(await requestThrough(mixedPort, target), expected, source + ': failed-download cold start ' + target);
-    }
-    check(await requestAt(tcpInlets.voiceAdded, ips.foreign), 'ai', source + ': cold start voice');
+    check(await requestThrough(mixedPort, 'domestic-probe.audit.iana.org'), 'direct', source + ': domestic direct still works after failed downloads');
     check(await requestAt(tcpInlets.telegram, ips.foreign), 'telegram', source + ': cold start Telegram GeoIP backup');
-    observations.push({source, tcp, known, processResults});
+    const degraded = {};
+    for (const target of ['chatgpt.com', 'gemini.google.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
+    observations.push({source, tcp, known, processResults, failedColdStart: {providersEmpty: Object.keys(sourceCache.providers), classificationReady: false, observedRoutes: degraded}});
   }
   const supplied = profile('js');
   const providerFile = path.join(home, 'node-provider.json');
@@ -269,6 +276,7 @@ async function run() {
   withProvider['proxy-groups'].find(g => g.name === group.auto).url = 'http://' + host + ':' + healthPort;
   withProvider['log-level'] = 'debug';
   await controller.setup(withProvider);
+  await loadedFileRules();
   const providerState = await controller.all();
   check(providerState[group.ai].all.includes(nodeName('ai')), true, 'file node provider visible');
   check(providerState[group.auto].all.includes('Manual direct alias'), false, 'provider direct alias excluded from auto');

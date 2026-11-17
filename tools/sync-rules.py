@@ -52,8 +52,10 @@ UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, uni
 class SafeRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
-        if redirected and urlsplit(req.full_url).hostname != urlsplit(newurl).hostname:
-            redirected.remove_header("Authorization")
+        if redirected:
+            old, new = urlsplit(req.full_url), urlsplit(newurl)
+            if new.scheme != "https" or (old.scheme, old.hostname, old.port or 443) != (new.scheme, new.hostname, new.port or 443):
+                redirected.remove_header("Authorization")
         return redirected
 
 

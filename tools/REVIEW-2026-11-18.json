@@ -1,0 +1,567 @@
+{
+  "date": "2026-11-18",
+  "base": "d627d61c19fb85cb99b9f09435b3249de5e90051",
+  "branch": "audit/v2.1-pure-remote",
+  "publication": "Validated correction candidate for the v2.1 replacement release. Actual publication state is determined by the GitHub tag and release page.",
+  "findings": [
+    "HTTP source snapshots were spread into runtime templates",
+    "Dedicated IP rules and private-IP handling were missed for otherwise unclassified domains resolved later",
+    "FlClash process-lookup opt-in was missing from README",
+    "Classification databases could update without triggering a scheduled full native-core regression"
+  ],
+  "httpProviders": {
+    "count": 20,
+    "embeddedPayloadCount": 0,
+    "intervalSeconds": 86400
+  },
+  "inlineProviders": [
+    {
+      "behavior": "classical",
+      "ruleCount": 4
+    }
+  ],
+  "files": {
+    "tools/v2-policy.cjs": {
+      "bytes": 4211,
+      "sha256": "6638fa3b678891b5e09f64a44ba23a9de4187dfaa9e72843204223954514d379"
+    },
+    "tools/v2-runtime.js": {
+      "bytes": 12302,
+      "sha256": "5075f472bfd00e2f3990ebdde62395903cff6f61385c80be848f4ab2992c1a75"
+    },
+    "v2/next-rules.yaml": {
+      "bytes": 26273,
+      "sha256": "80d7a6fefb9c6894c4e143ce8014865a4cf62d644d57a66b6ddea9d4718be1e2"
+    },
+    "v2/next-rules.js": {
+      "bytes": 26931,
+      "sha256": "75137976ecbef7a0396b8d2b8093ab0d3aa1ef386df4dae43f8e291005de3af4"
+    },
+    "test/ip-resolution.cjs": {
+      "bytes": 8162,
+      "sha256": "e1629f7fa76b4abb4ad2e0375713fd5b4c10a91c78b5c9a526a0f94a234d44d1"
+    },
+    "test/regression.cjs": {
+      "bytes": 18541,
+      "sha256": "ae33faf4a6922203e75c0b9303a49b22370b081904fae2ff791303224a22ff76"
+    },
+    "test/http-update.cjs": {
+      "bytes": 9100,
+      "sha256": "af20a8d0025f780ed86f9a6e44789d82f1d7df19f997944faab86d5bdbedbb62"
+    },
+    "test/fetch-resources.py": {
+      "bytes": 5462,
+      "sha256": "fb961cb6364e117d27d435f9f38844852866956d76b3890d8455cb12f8c76b3b"
+    },
+    ".github/workflows/verify-v2.yml": {
+      "bytes": 2491,
+      "sha256": "30c3ac39d0f37d37daa1f4e0eed596648838f904f8270978548b86d0d6fcc581"
+    },
+    ".github/workflows/sync-rules.yml": {
+      "bytes": 3459,
+      "sha256": "01f11a36470eaf211ade5c0e96e6a02e0daa21cdefd96d27cb89bc77077d845e"
+    }
+  },
+  "unchanged": {
+    "rules/next-rules.yaml": {
+      "byteIdentical": false,
+      "contentIdenticalAfterLineEndNormalization": true
+    },
+    "rules/next-rules.js": {
+      "byteIdentical": false,
+      "contentIdenticalAfterLineEndNormalization": true
+    },
+    "rules/ai/upstream-global.yaml": {
+      "byteIdentical": true,
+      "contentIdenticalAfterLineEndNormalization": true
+    },
+    "v2/data/source-cache.json": {
+      "byteIdentical": true,
+      "contentIdenticalAfterLineEndNormalization": true
+    }
+  },
+  "verification": {
+    "suites": [
+      {
+        "file": "http-results-1.19.33.json",
+        "sha256": "d51f5ffa081d7101fc222fd11d08aa162defad07ed761add97427b5f820e4b41",
+        "variant": "1.19.33",
+        "version": "v1.19.33",
+        "checks": 16,
+        "failed": false
+      },
+      {
+        "file": "http-results-1.19.34.json",
+        "sha256": "fea480c5336552cbd8b1742dde368f78a0b7070b477ee38682fcaf44771683ff",
+        "variant": "1.19.34",
+        "version": "v1.19.34",
+        "checks": 16,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.33-ipv6.json",
+        "sha256": "4a9e5158438ea09ec41a5e631a181b44b37f805bf35618a8c2e5ad0ef85b7d70",
+        "variant": "1.19.33",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.33-metadb-ipv6.json",
+        "sha256": "af87a66456f2fc64bd0851db37cbe34c486a8c6bcd57b0592cef98a1bc2c95c8",
+        "variant": "1.19.33",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.33-metadb.json",
+        "sha256": "e1473d7abbf00df21bb6053653a3e876e2802b863f23e03aafa779e07120986b",
+        "variant": "1.19.33",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.33.json",
+        "sha256": "b1a52d8b96f7ca5bc4e70afd7b9e55c29c4f45c51c914fc84e2482dcaf0114a8",
+        "variant": "1.19.33",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.34-ipv6.json",
+        "sha256": "f0f420217d4e85bd6692130823a29cee6ff09fe9651d0be23f61c25e8defa8b7",
+        "variant": "1.19.34",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.34-metadb-ipv6.json",
+        "sha256": "9dd374707e921685fc72b819e89fabbe8501ded85529bf1aac7f3f129598e896",
+        "variant": "1.19.34",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.34-metadb.json",
+        "sha256": "1413c9e4001631f5143981f7f7bf7fbba94897dadc65b793a2651aaa338256dd",
+        "variant": "1.19.34",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-1.19.34.json",
+        "sha256": "d44b85b270ef50bee66981635e1aae59761c8f6857d557b1b89e42686fea46e4",
+        "variant": "1.19.34",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-flclash-ipv6.json",
+        "sha256": "5dc85ab14fdc01634d6758f2b280fbe55ad01dd311fb2dceca520e7e2c8ad7bb",
+        "variant": "flclash",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-flclash-metadb-ipv6.json",
+        "sha256": "7d87c6b48dadb0ffe1d5954cd46e5091ee296fad7001d587d35d6643429c0bcd",
+        "variant": "flclash",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-flclash-metadb.json",
+        "sha256": "73d2e48a214fef71c08f7a4b480acce0cc4d7381e83bb00f27f0179c57e54729",
+        "variant": "flclash",
+        "checks": 12,
+        "failed": false
+      },
+      {
+        "file": "ip-resolution-flclash.json",
+        "sha256": "c4459895dfa9913a99ce05bee6be335a685094b43f58a30498a8121f0673b98d",
+        "variant": "flclash",
+        "checks": 24,
+        "failed": false
+      },
+      {
+        "file": "results-1.19.33.json",
+        "sha256": "22fac5032e14251bf0445f78caac35f7c28aa0e5f08f1d5b69ac436f2214e347",
+        "variant": "1.19.33",
+        "version": "v1.19.33",
+        "checks": 569,
+        "failed": false
+      },
+      {
+        "file": "results-1.19.34.json",
+        "sha256": "6a4d13712152e64954c61f86e5f29abf8cd64b4a7669a17540cf891d42547b4a",
+        "variant": "1.19.34",
+        "version": "v1.19.34",
+        "checks": 569,
+        "failed": false
+      },
+      {
+        "file": "results-flclash.json",
+        "sha256": "4ca862fae797f5f8cf7e5abd71f7c885d65c69ece0b38b9d15f5eabd91eca38e",
+        "variant": "flclash",
+        "version": "FlClash Windows 0.9.3 release core",
+        "checks": 569,
+        "failed": false
+      }
+    ],
+    "totalAssertions": 1955,
+    "offlineSourceValidationTests": 5,
+    "buildConsistency": true,
+    "yamlJsEquivalence": true,
+    "workflowYamlParsed": true
+  },
+  "publishedVersionReproduction": [
+    {
+      "variant": "1.19.34",
+      "source": "v2.1",
+      "mode": "observation of published version; desired routes are not asserted as passing",
+      "results": [
+        {
+          "geodata": true,
+          "routes": {
+            "late-voice.audit.iana.org": {
+              "byIP": "ai",
+              "byDomain": "default",
+              "wanted": "ai"
+            },
+            "late-telegram.audit.iana.org": {
+              "byIP": "telegram",
+              "byDomain": "default",
+              "wanted": "telegram"
+            },
+            "late-netflix.audit.iana.org": {
+              "byIP": "media",
+              "byDomain": "default",
+              "wanted": "media"
+            },
+            "domestic-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "direct",
+              "wanted": "direct"
+            },
+            "foreign-ip.audit.iana.org": {
+              "byIP": "default",
+              "byDomain": "default",
+              "wanted": "default"
+            },
+            "private-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "default",
+              "wanted": "direct"
+            }
+          }
+        },
+        {
+          "geodata": false,
+          "routes": {
+            "late-voice.audit.iana.org": {
+              "byIP": "ai",
+              "byDomain": "default",
+              "wanted": "ai"
+            },
+            "late-telegram.audit.iana.org": {
+              "byIP": "telegram",
+              "byDomain": "default",
+              "wanted": "telegram"
+            },
+            "late-netflix.audit.iana.org": {
+              "byIP": "media",
+              "byDomain": "default",
+              "wanted": "media"
+            },
+            "domestic-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "direct",
+              "wanted": "direct"
+            },
+            "foreign-ip.audit.iana.org": {
+              "byIP": "default",
+              "byDomain": "default",
+              "wanted": "default"
+            },
+            "private-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "default",
+              "wanted": "direct"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "variant": "flclash",
+      "source": "v2.1",
+      "mode": "observation of published version; desired routes are not asserted as passing",
+      "results": [
+        {
+          "geodata": true,
+          "routes": {
+            "late-voice.audit.iana.org": {
+              "byIP": "ai",
+              "byDomain": "default",
+              "wanted": "ai"
+            },
+            "late-telegram.audit.iana.org": {
+              "byIP": "telegram",
+              "byDomain": "default",
+              "wanted": "telegram"
+            },
+            "late-netflix.audit.iana.org": {
+              "byIP": "media",
+              "byDomain": "default",
+              "wanted": "media"
+            },
+            "domestic-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "direct",
+              "wanted": "direct"
+            },
+            "foreign-ip.audit.iana.org": {
+              "byIP": "default",
+              "byDomain": "default",
+              "wanted": "default"
+            },
+            "private-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "default",
+              "wanted": "direct"
+            }
+          }
+        },
+        {
+          "geodata": false,
+          "routes": {
+            "late-voice.audit.iana.org": {
+              "byIP": "ai",
+              "byDomain": "default",
+              "wanted": "ai"
+            },
+            "late-telegram.audit.iana.org": {
+              "byIP": "telegram",
+              "byDomain": "default",
+              "wanted": "telegram"
+            },
+            "late-netflix.audit.iana.org": {
+              "byIP": "media",
+              "byDomain": "default",
+              "wanted": "media"
+            },
+            "domestic-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "direct",
+              "wanted": "direct"
+            },
+            "foreign-ip.audit.iana.org": {
+              "byIP": "default",
+              "byDomain": "default",
+              "wanted": "default"
+            },
+            "private-ip.audit.iana.org": {
+              "byIP": "direct",
+              "byDomain": "default",
+              "wanted": "direct"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "correctedResolution": [
+    {
+      "geodata": true,
+      "backend": "GeoIP.dat",
+      "routes": {
+        "late-voice.audit.iana.org": {
+          "byIP": "ai",
+          "byDomain": "ai",
+          "wanted": "ai"
+        },
+        "late-telegram.audit.iana.org": {
+          "byIP": "telegram",
+          "byDomain": "telegram",
+          "wanted": "telegram"
+        },
+        "late-netflix.audit.iana.org": {
+          "byIP": "media",
+          "byDomain": "media",
+          "wanted": "media"
+        },
+        "domestic-ip.audit.iana.org": {
+          "byIP": "direct",
+          "byDomain": "direct",
+          "wanted": "direct"
+        },
+        "foreign-ip.audit.iana.org": {
+          "byIP": "default",
+          "byDomain": "default",
+          "wanted": "default"
+        },
+        "private-ip.audit.iana.org": {
+          "byIP": "direct",
+          "byDomain": "direct",
+          "wanted": "direct"
+        }
+      }
+    },
+    {
+      "geodata": false,
+      "backend": "MMDB",
+      "routes": {
+        "late-voice.audit.iana.org": {
+          "byIP": "ai",
+          "byDomain": "ai",
+          "wanted": "ai"
+        },
+        "late-telegram.audit.iana.org": {
+          "byIP": "telegram",
+          "byDomain": "telegram",
+          "wanted": "telegram"
+        },
+        "late-netflix.audit.iana.org": {
+          "byIP": "media",
+          "byDomain": "media",
+          "wanted": "media"
+        },
+        "domestic-ip.audit.iana.org": {
+          "byIP": "direct",
+          "byDomain": "direct",
+          "wanted": "direct"
+        },
+        "foreign-ip.audit.iana.org": {
+          "byIP": "default",
+          "byDomain": "default",
+          "wanted": "default"
+        },
+        "private-ip.audit.iana.org": {
+          "byIP": "direct",
+          "byDomain": "direct",
+          "wanted": "direct"
+        }
+      }
+    }
+  ],
+  "failedFirstDownload": [
+    {
+      "source": "panel",
+      "providersEmpty": [
+        "ai",
+        "ai-domain",
+        "ai-regex",
+        "ai-ip",
+        "crypto",
+        "media-channel4",
+        "media-channel4-domain",
+        "media-itv",
+        "media-itv-domain",
+        "media-fubo",
+        "media-fubo-domain",
+        "media-crunchyroll",
+        "media-crunchyroll-domain",
+        "media-linetv",
+        "media-linetv-domain",
+        "media-friday",
+        "media-friday-domain",
+        "media-hulujp",
+        "media-hulujp-domain"
+      ],
+      "classificationReady": false,
+      "observedRoutes": {
+        "chatgpt.com": "default",
+        "gemini.google.com": "google",
+        "www.linetv.tw": "default"
+      }
+    },
+    {
+      "source": "js",
+      "providersEmpty": [
+        "ai",
+        "ai-domain",
+        "ai-regex",
+        "ai-ip",
+        "crypto",
+        "media-channel4",
+        "media-channel4-domain",
+        "media-itv",
+        "media-itv-domain",
+        "media-fubo",
+        "media-fubo-domain",
+        "media-crunchyroll",
+        "media-crunchyroll-domain",
+        "media-linetv",
+        "media-linetv-domain",
+        "media-friday",
+        "media-friday-domain",
+        "media-hulujp",
+        "media-hulujp-domain"
+      ],
+      "classificationReady": false,
+      "observedRoutes": {
+        "chatgpt.com": "default",
+        "gemini.google.com": "google",
+        "www.linetv.tw": "default"
+      }
+    }
+  ],
+  "resources": {
+    "files": {
+      "geosite.dat": {
+        "sha256": "03996897044b01466b85c6f109f47b9d10405b80aa02aaca56e1624be7257d2a",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+      },
+      "geoip.dat": {
+        "sha256": "304ac8a1cbcc8166e4f5a4f32955e4d0fb77a1bd713583e371b30ee27f3659d8",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
+      },
+      "ASN.mmdb": {
+        "sha256": "3dceeef0f161aee0b48a3e71dd538798f5d95e9f4c2e0bc35f1c62874e22a4d5",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+      },
+      "Country.mmdb": {
+        "sha256": "bbedba6ef8584c484e35acdee4153ecf4bc9aa5e22b25d3982870ec1e780f681",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+      },
+      "telegram.mrs": {
+        "sha256": "d121af95b9aeca3d8c29b2112d5e6685b2a6716383df8ae31b5fbb3408c527b3",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/c50286e52b8f6497af083871747d4b49a4bb77a2/geo/geoip/telegram.mrs"
+      },
+      "geoip.metadb": {
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb",
+        "sha256": "e0f647631561e651745c96c9b662b94083bca222ed7c68115df12a7184549803"
+      },
+      "netflix-fixture.json": {
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.list",
+        "sha256": "ba1a9026332aa2030bbf1edfeca5b45a6ad908e03e9118b3e0f2ca424cd0e2f3"
+      }
+    },
+    "cores": {
+      "1.19.33": {
+        "file": "mihomo-1.19.33.exe",
+        "sha256": "926bfea2ce48a247d6a7ce4cf641980e416202d5e40fe4ee5c949089ace0e197",
+        "archive_sha256": "7aaf636a4f2172dcd8ec34ac4f52797b059195e5afd6409508c963e545f8864d",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.33/mihomo-windows-amd64-compatible-v1.19.33.zip"
+      },
+      "1.19.34": {
+        "file": "mihomo-1.19.34.exe",
+        "sha256": "5a0231811a80b27477ebdee15684b41946d01afbd2114534e9a4b256125ca147",
+        "archive_sha256": "cd6738d4648cc1a5f48049a1343b697ab510889d648f045c5c780fc1ab443a79",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.34/mihomo-windows-amd64-compatible-v1.19.34.zip"
+      },
+      "flclash": {
+        "file": "FlClashCore.exe",
+        "sha256": "d5097d4ea34f2975a7a7188dac9554d6b309c2abbf21a94c0a4111aca23bb8d0",
+        "archive_sha256": "e3c3c839784c50bbe406f2946f4f52147d418b3c28842ae8eb40404929490216",
+        "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.3/FlClash-0.9.3-windows-amd64.zip"
+      }
+    }
+  },
+  "limitations": [
+    "Tests use loopback mocks and controlled public-data fixtures; no user subscription, nodes or actual user IPs are read.",
+    "Tests do not validate real service login, playback, regional availability, system TUN routing or comprehensive WebRTC protection.",
+    "Without embedded payload and a valid cache, a failed initial HTTP download leaves that provider empty and requests may match later rules.",
+    "A syntactically valid incomplete upstream file may still be accepted by the core; client downloads across independent sources are not an atomic release.",
+    "The complete AI source is retained unchanged and includes shared-infrastructure classifications."
+  ]
+}

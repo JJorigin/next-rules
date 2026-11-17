@@ -5,6 +5,8 @@ on:
   pull_request:
     paths: ['v2/**', 'rules/ai/**', 'rules/media/**', 'rules/sources.json', 'test/**', 'tools/**', '.github/workflows/**']
   workflow_dispatch:
+  schedule:
+    - cron: '41 3 * * *'
 permissions:
   contents: read
 jobs:
@@ -40,6 +42,14 @@ jobs:
         run: |
           foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
             node test/regression.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --metadb
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --ipv6
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            node test/ip-resolution.cjs $variant --metadb --ipv6
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
           foreach ($variant in @('1.19.33', '1.19.34')) {
