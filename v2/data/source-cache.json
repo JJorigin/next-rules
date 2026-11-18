@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "counts": {
-    "ai_total": 349,
-    "ai_exact": 311,
+    "ai_total": 350,
+    "ai_exact": 312,
     "ai_regex": 1,
     "ai_deferred": 37,
     "voice_official": 411,
@@ -170,6 +170,7 @@
         "DOMAIN-SUFFIX,eigent.ai",
         "DOMAIN-SUFFIX,elevenlabs.com",
         "DOMAIN-SUFFIX,elevenlabs.io",
+        "DOMAIN-SUFFIX,elevenlabsusercontent.com",
         "DOMAIN-SUFFIX,factory.ai",
         "DOMAIN-SUFFIX,fireworks.ai",
         "DOMAIN-SUFFIX,gamma.app",
@@ -508,6 +509,7 @@
         "DOMAIN-SUFFIX,eigent.ai",
         "DOMAIN-SUFFIX,elevenlabs.com",
         "DOMAIN-SUFFIX,elevenlabs.io",
+        "DOMAIN-SUFFIX,elevenlabsusercontent.com",
         "DOMAIN-SUFFIX,factory.ai",
         "DOMAIN-SUFFIX,fireworks.ai",
         "DOMAIN-SUFFIX,gamma.app",

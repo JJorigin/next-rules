@@ -139,6 +139,7 @@ payload:
   - "DOMAIN-SUFFIX,eigent.ai"
   - "DOMAIN-SUFFIX,elevenlabs.com"
   - "DOMAIN-SUFFIX,elevenlabs.io"
+  - "DOMAIN-SUFFIX,elevenlabsusercontent.com"
   - "DOMAIN-SUFFIX,factory.ai"
   - "DOMAIN-SUFFIX,fireworks.ai"
   - "DOMAIN-SUFFIX,gamma.app"

@@ -3,8 +3,8 @@
   "sources": {
     "ai": {
       "url": "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml",
-      "sha256": "322b913039bb5edc6a8309032775ff68a776308fd6ebf79aa4723732aff931a3",
-      "commit": "b9a81ef1702941a07d2cdb924a3eb8c3499780ad"
+      "sha256": "a837e04a79752b8209e37829af58cda8214ad51fd4eb728191c2bd3dc0799ea7",
+      "commit": "d8e216c8349a2de02d6322d99fa7d20f8cb4bd9d"
     },
     "ai-ip": {
       "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
@@ -48,8 +48,8 @@
     }
   },
   "counts": {
-    "ai_total": 349,
-    "ai_exact": 311,
+    "ai_total": 350,
+    "ai_exact": 312,
     "ai_regex": 1,
     "ai_deferred": 37,
     "voice_official": 411,
