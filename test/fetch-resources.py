@@ -67,8 +67,8 @@ for version in ("1.19.33", "1.19.34"):
     (DEST / output).write_bytes(binary)
     manifest["cores"][version] = {"file": output, "sha256": hashlib.sha256(binary).hexdigest(), "archive_sha256": digest, "url": asset["browser_download_url"]}
 
-assets = release("chen08209/FlClash", "v0.9.3")["assets"]
-asset = next(a for a in assets if a["name"] == "FlClash-0.9.3-windows-amd64.zip")
+assets = release("chen08209/FlClash", "v0.9.4")["assets"]
+asset = next(a for a in assets if a["name"] == "FlClash-0.9.4-windows-amd64-portable.zip")
 data, digest = download(asset, DEST / asset["name"])
 with zipfile.ZipFile(io.BytesIO(data)) as archive:
     members = [n for n in archive.namelist() if n.endswith("/FlClashCore.exe") or n == "FlClashCore.exe"]

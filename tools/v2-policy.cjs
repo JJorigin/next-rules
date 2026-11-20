@@ -15,6 +15,7 @@ const group = {
 };
 
 const prefix = "next-rules-v2-";
+const aiCategories = ["openai", "anthropic", "google-gemini", "cursor", "github-copilot", "perplexity", "poe", "windsurf", "elevenlabs"];
 const cache = require("../v2/data/source-cache.json");
 const media = require("../v2/data/media-platforms.json");
 // 主配置只保留远程引用；清单保存在独立规则文件与测试样本中。
@@ -46,14 +47,14 @@ function mediaRoutes(items, target, full = false) {
 }
 
 // 域名明确归类后先选对应服务，再判断普通地址，最后处理软件进程兜底。
-const routes = [
+const domainRoutes = [
   ["GEOSITE,private", "DIRECT"],
   ["GEOIP,private,no-resolve", "DIRECT"],
   ["GEOSITE,category-ads-all", group.ads],
   // 域名视图由完整 AI 来源自动同步，不人工增删条目。
   [use("ai-domain"), group.ai, true],
   // 常用海外 AI 品牌由服务分类库补充识别，不展开为域名清单。
-  ...["openai", "anthropic", "google-gemini", "cursor", "github-copilot", "perplexity", "poe", "windsurf", "elevenlabs"]
+  ...aiCategories
     .map(category => ["GEOSITE," + category, group.ai, true]),
   ...mediaRoutes(media.apac.filter((item) => item.beforeCN), group.mediaAsia),
   ["GEOSITE,apple-cn", "DIRECT"],
@@ -69,7 +70,10 @@ const routes = [
   ...mediaRoutes(media.global, group.media),
   ["GEOSITE,apple", group.apple, true],
   ["GEOSITE,telegram", group.telegram, true],
-  ["GEOSITE,microsoft", group.microsoft, true],
+  ["GEOSITE,microsoft", group.microsoft, true]
+];
+const routes = [
+  ...domainRoutes,
   // 对尚未归类的域名解析一次，并先处理局域网地址，再检查专用服务网段。
   ["GEOIP,private", "DIRECT"],
   [use("ai-ip") + ",no-resolve", group.ai, true],
@@ -91,4 +95,11 @@ const routes = [
   ["MATCH", group.default]
 ];
 
-module.exports = { version: "2.2", group, providers, routes };
+const dns = {
+  proxy: ["https://1.1.1.1/dns-query", "https://8.8.8.8/dns-query"],
+  direct: ["https://dns.alidns.com/dns-query#DIRECT", "https://doh.pub/dns-query#DIRECT"],
+  bootstrap: ["223.5.5.5", "119.29.29.29"],
+  domainRuleCount: domainRoutes.length
+};
+
+module.exports = { version: "2.3", group, providers, routes, dns };

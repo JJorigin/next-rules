@@ -17,16 +17,24 @@ const fragment = vm.runInContext("remoteFragment()", sandbox);
 
 const yamlScalar = JSON.stringify;
 function fields(record, indentation) {
-  return Object.entries(record).map(([key, value]) => (
-    key === "payload"
-      ? indentation + key + ":\n" + value.map((item) => indentation + "  - " + yamlScalar(item)).join("\n")
-      : indentation + key + ": " + yamlScalar(value)
-  )).join("\n");
+  return Object.entries(record).map(([key, value]) => {
+    const label = indentation + (/^[\w-]+$/.test(key) ? key : yamlScalar(key)) + ":";
+    if (key === "payload") {
+      return label + "\n" + value.map((item) => indentation + "  - " + yamlScalar(item)).join("\n");
+    }
+    if (value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length) {
+      return label + "\n" + fields(value, indentation + "  ");
+    }
+    return label + " " + yamlScalar(value);
+  }).join("\n");
 }
 const yaml = [
   "# Next-Rules " + policy.version + " · 3X-UI 远程路由",
   "# 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。",
-  "# DNS、TUN 和 IPv6 由原订阅及客户端管理。",
+  "# 面板须允许远程 DNS 配置；TUN 和 IPv6 开关由客户端管理。",
+  "dns:",
+  fields(fragment.dns, "  "),
+  "",
   "rule-providers:",
   ...Object.entries(fragment["rule-providers"]).map(([name, item]) => "  " + name + ":\n" + fields(item, "    ")),
   "",

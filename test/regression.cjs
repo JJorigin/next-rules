@@ -150,6 +150,9 @@ async function run() {
         'override-destination': false, sniff: {HTTP: {ports: [80], 'override-destination': false}}}
     };
     const config = source === 'js' ? normalize(ctx.main(normalize(runtime))) : {...normalize(panel), ...runtime};
+    // Route classification uses identical controlled answers across entry points.
+    // The production DNS policy and its actual transport are tested in dns-routing.cjs.
+    config.dns = normalize(runtime.dns);
     if (source === 'panel') config['proxy-groups'].find(g => g.name === 'PROXY').proxies = [...runtime.proxies.map(p => p.name), 'DIRECT'];
     if (!empty) config.rules = config.rules.map(rule => rule.replace(/,DIRECT(?=,|$)/g, ',' + nodeName('direct')));
     config['proxy-groups'].find(g => g.name === group.auto).url = 'http://' + host + ':' + healthPort;
@@ -291,6 +294,7 @@ async function run() {
   const providerInput = {...supplied, proxies: [nodes.find(node => node.name === nodeName('direct'))], 'proxy-groups': [], rules: [], 'rule-providers': {},
     'proxy-providers': {subscription: {type: 'file', path: providerFile}}};
   const withProvider = normalize(ctx.main(providerInput));
+  withProvider.dns = normalize(supplied.dns);
   withProvider.rules = withProvider.rules.map(row => row.replace(/,DIRECT(?=,|$)/g, ',' + nodeName('direct')));
   for (const [name, provider] of Object.entries(withProvider['rule-providers'])) {
     withProvider['rule-providers'][name] = supplied['rule-providers'][name];

@@ -12,7 +12,7 @@ def git(*args):
 
 
 records = []
-for tag in ['v1.0', 'v1.1', 'v1.2', 'v1.3', 'v2.0', 'v2.1']:
+for tag in ['v1.0', 'v1.1', 'v1.2', 'v1.3', 'v2.0', 'v2.1', 'v2.2']:
     names = set(git('ls-tree', '-r', '--name-only', tag).decode().splitlines())
     version = tag[1:]
     commit = git('rev-parse', tag + '^{}').decode().strip()
@@ -43,8 +43,8 @@ for tag in ['v1.0', 'v1.1', 'v1.2', 'v1.3', 'v2.0', 'v2.1']:
         encoding='utf-8', newline='\n')
 (ROOT / 'old' / 'manifest.json').write_text(json.dumps({'files': records}, indent=2) + '\n', encoding='utf-8')
 (ROOT / 'old' / 'README.md').write_text(
-    '# 历史版本\n\n当前主版本为 **2.2**，使用方法见[项目首页](../README.md)。\n\n'
-    + '\n'.join('- [' + tag[1:] + '](' + tag[1:] + '/)' for tag in ['v2.1','v2.0','v1.3','v1.2','v1.1','v1.0'])
+    '# 历史版本\n\n当前主版本为 **2.3**，使用方法见[项目首页](../README.md)。\n\n'
+    + '\n'.join('- [' + tag[1:] + '](' + tag[1:] + '/)' for tag in ['v2.2','v2.1','v2.0','v1.3','v1.2','v1.1','v1.0'])
     + '\n\n历史文件不再维护，仍可能引用会更新的远程数据。原发布标签和附件保持不变。\n',
     encoding='utf-8', newline='\n')
-print(json.dumps({'archivedFiles': len(records), 'versions': 6}))
+print(json.dumps({'archivedFiles': len(records), 'versions': 7}))

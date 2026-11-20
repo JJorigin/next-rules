@@ -55,11 +55,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           go build -o .cache/panel-merge.exe ./test/panel-merge.go
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go build -o .cache/dns-cert.exe ./test/dns-cert.go
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python test/fetch-resources.py
       - name: Verify before committing data
         if: steps.changes.outputs.changed == 'true'
         run: |
           foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
+            node test/dns-routing.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             node test/regression.cjs $variant
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             node test/ip-resolution.cjs $variant

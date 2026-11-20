@@ -16,7 +16,11 @@ assert.ok(['verge', 'flclash'].includes(flavor));
 const home = options.home;
 fs.mkdirSync(home, {recursive:true});
 const exe = options.exe;
-if(flavor==='flclash') assert.equal(createHash('sha256').update(fs.readFileSync(exe)).digest('hex').toUpperCase(),'D5097D4EA34F2975A7A7188DAC9554D6B309C2ABBF21A94C0A4111ACA23BB8D0');
+if(flavor==='flclash') {
+  const verified = JSON.parse(fs.readFileSync(path.join(path.dirname(exe),'manifest.json'),'utf8')).cores.flclash;
+  assert.equal(createHash('sha256').update(fs.readFileSync(exe)).digest('hex'),verified.sha256);
+  assert.ok(verified.url.startsWith('https://github.com/chen08209/FlClash/releases/download/v0.9.4/'));
+}
 const closers = [];
 const children = [];
 let logs = '';
@@ -164,7 +168,7 @@ async function flController() {
       assert.equal((await call('proxy.select',{'group-name':name,'proxy-name':item})).message,'');
       assert.equal(await this.get(name),item);
     },
-    version() { return 'FlClash Windows 0.9.3 release core'; },
+    version() { return 'FlClash Windows 0.9.4 release core'; },
   };
 }
 function udpServer() { return dgram.createSocket('udp4'); }

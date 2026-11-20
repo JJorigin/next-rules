@@ -26,8 +26,24 @@ const base = {
 const local = normalize(ctx.main(normalize(base)));
 assert.deepEqual(remote.rules, local.rules);
 assert.deepEqual(remote["rule-providers"], local["rule-providers"]);
-assert.deepEqual(Object.keys(remote).sort(), ["proxy-groups", "rule-providers", "rules"]);
-for (const key of Object.keys(base)) assert.deepEqual(local[key], base[key], key + " must survive");
+assert.deepEqual(Object.keys(remote).sort(), ["dns", "proxy-groups", "rule-providers", "rules"]);
+for (const key of Object.keys(base).filter(key => key !== 'dns')) assert.deepEqual(local[key], base[key], key + " must survive");
+assert.deepEqual(local.dns, remote.dns);
+assert.equal(local.dns.enable, true);
+assert.deepEqual(local.dns.fallback, []);
+assert.deepEqual(local.dns['nameserver-policy']['geosite:private'], ['system']);
+const sortedDNSKeys=Object.keys(local.dns['nameserver-policy']).sort();
+const directDnsKey = sortedDNSKeys.find(key => local.dns['nameserver-policy'][key].every(server => server.endsWith('#DIRECT')));
+const firstAiDnsKey = sortedDNSKeys.find(key => local.dns['nameserver-policy'][key].every(server => decodeURIComponent(server.split('#')[1] || '') === group.ai));
+assert.ok(firstAiDnsKey && directDnsKey && firstAiDnsKey < directDnsKey, 'AI DNS exceptions precede domestic DNS even after panel key sorting');
+assert.equal(local.dns['direct-nameserver-follow-policy'], true);
+for (const server of local.dns.nameserver) {
+  assert.equal(decodeURIComponent(server.split('#')[1]), group.default, 'general DNS explicitly uses the proxy');
+  assert.ok(!server.includes('skip-cert-verify'), 'TLS validation is retained');
+}
+for (const key of ['direct-nameserver','proxy-server-nameserver']) {
+  assert.ok(local.dns[key].every(server => server.endsWith('#DIRECT')));
+}
 
 for (const config of [remote, local]) {
   const map = groups(config);
@@ -136,7 +152,7 @@ const dependent = normalize(ctx.main({
   dns: { nameserver: ["https://example.test/dns-query#" + encodeURIComponent(legacyName)] },
   "proxy-groups": [{ name: legacyName, type: "select", proxies: ["DIRECT"] }]
 }));
-assert.ok(groups(dependent)[legacyName], "existing resolver dependencies keep the original selector");
+assert.ok(!groups(dependent)[legacyName], "replaced DNS upstreams do not retain obsolete selectors");
 const renamed = normalize(ctx.main({
   proxies: [...proxies, { ...proxies[0], name: group.google }, { ...proxies[0], name: group.youtube }]
 }));
@@ -200,6 +216,15 @@ const allocatedDefault = group.default + " · Next-Rules";
 for (const provider of Object.values(downloadConflict["rule-providers"])) {
   if (provider.type === "http") assert.equal(provider.proxy, allocatedDefault);
 }
+assert.ok(downloadConflict.dns.nameserver.every(server => decodeURIComponent(server.split('#')[1]) === allocatedDefault), 'DNS uses the allocated default selector');
+const directDnsProvider = directDnsKey.split(':')[1];
+const dnsProviderConflict = normalize(ctx.main({proxies, 'rule-providers': {
+  [directDnsProvider]: {type: 'inline', behavior: 'classical', payload: ['DOMAIN,custom.invalid']},
+  'next-rules-v2-ai-domain': {type: 'inline', behavior: 'classical', payload: ['DOMAIN,custom-ai.invalid']}
+}}));
+assert.ok(dnsProviderConflict.dns['nameserver-policy'][directDnsKey + '-2'], 'DNS references use the allocated provider name');
+assert.ok(dnsProviderConflict['rule-providers'][firstAiDnsKey.split(':')[1]].payload.includes('AND,((RULE-SET,next-rules-v2-ai-domain-2))'));
+assert.deepEqual(normalize(ctx.main(normalize(dnsProviderConflict))), dnsProviderConflict);
 assert.deepEqual(normalize(ctx.main(normalize(downloadConflict))), downloadConflict, "download proxy remapping is idempotent");
 const preservedDownload = normalize(ctx.main({
   proxies,
@@ -222,13 +247,16 @@ assert.ok(!upgraded['rule-providers']['next-rules-v2-ai'], 'unused old source pr
 assert.equal(upgraded['proxy-groups'].filter(item=>item.name.startsWith(group.default)).length,1,'upgrade does not accumulate default selectors');
 assert.ok(upgraded['rule-providers']['next-rules-v2-ai-context']);
 for(const dependencies of [
-  {dns:{'nameserver-policy':{'rule-set:next-rules-v2-ai':['https://example.test/dns-query']}}},
+  {dns:{'fake-ip-filter-mode':'rule','fake-ip-filter':['RULE-SET,next-rules-v2-ai,fake-ip','MATCH,real-ip']}},
   {'sub-rules':{custom:['AND,((RULE-SET,next-rules-v2-ai)),DIRECT']}},
   {'sub-rules':{custom:['RULE-SET, next-rules-v2-ai, DIRECT']}}
 ]){
   const preserved=normalize(ctx.main({...normalize(previous),...dependencies}));
   assert.deepEqual(preserved['rule-providers']['next-rules-v2-ai'],previous['rule-providers']['next-rules-v2-ai'],'external dependencies keep the old provider');
-  for(const [key,value]of Object.entries(dependencies))assert.deepEqual(preserved[key],value);
+  for(const [key,value]of Object.entries(dependencies)) {
+    if(key === 'dns') for(const [field,setting] of Object.entries(value)) assert.deepEqual(preserved.dns[field],setting);
+    else assert.deepEqual(preserved[key],value);
+  }
   assert.deepEqual(normalize(ctx.main(normalize(preserved))),preserved,'upgrade with dependencies remains idempotent');
 }
 const customized = normalize(previous);
@@ -240,4 +268,4 @@ for(const entry of archived.files){
   assert.equal(require('node:crypto').createHash('sha256').update(data).digest('hex'),entry.sha256,entry.path);
 }
 
-console.log("Next-Rules 2.2 policy checks passed.");
+console.log("Next-Rules 2.3 policy checks passed.");

@@ -34,6 +34,8 @@ jobs:
           python test/check-panel-source.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           go build -o .cache/panel-merge.exe ./test/panel-merge.go
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go build -o .cache/dns-cert.exe ./test/dns-cert.go
       - name: Fetch verified official test resources
         env:
           NEXT_RULES_GITHUB_TOKEN: ${{ github.token }}
@@ -41,6 +43,8 @@ jobs:
       - name: Test real Windows cores
         run: |
           foreach ($variant in @('1.19.33', '1.19.34', 'flclash')) {
+            node test/dns-routing.cjs $variant
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             node test/regression.cjs $variant
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             node test/ip-resolution.cjs $variant
