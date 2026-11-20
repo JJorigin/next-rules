@@ -39,6 +39,19 @@ class SourceValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             sync.validate_voice(official, ["IP-CIDR,192.0.2.0/24"])
 
+    def test_ai_views_preserve_the_complete_source_without_repeating_exact_domains(self):
+        import json
+        from collections import Counter
+        raw, metadata = sync.from_checkout()
+        generated = sync.build(raw, metadata)
+        cache = json.loads(generated['v2/data/source-cache.json'])
+        complete = sync.parse_rows(raw['ai'], 'yaml', sync.AI_TYPES)
+        rows = [row for name in ['ai-domain','ai-regex','ai-context'] for row in cache['providers'][name]['payload']]
+        self.assertEqual(Counter(rows), Counter(complete))
+        self.assertEqual(generated['rules/ai/upstream-global.yaml'], raw['ai'])
+        self.assertTrue(all(not row.startswith(('DOMAIN,','DOMAIN-SUFFIX,','DOMAIN-REGEX,')) for row in cache['providers']['ai-context']['payload']))
+        self.assertNotIn('ai', cache['providers'])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,3 +3,5 @@
 rules/ai/upstream-global.yaml -text
 test/fixtures/** -text
 rules/licenses/** -text
+# Historical snapshots retain their original bytes and whitespace.
+old/** -text -whitespace

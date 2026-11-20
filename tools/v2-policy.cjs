@@ -52,6 +52,9 @@ const routes = [
   ["GEOSITE,category-ads-all", group.ads],
   // 域名视图由完整 AI 来源自动同步，不人工增删条目。
   [use("ai-domain"), group.ai, true],
+  // 常用海外 AI 品牌由服务分类库补充识别，不展开为域名清单。
+  ...["openai", "anthropic", "google-gemini", "cursor", "github-copilot", "perplexity", "poe", "windsurf", "elevenlabs"]
+    .map(category => ["GEOSITE," + category, group.ai, true]),
   ...mediaRoutes(media.apac.filter((item) => item.beforeCN), group.mediaAsia),
   ["GEOSITE,apple-cn", "DIRECT"],
   ["GEOSITE,microsoft@cn", "DIRECT"],
@@ -73,10 +76,13 @@ const routes = [
   [use("telegram-ip") + ",no-resolve", group.telegram, true],
   ["GEOIP,telegram,no-resolve", group.telegram, true],
   ...media.global.filter(item => item.geoip).map(item => ["GEOIP," + item.geoip + ",no-resolve", group.media, true]),
+  ["GEOIP,google,no-resolve", group.google, true],
   // 未归类域名允许解析，以免国内地址被后面的进程兜底送往代理。
   ["GEOIP,CN", "DIRECT"],
-  // 保留完整上游中的关键词、地址和进程条件，普通国内目标已经先行直连。
-  [use("ai"), group.ai, true],
+  // 通用 AI 分类只补充未识别的境外目标。
+  ["GEOSITE,category-ai-!cn", group.ai, true],
+  // 完整来源中的关键词、地址和进程条件由自动任务生成，普通国内目标已经先行直连。
+  [use("ai-context"), group.ai, true],
   ...mediaRoutes(media.apac.filter((item) => item.url), group.mediaAsia, true),
   ...mediaRoutes(media.global.filter((item) => item.url), group.media, true),
   [use("software"), group.software, true],
@@ -85,4 +91,4 @@ const routes = [
   ["MATCH", group.default]
 ];
 
-module.exports = { version: "2.1", group, providers, routes };
+module.exports = { version: "2.2", group, providers, routes };

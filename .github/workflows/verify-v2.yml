@@ -1,9 +1,9 @@
 name: Verify rules
 on:
   push:
-    paths: ['v2/**', 'rules/ai/**', 'rules/media/**', 'rules/sources.json', 'test/**', 'tools/**', '.github/workflows/**']
+    paths: ['next-rules.*', 'MEDIA.md', 'README.md', 'v2/**', 'old/**', 'rules/**', 'test/**', 'tools/**', '.github/workflows/**']
   pull_request:
-    paths: ['v2/**', 'rules/ai/**', 'rules/media/**', 'rules/sources.json', 'test/**', 'tools/**', '.github/workflows/**']
+    paths: ['next-rules.*', 'MEDIA.md', 'README.md', 'v2/**', 'old/**', 'rules/**', 'test/**', 'tools/**', '.github/workflows/**']
   workflow_dispatch:
   schedule:
     - cron: '41 3 * * *'

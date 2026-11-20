@@ -1,33 +1,688 @@
-// ============================================================
-// Next-Rules 1.3
-// Clash Verge Rev 订阅扩展脚本
-//
-// 本脚本只负责策略组、规则集和分流顺序。
-// DNS、TUN、IPv6、Sniffer、Hosts、端口和运行模式继续由原订阅或客户端负责。
-// ============================================================
+// Next-Rules 2.2 · Clash Verge Rev 订阅扩展脚本
+// 用于订阅的扩展脚本；DNS、TUN 和 IPv6 沿用原订阅及客户端设置。
 
-const NEXT_RULES_VERSION = "1.3";
+const POLICY = {
+  "version": "2.2",
+  "group": {
+    "auto": "♻️ 自动选择 [系统]",
+    "default": "🚀 默认代理 [自选]",
+    "ai": "🤖 AI服务 [自选]",
+    "google": "🔍 谷歌服务 [自选]",
+    "youtube": "📺 YouTube [自选]",
+    "media": "🎬 全球流媒体 [自选]",
+    "mediaAsia": "🌏 亚太流媒体 [自选]",
+    "telegram": "💬 电报专用 [自选]",
+    "microsoft": "Ⓜ️ 微软服务 [自选]",
+    "apple": "🍎 苹果服务 [自选]",
+    "crypto": "💰 币圈专用 [自选]",
+    "software": "🖥️ 软件分流 [自选]",
+    "ads": "🛑 广告拦截 [系统]"
+  },
+  "providers": {
+    "next-rules-v2-ai-context": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-ai-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-ai-regex": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-regex.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-ai-ip": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "text",
+      "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-crypto": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-channel4": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-channel4-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/channel4-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-itv": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-itv-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/itv-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-fubo": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-fubo-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/fubo-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-crunchyroll": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "text",
+      "url": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-crunchyroll-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/crunchyroll-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-linetv": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-linetv-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/linetv-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-friday": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-friday-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/friday-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-hulujp": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-media-hulujp-domain": {
+      "type": "http",
+      "behavior": "classical",
+      "format": "yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/hulujp-domains.yaml",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]"
+    },
+    "next-rules-v2-software": {
+      "type": "inline",
+      "behavior": "classical",
+      "payload": [
+        "PROCESS-NAME-WILDCARD,*Discord*",
+        "PROCESS-NAME-WILDCARD,*Steam*",
+        "PROCESS-NAME-WILDCARD,*EpicGames*",
+        "PROCESS-NAME-WILDCARD,*WhatsApp*"
+      ]
+    },
+    "next-rules-v2-telegram-ip": {
+      "type": "http",
+      "behavior": "ipcidr",
+      "format": "mrs",
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs",
+      "interval": 86400,
+      "proxy": "🚀 默认代理 [自选]",
+      "path-in-bundle": "geo/geoip/telegram.mrs"
+    }
+  },
+  "routes": [
+    [
+      "GEOSITE,private",
+      "DIRECT"
+    ],
+    [
+      "GEOIP,private,no-resolve",
+      "DIRECT"
+    ],
+    [
+      "GEOSITE,category-ads-all",
+      "🛑 广告拦截 [系统]"
+    ],
+    [
+      "RULE-SET,next-rules-v2-ai-domain",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,openai",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,anthropic",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,google-gemini",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,cursor",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,github-copilot",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,perplexity",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,poe",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,windsurf",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,elevenlabs",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,niconico",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,bilibili@!cn",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,iqiyi@!cn",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,apple-cn",
+      "DIRECT"
+    ],
+    [
+      "GEOSITE,microsoft@cn",
+      "DIRECT"
+    ],
+    [
+      "GEOSITE,steam@cn",
+      "DIRECT"
+    ],
+    [
+      "GEOSITE,CN",
+      "DIRECT"
+    ],
+    [
+      "RULE-SET,next-rules-v2-ai-regex",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,youtube",
+      "📺 YouTube [自选]",
+      true
+    ],
+    [
+      "GEOSITE,google",
+      "🔍 谷歌服务 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-crypto",
+      "💰 币圈专用 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,mytvsuper",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,now",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,viu",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,rthk",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,bahamut",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,litv",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,hamivideo",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,catchplay",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,kkbox",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      [
+        "RULE-SET,next-rules-v2-media-linetv-domain",
+        "NOT,((DOMAIN-SUFFIX,line-cdn.net))",
+        "NOT,((DOMAIN-SUFFIX,line-scdn.net))"
+      ],
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      [
+        "RULE-SET,next-rules-v2-media-friday-domain",
+        "NOT,((DOMAIN-SUFFIX,fetnet.net))"
+      ],
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,abema",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,tver",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,unext",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,nhk",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,radiko",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-hulujp-domain",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,hotstar",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,netflix",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,disney",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,hbo",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,primevideo",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,apple-tvplus",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,spotify",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,twitch",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,cbs",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,nbcuniversal",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,discoveryplus",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,bbc",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,amc",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,pbs",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,formula1",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,dazn",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,mubi",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,vimeo",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,dailymotion",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,plutotv",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,tubi",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,plex",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,sling",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,roku",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,deezer",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,soundcloud",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,tidal",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-channel4-domain",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-itv-domain",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-fubo-domain",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-crunchyroll-domain",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,apple",
+      "🍎 苹果服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,telegram",
+      "💬 电报专用 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,microsoft",
+      "Ⓜ️ 微软服务 [自选]",
+      true
+    ],
+    [
+      "GEOIP,private",
+      "DIRECT"
+    ],
+    [
+      "RULE-SET,next-rules-v2-ai-ip,no-resolve",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-telegram-ip,no-resolve",
+      "💬 电报专用 [自选]",
+      true
+    ],
+    [
+      "GEOIP,telegram,no-resolve",
+      "💬 电报专用 [自选]",
+      true
+    ],
+    [
+      "GEOIP,netflix,no-resolve",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "GEOIP,google,no-resolve",
+      "🔍 谷歌服务 [自选]",
+      true
+    ],
+    [
+      "GEOIP,CN",
+      "DIRECT"
+    ],
+    [
+      "GEOSITE,category-ai-!cn",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-ai-context",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      [
+        "RULE-SET,next-rules-v2-media-linetv",
+        "NOT,((DOMAIN-SUFFIX,line-cdn.net))",
+        "NOT,((DOMAIN-SUFFIX,line-scdn.net))"
+      ],
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      [
+        "RULE-SET,next-rules-v2-media-friday",
+        "NOT,((DOMAIN-SUFFIX,fetnet.net))"
+      ],
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-hulujp",
+      "🌏 亚太流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-channel4",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-itv",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-fubo",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-media-crunchyroll",
+      "🎬 全球流媒体 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-software",
+      "🖥️ 软件分流 [自选]",
+      true
+    ],
+    [
+      "NETWORK,UDP",
+      "🚀 默认代理 [自选]"
+    ],
+    [
+      "NETWORK,UDP",
+      "REJECT"
+    ],
+    [
+      "MATCH",
+      "🚀 默认代理 [自选]"
+    ]
+  ]
+};
+const OWNED_GROUPS = new Set(Object.values(POLICY.group));
+const unique = (items) => [...new Set(items.filter(Boolean))];
+const asRecord = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
+const BLOCKED_TYPES = "Pass|Compatible|Dns|Reject|RejectDrop";
+const BLOCKED_NODE_TYPES = new Set(BLOCKED_TYPES.toLowerCase().split("|"));
 
-// 过滤以说明标签开头的订阅信息；线路名称中的“流量”或 Bandwidth 等字样正常保留。
-const METADATA_FILTER = "(?i)(?:^|[|｜])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])";
+const METADATA_FILTER = "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])";
 const METADATA_RE = new RegExp(METADATA_FILTER.replace(/^\(\?i\)/, ""), "i");
 
-// 脚本会统一生成以下策略组；更新订阅时会替换同名旧组。
-const OWNED_GROUPS = new Set([
-  "♻️ 自动选择 [系统]",
-  "🛑 广告拦截 [系统]",
-  "🖥️ 软件分流 [自选]",
-  "🤖 AI服务 [自选]",
-  "🔍 谷歌服务(含油管) [自选]",
-  "💰 币圈专用 [自选]",
-  "🎬 流媒体 [自选]",
-  "🍎 苹果服务 [自选]",
-  "💬 电报专用 [自选]",
-  "Ⓜ️ 微软服务 [自选]",
-  "🚀 默认代理 [自选]"
-]);
-
 const LEGACY_GROUPS = new Set([
+  "🔍 谷歌服务(含油管) [自选]",
+  "🎬 流媒体 [自选]",
   "直连(DIRECT)",
   "禁止广告(REJECT)",
   "🌐 全部节点 [系统]",
@@ -43,53 +698,9 @@ const LEGACY_GROUPS = new Set([
   "🛰️ next-rules 规则下载 [系统]"
 ]);
 
-// 未被其他配置引用的旧版策略组会在更新时清理，不会重新生成。
-
-// Telegram 官方公布的地址范围，供只显示 IP 的连接使用。
-// https://core.telegram.org/resources/cidr.txt
-const TELEGRAM_IP_RANGES = [
-  "91.108.56.0/22",
-  "91.108.4.0/22",
-  "91.108.8.0/22",
-  "91.108.16.0/22",
-  "91.108.12.0/22",
-  "149.154.160.0/20",
-  "91.105.192.0/23",
-  "91.108.20.0/22",
-  "185.76.151.0/24",
-  "2001:b28:f23d::/48",
-  "2001:b28:f23f::/48",
-  "2001:67c:4e8::/48",
-  "2001:b28:f23c::/48",
-  "2a0a:f280::/32"
-];
-
-const unique = (items) => [...new Set(items.filter(Boolean))];
-
-function sourceFor(nodes, providerNames, keepDirect = false) {
-  const source = {};
-  if (nodes.length) source.proxies = nodes;
-  if (providerNames.length) {
-    source.use = providerNames;
-    // 使用节点提供者的订阅也保留提供者节点，供自动选择和场景组使用。
-    source["include-all-proxies"] = true;
-    // 组级过滤同时作用于显式节点；场景组须保留 DIRECT（直连）。
-    // 默认代理与自动选择只列出代理节点，并排除订阅说明。
-    if (!keepDirect) source["exclude-type"] = "Direct";
-    source["exclude-filter"] = keepDirect ? METADATA_FILTER : `${METADATA_FILTER}|^DIRECT$`;
-  }
-  return source;
-}
-
-function withSceneSource(nodes, providerNames, extraProxies) {
-  const source = sourceFor(nodes, providerNames, true);
-  source.proxies = unique([...extraProxies, ...(source.proxies || [])]);
-  return source;
-}
-
 function ownedGroupBase(name) {
   if (typeof name !== "string") return null;
-  for (const base of OWNED_GROUPS) {
+  for (const base of [...OWNED_GROUPS, ...LEGACY_GROUPS]) {
     const alias = base + " · Next-Rules";
     if (name === base || name === alias) return base;
     if (name.startsWith(alias + " ") && /^(?:[2-9]|[1-9][0-9]+)$/.test(name.slice(alias.length + 1))) return base;
@@ -133,7 +744,7 @@ function retainSubscriptionGroups(config, providers) {
   for (const [key, value] of Object.entries(config)) {
     if (!["proxy-groups", "rules", "rule-providers"].includes(key)) inspect(value);
   }
-  inspect(providers);
+  inspect(Object.fromEntries(Object.entries(providers).filter(([name, definition]) => !isOwnedProvider(name, definition))));
   // 多级依赖一并保留，避免更新后出现找不到策略组或链式连接循环的错误。
   for (const name of required) inspect(managed.get(name));
 
@@ -146,7 +757,7 @@ function allocateGroupNames(config, retainedGroups) {
   const rawNodes = Array.isArray(config.proxies) ? config.proxies : [];
   const occupied = new Set([
     ...rawNodes.filter(Boolean).map((proxy) => proxy.name),
-    ...Object.keys(config["proxy-providers"] || {}),
+    ...Object.keys(asRecord(config["proxy-providers"])),
     ...retainedGroups.map((group) => group.name)
   ]);
   const names = new Map();
@@ -176,8 +787,15 @@ function cachePathKey(path) {
 }
 
 function sameProvider(existing, expected) {
-  return existing && Object.keys(existing).length === Object.keys(expected).length &&
-    Object.entries(expected).every(([key, value]) => {
+  if (!existing) return false;
+  // 相同来源复用缓存，更新脚本时一并去除旧版本的内置副本。
+  const keys = (item) => Object.keys(item).filter((key) => !(item.type === "http" && key === "payload"));
+  return keys(existing).length === keys(expected).length &&
+    keys(expected).every((key) => {
+      const value = expected[key];
+      if (key === "proxy" && ownedGroupBase(value) && ownedGroupBase(existing[key])) {
+        return ownedGroupBase(value) === ownedGroupBase(existing[key]);
+      }
       if (!Array.isArray(value)) return existing[key] === value;
       const actual = existing[key];
       return Array.isArray(actual) && actual.length === value.length &&
@@ -185,12 +803,55 @@ function sameProvider(existing, expected) {
     });
 }
 
-function ruleProviderRegistry(config) {
-  const providers = { ...(config["rule-providers"] || {}) };
+function isOwnedProvider(name, definition) {
+  return Object.entries(POLICY.providers).some(([base, source]) =>
+    (name === base || (name.startsWith(base + "-") && /^(?:[2-9]|[1-9][0-9]+)$/.test(name.slice(base.length + 1)))) &&
+    sameProvider(definition, providerDefinition(name, source))
+  );
+}
+
+function retiredAiProvider(name, definition) {
+  return /^next-rules-v2-ai(?:-(?:[2-9]|[1-9][0-9]+))?$/.test(name) &&
+    definition && definition.type === "http" && definition.behavior === "classical" &&
+    definition.format === "yaml" && definition.interval === 86400 &&
+    Object.keys(definition).every(key => ["type", "behavior", "format", "interval", "url", "path", "proxy", "payload"].includes(key)) &&
+    definition.url === "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" &&
+    definition.path === "./providers/" + name + ".yaml" &&
+    ownedGroupBase(definition.proxy) === POLICY.group.default;
+}
+
+function dropUnusedRetiredProviders(config) {
+  const providers = asRecord(config["rule-providers"]);
+  const names = Object.keys(providers).filter(name => retiredAiProvider(name, providers[name]));
+  if (!names.length) return;
+  const used = new Set(), visited = new WeakSet();
+  const inspect = value => {
+    if (typeof value === "string") {
+      let decoded = value;
+      try { decoded = decodeURIComponent(value); } catch (_) { /* 保留原文。 */ }
+      for (const name of names) {
+        const matcher = new RegExp("RULE-SET\\s*,\\s*" + name + "(?=\\s*[,)]|\\s*$)|rule-set:\\s*" + name + "(?=[,\\s#]|$)", "i");
+        if ([value, decoded].some(text => matcher.test(text))) used.add(name);
+      }
+    } else if (value && typeof value === "object" && !visited.has(value)) {
+      visited.add(value);
+      for (const [key, child] of Object.entries(value)) { inspect(key); inspect(child); }
+    }
+  };
+  for (const [key, value] of Object.entries(config)) {
+    if (!["rules", "proxy-groups", "rule-providers"].includes(key)) inspect(value);
+  }
+  for (const [name, definition] of Object.entries(providers)) if (!names.includes(name)) inspect(definition);
+  // 原订阅仍有引用时保留；移除没有外部依赖的旧下载项。
+  config["rule-providers"] = Object.fromEntries(Object.entries(providers).filter(([name]) => !names.includes(name) || used.has(name)));
+}
+
+function ruleProviderRegistry(config, groupNames) {
+  const providers = { ...(asRecord(config["rule-providers"])) };
   const occupiedNames = new Map(Object.keys(providers).map((name) => [name.toLowerCase(), name]));
   const paths = [
     ...Object.entries(providers).map(([name, provider]) => [name, cachePathKey(provider && provider.path)]),
-    ...Object.values(config["proxy-providers"] || {}).map((provider) => [null, cachePathKey(provider && provider.path)])
+    ...Object.values(asRecord(config["proxy-providers"])).map((provider) => [null, cachePathKey(provider && provider.path)])
   ];
   const names = new Map();
 
@@ -198,9 +859,7 @@ function ruleProviderRegistry(config) {
   const add = (base, definition) => {
     for (let suffix = 1; ; suffix += 1) {
       const name = suffix === 1 ? base : base + "-" + suffix;
-      const desired = definition.type === "http"
-        ? { ...definition, path: "./providers/" + name + ".yaml" }
-        : definition;
+      const desired = providerDefinition(name, definition, groupNames);
       const occupied = occupiedNames.get(name);
       if (occupied && (occupied !== name || !sameProvider(providers[occupied], desired))) continue;
       const cachePath = cachePathKey(desired.path);
@@ -209,10 +868,10 @@ function ruleProviderRegistry(config) {
         owner !== name && (used === cachePath || used.endsWith("/" + cachePath))
       )) continue;
       if (!occupied) {
-        providers[name] = desired;
         occupiedNames.set(name, name);
         if (cachePath) paths.push([name, cachePath]);
       }
+      providers[name] = desired;
       names.set(base, name);
       return;
     }
@@ -220,147 +879,117 @@ function ruleProviderRegistry(config) {
   return { providers, names, add };
 }
 
-function main(config) {
-  if (!config || typeof config !== "object" || Array.isArray(config)) return config;
+function providerDefinition(name, definition, groupNames = new Map()) {
+  if (definition.type === "http") {
+    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: "./providers/" + name + "." + definition.format };
+  }
+  return { ...definition, payload: [...definition.payload] };
+}
 
-  const inlineNodes = Array.isArray(config.proxies)
-    ? config.proxies
-        .filter((proxy) => (
-          proxy &&
-          String(proxy.type || "").toLowerCase() !== "direct" &&
-          String(proxy.name || "").toUpperCase() !== "DIRECT"
-        ))
-        .map((proxy) => proxy.name)
-        .filter((name) => typeof name === "string" && name.length)
-        .filter((name) => !METADATA_RE.test(name))
-    : [];
+function buildGroups(groupNames, inlineNodes, providerNames = []) {
+  const g = POLICY.group;
+  const nameOf = (name) => groupNames.get(name) || name;
+  const auto = nameOf(g.auto);
+  const source = {
+    "exclude-filter": METADATA_FILTER
+  };
+  // 远程入口从面板订阅读取节点。本地入口筛选内嵌节点，并沿用原来的节点提供者。
+  if (inlineNodes === undefined) source["include-all"] = true;
+  if (providerNames.length) source.use = providerNames;
 
-  const providerNames = config["proxy-providers"] && typeof config["proxy-providers"] === "object"
-    ? Object.keys(config["proxy-providers"])
-    : [];
+  function selector(base, manualDirect, preferred = auto) {
+    return {
+      name: nameOf(base),
+      type: "select",
+      "default-selected": preferred,
+      "empty-fallback": "REJECT",
+      ...source,
+      "exclude-type": manualDirect ? BLOCKED_TYPES : "Direct|" + BLOCKED_TYPES,
+      proxies: unique([preferred, auto, ...(manualDirect ? ["DIRECT"] : []), ...(inlineNodes || [])])
+    };
+  }
 
-  const { providers, names: ruleProviderNames, add } = ruleProviderRegistry(config);
-  const provider = (name, url) => add(name, {
-    type: "http",
-    behavior: "classical",
-    format: "yaml",
-    url,
-    interval: 86400
-  });
-
-  provider("next-rules-ads", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml");
-  provider("next-rules-ai", "https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml");
-  provider("next-rules-youtube", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml");
-  provider("next-rules-crypto", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml");
-  provider("next-rules-disney", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml");
-  provider("next-rules-apple", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml");
-  provider("next-rules-google", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml");
-  provider("next-rules-software", "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/software.yaml");
-
-  add("next-rules-telegram-ip", {
-    type: "inline",
-    behavior: "ipcidr",
-    payload: TELEGRAM_IP_RANGES
-  });
-
-  const retainedGroups = retainSubscriptionGroups(config, providers);
-  const groupNames = allocateGroupNames(config, retainedGroups);
-  const groups = [];
-  const addGroup = (group) => groups.push({
-    ...group,
-    name: groupNames.get(group.name) || group.name
-  });
-
-  const autoGroup = groupNames.get("♻️ 自动选择 [系统]");
-  const defaultGroup = groupNames.get("🚀 默认代理 [自选]");
-
-  // 默认代理组不含 DIRECT，未命中规则的流量默认使用代理。
-  const defaultSource = sourceFor(inlineNodes, providerNames);
-  addGroup({
-    name: defaultGroup,
-    type: "select",
-    "empty-fallback": "REJECT",
-    ...defaultSource,
-    proxies: unique([autoGroup, ...(defaultSource.proxies || [])])
-  });
-
-  // 各场景可独立选择自动选择、DIRECT（直连）或当前订阅中的节点。
-  const sceneSource = () => withSceneSource(
-    inlineNodes,
-    providerNames,
-    [autoGroup, "DIRECT"]
-  );
-  const sceneGroup = (name) => addGroup({
-    name,
-    type: "select",
-    ...sceneSource()
-  });
-
-  sceneGroup("🤖 AI服务 [自选]");
-  sceneGroup("🔍 谷歌服务(含油管) [自选]");
-  sceneGroup("🎬 流媒体 [自选]");
-  sceneGroup("💬 电报专用 [自选]");
-  sceneGroup("Ⓜ️ 微软服务 [自选]");
-  sceneGroup("🍎 苹果服务 [自选]");
-  sceneGroup("💰 币圈专用 [自选]");
-
-  addGroup({
-    name: "🖥️ 软件分流 [自选]",
-    type: "select",
-    ...withSceneSource(inlineNodes, providerNames, [autoGroup, "DIRECT"])
-  });
-
-  const autoSource = sourceFor(inlineNodes, providerNames);
-  if (!inlineNodes.length && !providerNames.length) autoSource.proxies = ["REJECT"];
-  addGroup({
-    name: autoGroup,
+  const autoGroup = {
+    name: auto,
     type: "url-test",
-    ...autoSource,
     "empty-fallback": "REJECT",
+    ...source,
+    "exclude-type": "Direct|" + BLOCKED_TYPES,
     url: "https://cp.cloudflare.com/generate_204",
     interval: 300,
     tolerance: 50,
     lazy: true
-  });
-
-  addGroup({
-    name: "🛑 广告拦截 [系统]",
-    type: "select",
-    proxies: ["REJECT", "DIRECT"]
-  });
-
-  // Next-Rules 自有组排在前面，原订阅中未被接管的策略组继续保留在后面。
-  groups.push(...retainedGroups);
-
-  config["proxy-groups"] = groups;
-  config["rule-providers"] = providers;
-
-  const rules = [];
-  const ruleSet = (name) => "RULE-SET," + ruleProviderNames.get("next-rules-" + name);
-  const route = (condition, group) => rules.push(condition + "," + groupNames.get(group));
-  const scene = (condition, group, option = "") => {
-    rules.push(condition + "," + groupNames.get(group) + option);
-    // 策略无法转发 UDP 时拒绝同一请求，避免继续匹配到其他出口。
-    rules.push("AND,((NETWORK,UDP),(" + condition + option + ")),REJECT");
   };
+  if (inlineNodes !== undefined && (inlineNodes.length || !providerNames.length)) {
+    autoGroup.proxies = inlineNodes.length ? inlineNodes : ["REJECT"];
+  }
 
-  // 软件进程优先。未命中特定规则的请求再由直连规则和默认代理处理。
-  scene(ruleSet("software"), "🖥️ 软件分流 [自选]");
-  rules.push("GEOSITE,private,DIRECT", "GEOIP,private,DIRECT,no-resolve");
-  route(ruleSet("ads"), "🛑 广告拦截 [系统]");
-  scene(ruleSet("ai"), "🤖 AI服务 [自选]");
-  scene(ruleSet("youtube"), "🔍 谷歌服务(含油管) [自选]");
-  scene(ruleSet("google"), "🔍 谷歌服务(含油管) [自选]");
-  scene(ruleSet("crypto"), "💰 币圈专用 [自选]");
-  scene(ruleSet("disney"), "🎬 流媒体 [自选]");
-  scene("GEOSITE,netflix", "🎬 流媒体 [自选]");
-  scene(ruleSet("apple"), "🍎 苹果服务 [自选]");
-  scene("GEOSITE,telegram", "💬 电报专用 [自选]");
-  scene(ruleSet("telegram-ip"), "💬 电报专用 [自选]", ",no-resolve");
-  scene("GEOSITE,microsoft", "Ⓜ️ 微软服务 [自选]");
-  rules.push("GEOSITE,CN,DIRECT", "GEOIP,CN,DIRECT,no-resolve");
-  rules.push("NETWORK,UDP," + defaultGroup, "NETWORK,UDP,REJECT", "MATCH," + defaultGroup);
-  config.rules = rules;
+  return [
+    selector(g.default, false),
+    ...[g.ai, g.google, g.youtube, g.media, g.mediaAsia, g.telegram, g.microsoft, g.apple, g.crypto, g.software]
+      .map((base) => selector(base, true, base === g.youtube ? nameOf(g.google) : auto)),
+    autoGroup,
+    { name: nameOf(g.ads), type: "select", proxies: ["REJECT", "DIRECT"] }
+  ];
+}
 
+function renderRules(providerNames, groupNames) {
+  function tokens(condition) {
+    const fields = condition.split(",");
+    if (fields[0] === "RULE-SET") fields[1] = providerNames.get(fields[1]) || fields[1];
+    return fields;
+  }
+
+  function and(conditions, target) {
+    return "AND,(" + conditions.map((condition) => "(" + tokens(condition).join(",") + ")").join(",") + ")," + target;
+  }
+
+  const result = [];
+  for (const [condition, base, guard] of POLICY.routes) {
+    const target = groupNames.get(base) || base;
+    if (Array.isArray(condition)) {
+      result.push(and(condition, target));
+    } else {
+      const fields = tokens(condition);
+      fields.splice(Math.min(fields.length, 2), 0, target);
+      result.push(fields.join(","));
+    }
+    // 节点不支持 UDP 时内核会继续匹配，因此在同一条件下拒绝该请求。
+    if (guard) result.push(and(unique(["NETWORK,UDP", ...[].concat(condition)]), "REJECT"));
+  }
+  return result;
+}
+
+function remoteFragment() {
+  const groupNames = new Map();
+  const providers = Object.fromEntries(Object.entries(POLICY.providers).map(([name, definition]) => [
+    name, providerDefinition(name, definition)
+  ]));
+  return {
+    "rule-providers": providers,
+    "proxy-groups": buildGroups(groupNames),
+    rules: renderRules(new Map(), groupNames)
+  };
+}
+
+function main(config) {
+  if (!config || typeof config !== "object" || Array.isArray(config)) return config;
+  dropUnusedRetiredProviders(config);
+  const inlineNodes = Array.isArray(config.proxies)
+    ? config.proxies.filter((node) => (
+      node && typeof node.name === "string" &&
+      !METADATA_RE.test(node.name) &&
+      !BLOCKED_NODE_TYPES.has(String(node.type || "").toLowerCase())
+    )).map((node) => node.name)
+    : [];
+  const providerNames = Object.keys(asRecord(config["proxy-providers"]));
+  const retained = retainSubscriptionGroups(config, asRecord(config["rule-providers"]));
+  const groupNames = allocateGroupNames(config, retained);
+  const { providers, names: ruleProviderNames, add } = ruleProviderRegistry(config, groupNames);
+  for (const [name, definition] of Object.entries(POLICY.providers)) add(name, definition);
+
+  config["proxy-groups"] = [...buildGroups(groupNames, inlineNodes, providerNames), ...retained];
+  config["rule-providers"] = providers;
+  config.rules = renderRules(ruleProviderNames, groupNames);
   return config;
 }

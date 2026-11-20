@@ -1,15 +1,15 @@
-# Next-Rules 2.1 · 3X-UI 远程路由
+# Next-Rules 2.2 · 3X-UI 远程路由
 # 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。
 # DNS、TUN 和 IPv6 由原订阅及客户端管理。
 rule-providers:
-  next-rules-v2-ai:
+  next-rules-v2-ai-context:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-ai.yaml"
+    path: "./providers/next-rules-v2-ai-context.yaml"
   next-rules-v2-ai-domain:
     type: "http"
     behavior: "classical"
@@ -177,7 +177,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Direct|Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]"]
@@ -185,7 +185,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -193,7 +193,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -201,7 +201,7 @@ proxy-groups:
     type: "select"
     default-selected: "🔍 谷歌服务 [自选]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["🔍 谷歌服务 [自选]","♻️ 自动选择 [系统]","DIRECT"]
@@ -209,7 +209,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -217,7 +217,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -225,7 +225,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -233,7 +233,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -241,7 +241,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -249,7 +249,7 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
@@ -257,14 +257,14 @@ proxy-groups:
     type: "select"
     default-selected: "♻️ 自动选择 [系统]"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
     proxies: ["♻️ 自动选择 [系统]","DIRECT"]
   - name: "♻️ 自动选择 [系统]"
     type: "url-test"
     empty-fallback: "REJECT"
-    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
     include-all: true
     exclude-type: "Direct|Pass|Compatible|Dns|Reject|RejectDrop"
     url: "https://cp.cloudflare.com/generate_204"
@@ -281,6 +281,24 @@ rules:
   - "GEOSITE,category-ads-all,🛑 广告拦截 [系统]"
   - "RULE-SET,next-rules-v2-ai-domain,🤖 AI服务 [自选]"
   - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-domain)),REJECT"
+  - "GEOSITE,openai,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,openai)),REJECT"
+  - "GEOSITE,anthropic,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,anthropic)),REJECT"
+  - "GEOSITE,google-gemini,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,google-gemini)),REJECT"
+  - "GEOSITE,cursor,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,cursor)),REJECT"
+  - "GEOSITE,github-copilot,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,github-copilot)),REJECT"
+  - "GEOSITE,perplexity,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,perplexity)),REJECT"
+  - "GEOSITE,poe,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,poe)),REJECT"
+  - "GEOSITE,windsurf,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,windsurf)),REJECT"
+  - "GEOSITE,elevenlabs,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,elevenlabs)),REJECT"
   - "GEOSITE,niconico,🌏 亚太流媒体 [自选]"
   - "AND,((NETWORK,UDP),(GEOSITE,niconico)),REJECT"
   - "GEOSITE,bilibili@!cn,🌏 亚太流媒体 [自选]"
@@ -410,9 +428,13 @@ rules:
   - "AND,((NETWORK,UDP),(GEOIP,telegram,no-resolve)),REJECT"
   - "GEOIP,netflix,🎬 全球流媒体 [自选],no-resolve"
   - "AND,((NETWORK,UDP),(GEOIP,netflix,no-resolve)),REJECT"
+  - "GEOIP,google,🔍 谷歌服务 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(GEOIP,google,no-resolve)),REJECT"
   - "GEOIP,CN,DIRECT"
-  - "RULE-SET,next-rules-v2-ai,🤖 AI服务 [自选]"
-  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai)),REJECT"
+  - "GEOSITE,category-ai-!cn,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,category-ai-!cn)),REJECT"
+  - "RULE-SET,next-rules-v2-ai-context,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-context)),REJECT"
   - "AND,((RULE-SET,next-rules-v2-media-linetv),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),🌏 亚太流媒体 [自选]"
   - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-linetv),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),REJECT"
   - "AND,((RULE-SET,next-rules-v2-media-friday),(NOT,((DOMAIN-SUFFIX,fetnet.net)))),🌏 亚太流媒体 [自选]"

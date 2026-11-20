@@ -1,8 +1,8 @@
-// Next-Rules 2.1 · Clash Verge Rev 订阅扩展脚本
+// Next-Rules 2.2 · Clash Verge Rev 订阅扩展脚本
 // 用于订阅的扩展脚本；DNS、TUN 和 IPv6 沿用原订阅及客户端设置。
 
 const POLICY = {
-  "version": "2.1",
+  "version": "2.2",
   "group": {
     "auto": "♻️ 自动选择 [系统]",
     "default": "🚀 默认代理 [自选]",
@@ -19,11 +19,11 @@ const POLICY = {
     "ads": "🛑 广告拦截 [系统]"
   },
   "providers": {
-    "next-rules-v2-ai": {
+    "next-rules-v2-ai-context": {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml",
       "interval": 86400,
       "proxy": "🚀 默认代理 [自选]"
     },
@@ -206,6 +206,51 @@ const POLICY = {
     ],
     [
       "RULE-SET,next-rules-v2-ai-domain",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,openai",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,anthropic",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,google-gemini",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,cursor",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,github-copilot",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,perplexity",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,poe",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,windsurf",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,elevenlabs",
       "🤖 AI服务 [自选]",
       true
     ],
@@ -547,11 +592,21 @@ const POLICY = {
       true
     ],
     [
+      "GEOIP,google,no-resolve",
+      "🔍 谷歌服务 [自选]",
+      true
+    ],
+    [
       "GEOIP,CN",
       "DIRECT"
     ],
     [
-      "RULE-SET,next-rules-v2-ai",
+      "GEOSITE,category-ai-!cn",
+      "🤖 AI服务 [自选]",
+      true
+    ],
+    [
+      "RULE-SET,next-rules-v2-ai-context",
       "🤖 AI服务 [自选]",
       true
     ],
@@ -622,7 +677,7 @@ const asRecord = (value) => value && typeof value === "object" && !Array.isArray
 const BLOCKED_TYPES = "Pass|Compatible|Dns|Reject|RejectDrop";
 const BLOCKED_NODE_TYPES = new Set(BLOCKED_TYPES.toLowerCase().split("|"));
 
-const METADATA_FILTER = "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)?|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official(?:[ _-]+(?:website|site|channel))?|website)(?=$|[\\s:：=|｜0-9-])";
+const METADATA_FILTER = "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])";
 const METADATA_RE = new RegExp(METADATA_FILTER.replace(/^\(\?i\)/, ""), "i");
 
 const LEGACY_GROUPS = new Set([
@@ -755,6 +810,42 @@ function isOwnedProvider(name, definition) {
   );
 }
 
+function retiredAiProvider(name, definition) {
+  return /^next-rules-v2-ai(?:-(?:[2-9]|[1-9][0-9]+))?$/.test(name) &&
+    definition && definition.type === "http" && definition.behavior === "classical" &&
+    definition.format === "yaml" && definition.interval === 86400 &&
+    Object.keys(definition).every(key => ["type", "behavior", "format", "interval", "url", "path", "proxy", "payload"].includes(key)) &&
+    definition.url === "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" &&
+    definition.path === "./providers/" + name + ".yaml" &&
+    ownedGroupBase(definition.proxy) === POLICY.group.default;
+}
+
+function dropUnusedRetiredProviders(config) {
+  const providers = asRecord(config["rule-providers"]);
+  const names = Object.keys(providers).filter(name => retiredAiProvider(name, providers[name]));
+  if (!names.length) return;
+  const used = new Set(), visited = new WeakSet();
+  const inspect = value => {
+    if (typeof value === "string") {
+      let decoded = value;
+      try { decoded = decodeURIComponent(value); } catch (_) { /* 保留原文。 */ }
+      for (const name of names) {
+        const matcher = new RegExp("RULE-SET\\s*,\\s*" + name + "(?=\\s*[,)]|\\s*$)|rule-set:\\s*" + name + "(?=[,\\s#]|$)", "i");
+        if ([value, decoded].some(text => matcher.test(text))) used.add(name);
+      }
+    } else if (value && typeof value === "object" && !visited.has(value)) {
+      visited.add(value);
+      for (const [key, child] of Object.entries(value)) { inspect(key); inspect(child); }
+    }
+  };
+  for (const [key, value] of Object.entries(config)) {
+    if (!["rules", "proxy-groups", "rule-providers"].includes(key)) inspect(value);
+  }
+  for (const [name, definition] of Object.entries(providers)) if (!names.includes(name)) inspect(definition);
+  // 原订阅仍有引用时保留；移除没有外部依赖的旧下载项。
+  config["rule-providers"] = Object.fromEntries(Object.entries(providers).filter(([name]) => !names.includes(name) || used.has(name)));
+}
+
 function ruleProviderRegistry(config, groupNames) {
   const providers = { ...(asRecord(config["rule-providers"])) };
   const occupiedNames = new Map(Object.keys(providers).map((name) => [name.toLowerCase(), name]));
@@ -883,6 +974,7 @@ function remoteFragment() {
 
 function main(config) {
   if (!config || typeof config !== "object" || Array.isArray(config)) return config;
+  dropUnusedRetiredProviders(config);
   const inlineNodes = Array.isArray(config.proxies)
     ? config.proxies.filter((node) => (
       node && typeof node.name === "string" &&

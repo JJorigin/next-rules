@@ -1,0 +1,130 @@
+{
+  "files": [
+    {
+      "path": "old/1.0/next-rules.yaml",
+      "tag": "v1.0",
+      "commit": "1dd7f0410200c6813910e461b57944e1e962d1a4",
+      "source": "rules/next-rules.yaml",
+      "sha256": "363caa02933cb3af42fddc76b05124e510f80e772cf833dfeb0a07af4e7c6849"
+    },
+    {
+      "path": "old/1.0/next-rules.js",
+      "tag": "v1.0",
+      "commit": "1dd7f0410200c6813910e461b57944e1e962d1a4",
+      "source": "rules/next-rules.js",
+      "sha256": "883e8be514e99fceaf926a94b6f8eddadc5ac489c1ffcf28ee0fb69b16a4775d"
+    },
+    {
+      "path": "old/1.0/ORIGINAL_README.md",
+      "tag": "v1.0",
+      "commit": "1dd7f0410200c6813910e461b57944e1e962d1a4",
+      "source": "README.md",
+      "sha256": "5ac32aa6432ee5982973fe158969aac14202b1794dc99d48980b44c0f807b3a9"
+    },
+    {
+      "path": "old/1.1/next-rules.yaml",
+      "tag": "v1.1",
+      "commit": "550f7ecf447a448f22a4550426a6ad15b2734b91",
+      "source": "rules/next-rules.yaml",
+      "sha256": "63bf3308cf5c360564d98dad364ea968902345809d862d0a1b6f49685f0240cc"
+    },
+    {
+      "path": "old/1.1/next-rules.js",
+      "tag": "v1.1",
+      "commit": "550f7ecf447a448f22a4550426a6ad15b2734b91",
+      "source": "rules/next-rules.js",
+      "sha256": "d3cd766f843f91279b77c82b6587d7c5916896e40cac8cc3442dad1b491d33a2"
+    },
+    {
+      "path": "old/1.1/ORIGINAL_README.md",
+      "tag": "v1.1",
+      "commit": "550f7ecf447a448f22a4550426a6ad15b2734b91",
+      "source": "README.md",
+      "sha256": "d7f84ab8155c7df58a21a6478596c4e66beae774c1ce2882994394c22db8f1d0"
+    },
+    {
+      "path": "old/1.2/next-rules.yaml",
+      "tag": "v1.2",
+      "commit": "f919acc7e45b45662de6242d4fe5437b1c91510a",
+      "source": "rules/next-rules.yaml",
+      "sha256": "e7b25f9e9d52b01e5f4af98a0da46f7588cfdf3f074b2e885b9871945c7524e4"
+    },
+    {
+      "path": "old/1.2/next-rules.js",
+      "tag": "v1.2",
+      "commit": "f919acc7e45b45662de6242d4fe5437b1c91510a",
+      "source": "rules/next-rules.js",
+      "sha256": "4a8cf35ed646abfebf93ee70f798dca1e492bbf559b91b38fefadd463a9c7ed2"
+    },
+    {
+      "path": "old/1.2/ORIGINAL_README.md",
+      "tag": "v1.2",
+      "commit": "f919acc7e45b45662de6242d4fe5437b1c91510a",
+      "source": "README.md",
+      "sha256": "d21752bff72c41c0fac814d26370063d9771a5ad8e9488a023ef7adf5c3e5594"
+    },
+    {
+      "path": "old/1.3/next-rules.yaml",
+      "tag": "v1.3",
+      "commit": "2af4ed9ef94ec5d19ca2c18d34db399f87e27074",
+      "source": "rules/next-rules.yaml",
+      "sha256": "57fd82e1d603c8e061bb08f29b38a90f29d568b6c90e20627729daeb9eb8652c"
+    },
+    {
+      "path": "old/1.3/next-rules.js",
+      "tag": "v1.3",
+      "commit": "2af4ed9ef94ec5d19ca2c18d34db399f87e27074",
+      "source": "rules/next-rules.js",
+      "sha256": "2b1ceb4826c0562d478b413dca2d3dff9a99e5c301ea053c977d0105038c580b"
+    },
+    {
+      "path": "old/1.3/ORIGINAL_README.md",
+      "tag": "v1.3",
+      "commit": "2af4ed9ef94ec5d19ca2c18d34db399f87e27074",
+      "source": "README.md",
+      "sha256": "961d8032cff67e482fda51b2eac60bf2e8a7d97a17e23272cf6167e22517b2fe"
+    },
+    {
+      "path": "old/2.0/next-rules.yaml",
+      "tag": "v2.0",
+      "commit": "add2a6458b175a9d238dff929a1599597e544ec2",
+      "source": "v2/next-rules.yaml",
+      "sha256": "a8fc2d653370181c7ff821ab0bd011002b4dbc77705560e2f033908bc50e2ee9"
+    },
+    {
+      "path": "old/2.0/next-rules.js",
+      "tag": "v2.0",
+      "commit": "add2a6458b175a9d238dff929a1599597e544ec2",
+      "source": "v2/next-rules.js",
+      "sha256": "517245cb8c20d23e664def60213e28ebafc70dfa2d579b2f7b40f71a35115825"
+    },
+    {
+      "path": "old/2.0/ORIGINAL_README.md",
+      "tag": "v2.0",
+      "commit": "add2a6458b175a9d238dff929a1599597e544ec2",
+      "source": "README.md",
+      "sha256": "604338b3e814ebfa16eeb2124ae4dcd34d6fc9db3aea288b099fcd50a88bf514"
+    },
+    {
+      "path": "old/2.1/next-rules.yaml",
+      "tag": "v2.1",
+      "commit": "79d18a771386dde917a1c922d91051e6fa6712dd",
+      "source": "v2/next-rules.yaml",
+      "sha256": "80d7a6fefb9c6894c4e143ce8014865a4cf62d644d57a66b6ddea9d4718be1e2"
+    },
+    {
+      "path": "old/2.1/next-rules.js",
+      "tag": "v2.1",
+      "commit": "79d18a771386dde917a1c922d91051e6fa6712dd",
+      "source": "v2/next-rules.js",
+      "sha256": "75137976ecbef7a0396b8d2b8093ab0d3aa1ef386df4dae43f8e291005de3af4"
+    },
+    {
+      "path": "old/2.1/ORIGINAL_README.md",
+      "tag": "v2.1",
+      "commit": "79d18a771386dde917a1c922d91051e6fa6712dd",
+      "source": "README.md",
+      "sha256": "b701fbc53ad651515c51dfc95c8a4539517ef539e73ab2e35a6cbe361730820e"
+    }
+  ]
+}

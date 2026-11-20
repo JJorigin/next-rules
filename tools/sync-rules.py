@@ -171,12 +171,13 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
         "rules/ai/upstream-global.yaml": raw["ai"],
         "rules/ai/domains-exact.yaml": render_yaml(exact, "AI 服务域名", AI_URL),
         "rules/ai/domains-regex.yaml": render_yaml(regex, "AI 服务域名匹配", AI_URL),
+        "rules/ai/context.yaml": render_yaml(deferred, "AI 服务补充条件", AI_URL),
         "test/fixtures/ai-ip.txt": raw["ai-ip"],
         "test/fixtures/openai-voice.json": raw["voice"],
         "test/fixtures/providers/crypto.yaml": raw["crypto"],
     }
     cache = {
-        "ai": {"url": AI_URL, "behavior": "classical", "format": "yaml", "payload": ai_rows},
+        "ai-context": {"url": OWN_RAW + "rules/ai/context.yaml", "behavior": "classical", "format": "yaml", "payload": deferred},
         "ai-domain": {"url": OWN_RAW + "rules/ai/domains-exact.yaml", "behavior": "classical", "format": "yaml", "payload": exact},
         "ai-regex": {"url": OWN_RAW + "rules/ai/domains-regex.yaml", "behavior": "classical", "format": "yaml", "payload": regex},
         "ai-ip": {"url": AI_IP_URL, "behavior": "classical", "format": "text", "payload": ai_ip},
@@ -200,7 +201,7 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
             outputs[generated] = render_yaml(domains, item["name"] + " 域名", item["url"])
             cache[key] = {"url": item["url"], "behavior": "classical", "format": item.get("format", "yaml"), "payload": rows}
             cache[key + "-domain"] = {"url": OWN_RAW + generated, "behavior": "classical", "format": "yaml", "payload": domains}
-    outputs["v2/data/source-cache.json"] = json_bytes({"schema": 1, "counts": counts, "providers": cache})
+    outputs["v2/data/source-cache.json"] = json_bytes({"schema": 2, "upstream_ai": {"url": AI_URL, "payload": ai_rows}, "counts": counts, "providers": cache})
     outputs["rules/sources.json"] = json_bytes({"schema": 1, "sources": source_info, "counts": counts})
     return outputs
 

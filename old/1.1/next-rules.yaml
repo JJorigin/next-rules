@@ -1,0 +1,160 @@
+# Next-Rules 1.1
+# 供 3X-UI「订阅设置 → Clash / Mihomo → 全局路由规则」使用。
+# 本文件不创建国家/地区策略组，也不修改 DNS、TUN、IPv6、Sniffer、Hosts、端口或运行模式。
+
+rule-providers:
+  next-rules-ads:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/ads.yaml
+    path: ./providers/next-rules-ads.yaml
+    interval: 86400
+  next-rules-ai:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/VPSDance/ai-proxy-rules@main/rules/clash/global.yaml
+    path: ./providers/next-rules-ai.yaml
+    interval: 86400
+  next-rules-youtube:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/youtube.yaml
+    path: ./providers/next-rules-youtube.yaml
+    interval: 86400
+  next-rules-crypto:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml
+    path: ./providers/next-rules-crypto.yaml
+    interval: 86400
+  next-rules-disney:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/disney.yaml
+    path: ./providers/next-rules-disney.yaml
+    interval: 86400
+  next-rules-apple:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/apple.yaml
+    path: ./providers/next-rules-apple.yaml
+    interval: 86400
+  next-rules-google:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/google.yaml
+    path: ./providers/next-rules-google.yaml
+    interval: 86400
+  next-rules-software:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/software.yaml
+    path: ./providers/next-rules-software.yaml
+    interval: 86400
+
+proxy-groups:
+  # ---------- 用户默认组 ----------
+  # 未命中特定规则的请求默认使用代理；自动选择和当前订阅中的有效节点可手动选择。
+  - name: "🚀 默认代理 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]"]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+
+  # ---------- 用户场景组 ----------
+  # 场景组直接展开当前订阅中的有效代理节点。
+  # include-all-proxies 不包含其他策略组；DIRECT 是 Mihomo 内置直连出口。
+  - name: "🤖 AI服务 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "🔍 谷歌服务(含油管) [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "🎬 流媒体 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "💬 电报专用 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "Ⓜ️ 微软服务 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "🍎 苹果服务 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "💰 币圈专用 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+  - name: "🖥️ 软件分流 [自选]"
+    type: select
+    proxies: ["♻️ 自动选择 [系统]", DIRECT]
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+
+  # ---------- 系统组 ----------
+  - name: "♻️ 自动选择 [系统]"
+    type: url-test
+    include-all-proxies: true
+    exclude-type: Direct
+    exclude-filter: "(?i)官网|官方|流量|剩余|到期|过期|套餐|订阅|重置|traffic|remaining|expire|expiry|expires|quota|bandwidth|subscription|reset|official|website|^DIRECT$"
+    url: https://cp.cloudflare.com/generate_204
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  # ---------- 广告拦截 ----------
+  - name: "🛑 广告拦截 [系统]"
+    type: select
+    proxies: [REJECT, DIRECT]
+
+rules:
+  - "RULE-SET,next-rules-software,🖥️ 软件分流 [自选]"
+  - "GEOSITE,private,DIRECT"
+  - "GEOIP,private,DIRECT,no-resolve"
+  - "RULE-SET,next-rules-ads,🛑 广告拦截 [系统]"
+  # AI 规则必须在直连规则之前，避免专用服务被直连规则提前截断。
+  - "RULE-SET,next-rules-ai,🤖 AI服务 [自选]"
+  - "RULE-SET,next-rules-youtube,🔍 谷歌服务(含油管) [自选]"
+  - "RULE-SET,next-rules-google,🔍 谷歌服务(含油管) [自选]"
+  - "RULE-SET,next-rules-crypto,💰 币圈专用 [自选]"
+  - "RULE-SET,next-rules-disney,🎬 流媒体 [自选]"
+  - "GEOSITE,netflix,🎬 流媒体 [自选]"
+  - "RULE-SET,next-rules-apple,🍎 苹果服务 [自选]"
+  - "GEOSITE,telegram,💬 电报专用 [自选]"
+  - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
+  # 命中直连规则且未命中特定规则的普通流量直连。
+  - "GEOSITE,CN,DIRECT"
+  - "GEOIP,CN,DIRECT,no-resolve"
+  - "MATCH,🚀 默认代理 [自选]"
+

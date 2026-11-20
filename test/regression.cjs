@@ -58,7 +58,7 @@ async function localDNS() {
     let answer = Buffer.alloc(0);
     if (type === 1) {
       header.writeUInt16BE(1, 6);
-      const address = domain.includes('domestic-probe') || domain.includes('sentry-domestic') ? ips.cn : ips.foreign;
+      const address = domain.includes('domestic-probe') || domain.includes('sentry-domestic') || domain.includes('auditcn') || domain === 'gemini.google.com' ? ips.cn : ips.foreign;
       answer = Buffer.from([0xc0, 0x0c, 0, 1, 0, 1, 0, 0, 0, 30, 0, 4, ...address.split('.').map(Number)]);
     }
     socket.send(Buffer.concat([header, question, answer]), remote.port, remote.address);
@@ -92,6 +92,8 @@ async function run() {
   nodes.push({name: 'TCP-only', type: 'http', server: host, port: 1});
   nodes.push({name: 'Manual direct alias', type: 'direct'});
   nodes.push({name: '剩余流量：0', type: 'socks5', server: host, port: 1});
+  nodes.push({...nodes[0], name:'Official HK 01'});
+  nodes.push({...nodes[0], name:'官方 HK 01'});
   const mixedPort = await harness.reserveMixed();
   const dnsPort = await localDNS();
   const health = http.createServer((_req, res) => {res.writeHead(204);res.end();});
@@ -114,21 +116,24 @@ async function run() {
     }
   }
   collect(voice);
-  const ipCases = {voiceFirst: voiceAddresses[0], voiceLast: voiceAddresses.at(-1), voiceAdded: '20.194.216.119', telegram: '149.154.160.1'};
+  const ipCases = {voiceFirst: voiceAddresses[0], voiceLast: voiceAddresses.at(-1), voiceAdded: '20.194.216.119', telegram: '149.154.160.1', google: '74.125.250.129'};
+  const ipOwner = key => key === 'telegram' ? 'telegram' : key === 'google' ? 'google' : 'ai';
   for (const [key, value] of Object.entries(ipCases)) {
     const port = await reserve(() => net.createServer(), 'listen');
     tcpInlets[key] = port;
     tunnels.push({network: ['tcp'], address: host + ':' + port, target: address(value, 80)});
   }
-  const udpTargets = {'www.youtube.com': ['youtube', 443], 'tv.apple.com': ['media', 443], 'www.max.com': ['media', 443], 'www.hulu.jp': ['apac', 443], 'chatgpt.com': ['ai', 443], 'audit-default.iana.org': ['default', 443], ...Object.fromEntries(Object.entries(ipCases).map(([key, value]) => [value, [key === 'telegram' ? 'telegram' : 'ai', key === 'voiceAdded' ? 3478 : 443]]))};
+  const udpTargets = {'www.youtube.com': ['youtube', 443], 'tv.apple.com': ['media', 443], 'www.max.com': ['media', 443], 'www.hulu.jp': ['apac', 443], 'chatgpt.com': ['ai', 443], 'audit-default.iana.org': ['default', 443], ...Object.fromEntries(Object.entries(ipCases).map(([key, value]) => [value, [ipOwner(key), key === 'voiceAdded' ? 3478 : 443]]))};
   for (const [target, [, targetPort]] of Object.entries(udpTargets)) {
     const port = await reserve(udpServer, 'bind');
     udpInlets[target] = port;
     tunnels.push({network: ['udp'], address: host + ':' + port, target: address(target, targetPort)});
   }
   const processExecutables = {};
-  for (const name of ['Cursor', 'Steam']) {
-    const file = path.join(home, name + '.exe');
+  for (const name of ['Cursor', 'cursor', 'Steam', 'steam', 'Discord', 'discord', 'WhatsApp', 'whatsapp', 'EpicGamesLauncher', 'epicgameslauncher']) {
+    const directory = path.join(home, 'process-' + Object.keys(processExecutables).length);
+    fs.mkdirSync(directory);
+    const file = path.join(directory, name + '.exe');
     fs.copyFileSync(process.execPath, file);
     processExecutables[name] = file;
   }
@@ -176,10 +181,10 @@ async function run() {
     if (controller.api) return (await controller.api('/providers/rules')).json().providers;
     return Object.fromEntries((await controller.providers()).map(item => [item.name ?? item.Name, {ruleCount: item.count ?? item.Count}]));
   }
-  async function loadedFileRules() {
+  async function loadedFileRules(skip = []) {
     for (let attempt = 0; attempt < 100; attempt++) {
       const loaded = await ruleStates();
-      if (Object.entries(sourceCache.providers).filter(([, item]) => item.payload.length).every(([id]) => loaded['next-rules-v2-' + id]?.ruleCount > 0)) return loaded;
+      if (Object.entries(sourceCache.providers).filter(([id, item]) => item.payload.length && !skip.includes(id)).every(([id]) => loaded['next-rules-v2-' + id]?.ruleCount > 0)) return loaded;
       await wait(50);
     }
     throw Error('file rule providers did not finish loading');
@@ -191,6 +196,9 @@ async function run() {
       if (entry.payload.length) check(loaded['next-rules-v2-' + id].ruleCount, entry.payload.length, source + ': all source rows parsed ' + id);
     }
     const state = await controller.all();
+    for(const [key,name]of Object.entries(group))if(key!=='ads'){
+      for(const candidate of ['Official HK 01','官方 HK 01'])check(state[name].all.includes(candidate),true,source+': legitimate official-named node '+name);
+    }
     for (const key of Object.keys(group).filter(key => !['ads', 'auto'].includes(key))) {
       const candidates = state[group[key]].all;
       check(candidates.includes(nodeName('media')), true, source + ': ordinary names visible in ' + key);
@@ -226,10 +234,10 @@ async function run() {
         known[target + '/' + key] = actual;
       }
     }
-    for (const key of Object.keys(ipCases)) check(await requestAt(tcpInlets[key], ips.foreign), key === 'telegram' ? 'telegram' : 'ai', source + ': owned IP ' + key);
+    for (const key of Object.keys(ipCases)) check(await requestAt(tcpInlets[key], ips.foreign), ipOwner(key), source + ': owned IP ' + key);
     const processResults = {};
     for (const [name, executable] of Object.entries(processExecutables)) {
-      for (const [target, expected] of [['www.baidu.com', 'direct'], ['domestic-probe.audit.iana.org', 'direct'], ['sentry-domestic.audit.iana.org', 'direct'], [ips.cn, 'direct'], ['audit-unknown.iana.org', name === 'Cursor' ? 'ai' : 'software'], ['www.youtube.com', 'youtube']]) {
+      for (const [target, expected] of [['www.baidu.com', 'direct'], ['domestic-probe.audit.iana.org', 'direct'], ['sentry-domestic.audit.iana.org', 'direct'], [ips.cn, 'direct'], ['audit-unknown.iana.org', name.toLowerCase() === 'cursor' ? 'ai' : 'software'], ['www.youtube.com', 'youtube']]) {
         const result = await requestThrough(mixedPort, target, executable);
         check(result, expected, source + ': actual process ' + name + '/' + target);
         processResults[name + '/' + target] = result;
@@ -243,6 +251,18 @@ async function run() {
     check(empty[group.auto].all, ['REJECT'], source + ': empty auto');
     check(empty[group.auto].now, 'REJECT', source + ': empty auto exit');
     check(empty[group.default].all, [group.auto], source + ': empty default');
+    // Native domain classification keeps recognized AI on its scene when the precise view is unavailable.
+    const partial = profile(source);
+    const missingView = partial['rule-providers']['next-rules-v2-ai-domain'];
+    missingView.type = 'http';missingView.url = 'http://' + host + ':' + healthPort + '/unavailable';
+    missingView.proxy = group.default;missingView.path = path.join(home, 'partial-' + source + '-ai-domain.yaml');
+    await controller.setup(partial);
+    const partialState = await loadedFileRules(['ai-domain']);
+    check(partialState['next-rules-v2-ai-domain'].ruleCount, 0, source + ': precise AI view is missing');
+    await selectAll();
+    for (const target of ['auditcn.chatgpt.com', 'gemini.google.com', 'www.baidu.com', 'www.deepseek.com', 'www.kimi.com', 'auditcn.kimi.ai', 'auditcn.moonshot.ai']) {
+      check(await requestThrough(mixedPort, target), ['www.baidu.com','www.deepseek.com','www.kimi.com','auditcn.kimi.ai','auditcn.moonshot.ai'].includes(target) ? 'direct' : 'ai', source + ': native fallback with missing precise view ' + target);
+    }
     // Pure remote references have no built-in data: record empty providers on a failed cold start.
     const cold = profile(source);
     for (const [name, provider] of Object.entries(cold['rule-providers'])) {
@@ -261,6 +281,8 @@ async function run() {
     check(await requestAt(tcpInlets.telegram, ips.foreign), 'telegram', source + ': cold start Telegram GeoIP backup');
     const degraded = {};
     for (const target of ['chatgpt.com', 'gemini.google.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
+    check(degraded['chatgpt.com'], 'ai', source + ': native ChatGPT fallback after failed downloads');
+    check(degraded['gemini.google.com'], 'ai', source + ': native Gemini fallback after failed downloads');
     observations.push({source, tcp, known, processResults, failedColdStart: {providersEmpty: Object.keys(sourceCache.providers), classificationReady: false, observedRoutes: degraded}});
   }
   const supplied = profile('js');

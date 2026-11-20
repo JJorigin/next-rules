@@ -2,7 +2,7 @@
 
 Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路。节点由你自己的订阅提供。
 
-**当前版本 2.1**
+**当前主版本 2.2**
 
 ## 选择接入方式
 
@@ -21,13 +21,13 @@ Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路�
    **GitHub Raw**
 
    ```text
-   https://raw.githubusercontent.com/JJorigin/next-rules/main/v2/next-rules.yaml
+   https://raw.githubusercontent.com/JJorigin/next-rules/main/next-rules.yaml
    ```
 
    **jsDelivr 加速**
 
    ```text
-   https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/v2/next-rules.yaml
+   https://cdn.jsdelivr.net/gh/JJorigin/next-rules@main/next-rules.yaml
    ```
 
 3. 在 Clash Verge Rev 或 FlClash Windows 中导入面板生成的 **Mihomo 完整订阅地址**。已导入的订阅直接刷新即可。最后切换到**规则模式**。
@@ -35,7 +35,7 @@ Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路�
 ### Clash Verge Rev
 
 1. 导入你的节点订阅。右键该订阅，选择 **扩展脚本**。
-2. 复制完整脚本，粘贴到编辑器并保存。 [打开 / 复制脚本](https://raw.githubusercontent.com/JJorigin/next-rules/main/v2/next-rules.js)
+2. 复制完整脚本，粘贴到编辑器并保存。 [打开 / 复制脚本](https://raw.githubusercontent.com/JJorigin/next-rules/main/next-rules.js)
 3. 刷新订阅，切换到**规则模式**。
 
 同一个订阅选一种接入方式即可。
@@ -44,9 +44,9 @@ Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路�
 
 访问服务时，客户端会按规则找到对应的策略组，并使用你为该组选定的线路。比如，在 **AI服务**组选择节点 A，在 **谷歌服务**组选择节点 B，匹配到的请求就会分别走 A 和 B。
 
-**YouTube** 可以单独选线路，默认跟随 Google 组。**全球流媒体**和**亚太流媒体**也可以分别选线路，后者包含香港、台湾及其他已收录的亚太平台。TikTok 沿用常规规则。[查看流媒体平台清单](v2/MEDIA.md)
+**YouTube** 可以单独选线路，默认跟随 Google 组。**全球流媒体**和**亚太流媒体**也可以分别选线路，后者包含香港、台湾及其他已收录的亚太平台。TikTok 沿用常规规则。[查看流媒体平台清单](MEDIA.md)
 
-规则会优先识别局域网和常见国内站点，匹配到的流量直接连接。客户端能识别软件进程时，部分未归类的连接会交给**软件分流**。仍未匹配的请求交给**默认代理**。
+已识别的专用服务交给对应场景组，普通国内和局域网流量直连。客户端能识别软件进程时，部分未归类的连接会交给**软件分流**。仍未匹配的请求交给**默认代理**。
 
 ### 节点选择方式
 
@@ -76,8 +76,9 @@ DNS、TUN（虚拟网卡模式）和 IPv6 由原订阅和客户端管理。Windo
 
 - 使用 **3X-UI** 时，保留上面的规则地址，在客户端更新订阅。
 - 使用 **Clash Verge Rev 本地脚本**时，从上面的链接重新复制脚本，替换并保存后刷新订阅。
-- 请保持客户端及其服务分类数据库更新。客户端运行时每 **24 小时**检查一次外部规则集。首次使用须确认规则集加载成功；未加载的规则无法参与分流，出现下载失败提示时请先重试更新。
-- 需要固定使用 **2.1** 时，可下载发布文件。 [2.1 发布页](https://github.com/JJorigin/next-rules/releases/tag/v2.1)
+- 请先更新客户端及其服务分类数据库，再导入规则。客户端运行时每 **24 小时**检查一次外部规则集。首次使用须确认规则集加载成功；出现下载错误时，先完成更新再使用需要指定出口的服务。
+- 需要固定使用 **2.2** 时，可下载发布文件。 [2.2 发布页](https://github.com/JJorigin/next-rules/releases/tag/v2.2)
+- 旧版文件已归档到 [old](old/)，不再维护。原有规则地址仍可用于获取当前主版本。
 
 ## 兼容性与边界
 

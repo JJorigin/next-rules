@@ -31,15 +31,17 @@ const targets = {
   'late-voice.audit.iana.org': {ip: '20.194.216.119', wanted: 'ai'},
   'late-telegram.audit.iana.org': {ip: '149.154.160.1', wanted: 'telegram'},
   'late-netflix.audit.iana.org': {ip: '45.57.0.1', wanted: 'media'},
+  'late-google.audit.iana.org': {ip: '74.125.250.129', wanted: 'google'},
   'domestic-ip.audit.iana.org': {ip: '223.5.5.5', wanted: 'direct'},
   'foreign-ip.audit.iana.org': {ip: '9.9.9.9', wanted: 'default'},
   'private-ip.audit.iana.org': {ip: '192.168.1.1', wanted: 'direct'}
 };
 if (ipv6) {
   const netflix = JSON.parse(fs.readFileSync(path.join(resources, 'netflix-fixture.json'), 'utf8'));
-  targets['late-voice.audit.iana.org'].ip = cache.ai.payload.find(row => row.startsWith('IP-CIDR6,')).split(',')[1].split('/')[0];
+  targets['late-voice.audit.iana.org'].ip = cache['ai-context'].payload.find(row => row.startsWith('IP-CIDR6,')).split(',')[1].split('/')[0];
   targets['late-telegram.audit.iana.org'].ip = '2001:b28:f23d::1';
   targets['late-netflix.audit.iana.org'].ip = netflix.ipv6;
+  targets['late-google.audit.iana.org'].ip = '2001:4860:4860::8888';
   targets['domestic-ip.audit.iana.org'].ip = '2400:3200::1';
   targets['foreign-ip.audit.iana.org'].ip = '2606:4700:4700::1111';
   targets['private-ip.audit.iana.org'].ip = 'fd00::1';
@@ -54,7 +56,7 @@ function ipv6Bytes(address) {
 async function run() {
   for (const file of ['geoip.dat', 'geosite.dat', metadb ? 'geoip.metadb' : 'Country.mmdb', 'ASN.mmdb']) fs.copyFileSync(path.join(resources, file), path.join(home, file));
   const controller = variant === 'flclash' ? await h.flController() : await h.vergeController();
-  const labels = ['default', 'ai', 'media', 'telegram', 'direct'];
+  const labels = ['default', 'ai', 'media', 'telegram', 'google', 'direct'];
   const nodes = [];
   for (const label of labels) {
     const mock = await fakeOutbound(label);
@@ -102,14 +104,14 @@ async function run() {
       delete provider.url;delete provider.interval;delete provider.proxy;delete provider.payload;
     }
     await controller.setup(config);
-    if (controller.providers) {
+    if (controller.providers || controller.api) {
       let loaded;
       for (let attempt = 0; attempt < 100; attempt++) {
-        loaded = await controller.providers();
-        if (loaded.every(item => (item.count ?? item.Count) > 0)) break;
+        loaded = controller.api ? Object.values((await controller.api('/providers/rules')).json().providers) : await controller.providers();
+        if (loaded.every(item => (item.ruleCount ?? item.count ?? item.Count) > 0)) break;
         await h.wait(50);
       }
-      assert.ok(loaded.every(item => (item.count ?? item.Count) > 0), 'file rule providers must finish loading');
+      assert.ok(loaded.every(item => (item.ruleCount ?? item.count ?? item.Count) > 0), 'file rule providers must finish loading');
     }
     for (const label of labels.filter(label => label !== 'direct')) await controller.select(group[label], 'Probe ' + label);
     const routes = {};
@@ -125,7 +127,7 @@ async function run() {
     results.push({geodata, backend: geodata ? 'GeoIP.dat' : metadb ? 'MetaDB' : 'MMDB', routes});
   }
 }
-run().catch(error => {process.exitCode = 1;console.error(error.stack);console.error(h.logs().split(/\r?\n/).slice(-8).join('\n'));}).finally(async () => {
+run().catch(error => {process.exitCode = 1;fs.writeFileSync(path.join(home,'failure.log'),h.logs());console.error(error.stack);console.error(h.logs().split(/\r?\n/).slice(-16).join('\n'));}).finally(async () => {
   await h.cleanup();
   const report = {variant, ipv6, source: process.argv.includes('--released') ? 'v2.1' : 'working', checks, failed: Boolean(process.exitCode), results};
   fs.writeFileSync(path.join(root, '.cache/ip-resolution-' + variant + (metadb ? '-metadb' : '') + (ipv6 ? '-ipv6' : '') + (process.argv.includes('--released') ? '-released' : '') + '.json'), JSON.stringify(report, null, 2) + '\n');

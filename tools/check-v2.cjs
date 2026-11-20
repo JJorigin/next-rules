@@ -58,20 +58,20 @@ const retained = {
 };
 const conflict = normalize(ctx.main({
   proxies: [...proxies, { ...proxies[0], name: group.ai }],
-  "rule-providers": { legacy: retained, "next-rules-v2-ai": { type: "inline", behavior: "domain", payload: ["fixture.invalid"] } },
+  "rule-providers": { legacy: retained, "next-rules-v2-ai-context": { type: "inline", behavior: "domain", payload: ["fixture.invalid"] } },
   "sub-rules": { legacy: ["RULE-SET,legacy,DIRECT"] }
 }));
 assert.deepEqual(conflict["rule-providers"].legacy, retained);
 assert.equal(conflict["rule-providers"]["next-rules-v2-telegram-ip-2"].path, "./providers/next-rules-v2-telegram-ip-2.mrs");
-assert.ok(conflict.rules.includes("RULE-SET,next-rules-v2-ai-2," + group.ai + " · Next-Rules"));
-assert.ok(conflict.rules.includes("AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-2)),REJECT"));
+assert.ok(conflict.rules.includes("RULE-SET,next-rules-v2-ai-context-2," + group.ai + " · Next-Rules"));
+assert.ok(conflict.rules.includes("AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-context-2)),REJECT"));
 assert.ok(conflict.rules.includes("AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-telegram-ip-2,no-resolve)),REJECT"));
 assert.deepEqual(conflict["sub-rules"], { legacy: ["RULE-SET,legacy,DIRECT"] });
 
 const rules = remote.rules;
 const direct = rules.indexOf("GEOSITE,CN,DIRECT");
 const resolvedIp = rules.indexOf("GEOIP,CN,DIRECT,no-resolve");
-const aiIndex = rules.indexOf("RULE-SET,next-rules-v2-ai," + group.ai);
+const aiIndex = rules.indexOf("RULE-SET,next-rules-v2-ai-context," + group.ai);
 const domesticIp = rules.indexOf("GEOIP,CN,DIRECT");
 const domainIndex = rules.indexOf("RULE-SET,next-rules-v2-ai-domain," + group.ai);
 assert.equal(resolvedIp, -1, "unclassified domestic domains must resolve before process fallback");
@@ -153,16 +153,26 @@ assert.ok(supplementaryConflict.rules.includes(
 assert.deepEqual(rules.slice(-3), ["NETWORK,UDP," + group.default, "NETWORK,UDP,REJECT", "MATCH," + group.default]);
 
 const sourceCache = require("../v2/data/source-cache.json");
-const aiProvider = remote["rule-providers"]["next-rules-v2-ai"];
-const ai = sourceCache.providers.ai.payload;
+const aiProvider = remote["rule-providers"]["next-rules-v2-ai-context"];
+const ai = sourceCache.upstream_ai.payload;
 assert.equal(aiProvider.type, "http");
-assert.equal(aiProvider.url, "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml");
+assert.equal(aiProvider.url, "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml");
+assert.equal(sourceCache.upstream_ai.url, "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml");
 assert.ok(!Object.hasOwn(aiProvider, "payload"), "the AI list is fetched remotely instead of embedded in the template");
 for (const host of ["openai.com", "chatgpt.com", "claude.ai", "gemini.google.com", "cursor.com", "copilot.microsoft.com"]) {
   assert.ok(ai.includes("DOMAIN-SUFFIX," + host));
 }
 assert.deepEqual(sourceCache.providers["ai-domain"].payload, ai.filter((row) => /^(DOMAIN|DOMAIN-SUFFIX),/.test(row)));
 assert.deepEqual(sourceCache.providers["ai-regex"].payload, ai.filter((row) => row.startsWith("DOMAIN-REGEX,")));
+assert.deepEqual(sourceCache.providers["ai-context"].payload, ai.filter(row => !/^(DOMAIN|DOMAIN-SUFFIX|DOMAIN-REGEX),/.test(row)), "all remaining source rules are represented exactly once");
+assert.ok(!remote["rule-providers"]["next-rules-v2-ai"], "the independently updated complete provider is retired");
+assert.ok(rules.indexOf("GEOSITE,category-ai-!cn," + group.ai) > domesticIp);
+for(const tag of ['openai','anthropic','google-gemini','cursor','github-copilot','perplexity','poe','windsurf','elevenlabs']){
+  assert.ok(rules.indexOf('GEOSITE,'+tag+','+group.ai) > domainIndex && rules.indexOf('GEOSITE,'+tag+','+group.ai) < direct);
+}
+const googleIpIndex = rules.indexOf("GEOIP,google," + group.google + ",no-resolve");
+assert.ok(googleIpIndex > rules.indexOf("RULE-SET,next-rules-v2-ai-ip," + group.ai + ",no-resolve") && googleIpIndex < domesticIp);
+assert.ok(rules.includes("AND,((NETWORK,UDP),(GEOIP,google,no-resolve)),REJECT"));
 assert.ok(!remote["rule-providers"]["next-rules-v2-ai-voice"], "no frozen voice-only provider");
 assert.ok(!remote["rule-providers"]["next-rules-v2-ai-process"], "process rules come from the complete maintained source");
 const aiIp = remote["rule-providers"]["next-rules-v2-ai-ip"];
@@ -181,7 +191,7 @@ for (const condition of ["RULE-SET,next-rules-v2-ai-ip," + group.ai + ",no-resol
 }
 // Updating a profile from the published seeded form must remove its old HTTP payload.
 const outdated = normalize(local);
-outdated["rule-providers"]["next-rules-v2-ai"].payload = ["DOMAIN,old.example"];
+outdated["rule-providers"]["next-rules-v2-ai-context"].payload = ["DOMAIN,old.example"];
 assert.deepEqual(normalize(ctx.main(outdated)), local);
 const downloadConflict = normalize(ctx.main({
   proxies: [...proxies, {...proxies[0], name: group.default}]
@@ -198,6 +208,36 @@ const preservedDownload = normalize(ctx.main({
 }));
 assert.equal(groups(preservedDownload)[group.default].proxies[0], proxies[0].name, "original download dependencies are retained");
 assert.equal(preservedDownload["rule-providers"].original.proxy, group.default);
-assert.equal(preservedDownload["rule-providers"]["next-rules-v2-ai"].proxy, allocatedDefault);
+assert.equal(preservedDownload["rule-providers"]["next-rules-v2-ai-context"].proxy, allocatedDefault);
 
-console.log("Next-Rules 2.1 policy checks passed.");
+const previous = normalize(local);
+delete previous['rule-providers']['next-rules-v2-ai-context'];
+previous['rule-providers']['next-rules-v2-ai'] = {
+  type:'http',behavior:'classical',format:'yaml',interval:86400,
+  url:'https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml',
+  path:'./providers/next-rules-v2-ai.yaml',proxy:group.default
+};
+const upgraded = normalize(ctx.main(normalize(previous)));
+assert.ok(!upgraded['rule-providers']['next-rules-v2-ai'], 'unused old source provider is removed');
+assert.equal(upgraded['proxy-groups'].filter(item=>item.name.startsWith(group.default)).length,1,'upgrade does not accumulate default selectors');
+assert.ok(upgraded['rule-providers']['next-rules-v2-ai-context']);
+for(const dependencies of [
+  {dns:{'nameserver-policy':{'rule-set:next-rules-v2-ai':['https://example.test/dns-query']}}},
+  {'sub-rules':{custom:['AND,((RULE-SET,next-rules-v2-ai)),DIRECT']}},
+  {'sub-rules':{custom:['RULE-SET, next-rules-v2-ai, DIRECT']}}
+]){
+  const preserved=normalize(ctx.main({...normalize(previous),...dependencies}));
+  assert.deepEqual(preserved['rule-providers']['next-rules-v2-ai'],previous['rule-providers']['next-rules-v2-ai'],'external dependencies keep the old provider');
+  for(const [key,value]of Object.entries(dependencies))assert.deepEqual(preserved[key],value);
+  assert.deepEqual(normalize(ctx.main(normalize(preserved))),preserved,'upgrade with dependencies remains idempotent');
+}
+const customized = normalize(previous);
+customized['rule-providers']['next-rules-v2-ai'].header = {'User-Agent':['custom-client']};
+assert.deepEqual(normalize(ctx.main(customized))['rule-providers']['next-rules-v2-ai'],customized['rule-providers']['next-rules-v2-ai'],'user-customized providers are not retired');
+const archived=JSON.parse(fs.readFileSync(path.join(__dirname,'../old/manifest.json'),'utf8'));
+for(const entry of archived.files){
+  const data=fs.readFileSync(path.join(__dirname,'..',entry.path));
+  assert.equal(require('node:crypto').createHash('sha256').update(data).digest('hex'),entry.sha256,entry.path);
+}
+
+console.log("Next-Rules 2.2 policy checks passed.");

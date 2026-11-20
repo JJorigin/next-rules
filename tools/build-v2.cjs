@@ -63,7 +63,11 @@ const mediaGuide = [
   ""
 ].join("\n");
 
-for (const [file, expected] of [["v2/next-rules.yaml", yaml], ["v2/next-rules.js", script], ["v2/MEDIA.md", mediaGuide]]) {
+for (const [file, expected] of [
+  ["next-rules.yaml", yaml], ["next-rules.js", script], ["MEDIA.md", mediaGuide],
+  ["v2/next-rules.yaml", yaml], ["v2/next-rules.js", script], ["v2/MEDIA.md", mediaGuide],
+  ["rules/next-rules.yaml", yaml], ["rules/next-rules.js", script]
+]) {
   const destination = path.join(root, file);
   if (process.argv.includes("--check")) {
     assert.equal(fs.readFileSync(destination, "utf8").replace(/\r\n/g, "\n"), expected, file + " is out of sync");

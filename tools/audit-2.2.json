@@ -1,0 +1,237 @@
+{
+  "version": "2.2",
+  "date": "2026-11-20",
+  "baseline": "f01c619306838556ff669a2b6826652e7102c4cf",
+  "entryPoints": {
+    "current": [
+      "next-rules.yaml",
+      "next-rules.js"
+    ],
+    "compatibility": [
+      "v2/next-rules.yaml",
+      "v2/next-rules.js",
+      "rules/next-rules.yaml",
+      "rules/next-rules.js"
+    ],
+    "archives": "old/manifest.json"
+  },
+  "changes": [
+    "AI source is preserved completely and partitioned automatically into non-overlapping exact, regex and context views; the independent complete runtime provider is retired.",
+    "Native overseas AI brand categories provide bounded fallback; broader AI category follows domestic IP direct handling.",
+    "Google IP fallback and corresponding UDP rejection preserve earlier dedicated AI, Telegram and Netflix IP rules.",
+    "Unused old complete AI providers are removed during script upgrade; DNS and sub-rule dependencies remain intact.",
+    "2.2 is the primary root entry; compatibility entries are generated identically; six historical versions are archived byte-for-byte.",
+    "Ambiguous bare official-name labels no longer hide legitimate proxy nodes; explicit website/channel metadata remains filtered."
+  ],
+  "requirements": {
+    "ordinaryNodeNamesAccepted": true,
+    "noRegionGroups": true,
+    "manualDirectInSceneGroups": true,
+    "youtubeBeforeGoogle": true,
+    "youtubeDefaultsToGoogle": true,
+    "separateGlobalAndApacMedia": true,
+    "noDedicatedTikTok": true,
+    "preserveDnsTunIpv6HostsPortsMode": true,
+    "domesticTargetsBeforeProcessFallback": true,
+    "noEmbeddedHttpServiceSnapshots": true
+  },
+  "sourceCounts": {
+    "ai_total": 350,
+    "ai_exact": 312,
+    "ai_regex": 1,
+    "ai_deferred": 37,
+    "voice_official": 411,
+    "ai_ip": 411
+  },
+  "digests": {
+    "next-rules.yaml": {
+      "bytes": 27351,
+      "sha256": "ab9ffe5fb095e73849fa87f21458873e13c8f2064d3caa821e83ddef536400b8"
+    },
+    "next-rules.js": {
+      "bytes": 29938,
+      "sha256": "0b9eab6e65bec7f73c04f4cab977c7c96bb0956fa1b1ad397b0774869ca88597"
+    },
+    "rules/ai/upstream-global.yaml": {
+      "bytes": 14068,
+      "sha256": "a837e04a79752b8209e37829af58cda8214ad51fd4eb728191c2bd3dc0799ea7"
+    },
+    "rules/ai/domains-exact.yaml": {
+      "bytes": 11516,
+      "sha256": "dd1f3fe1eba301db2c13c935c81c75246043ed6a47b51a474c1ab813d8c708d2"
+    },
+    "rules/ai/domains-regex.yaml": {
+      "bytes": 213,
+      "sha256": "4a527199d2c256a2dfd36cf7933bc03c6d8992da43f2569161bba16d8c9126d4"
+    },
+    "rules/ai/context.yaml": {
+      "bytes": 1289,
+      "sha256": "ba0c1bd0883df866578506ca0b49585d059ccea18c2bb820663b12288e63cb8e"
+    }
+  },
+  "nativeResults": [
+    {
+      "file": "http-results-1.19.33.json",
+      "checks": 16,
+      "failed": false
+    },
+    {
+      "file": "http-results-1.19.34.json",
+      "checks": 16,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.33-ipv6.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.33-metadb-ipv6.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.33-metadb.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.33.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.34-ipv6.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.34-metadb-ipv6.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.34-metadb.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-1.19.34.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-flclash-ipv6.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-flclash-metadb-ipv6.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-flclash-metadb.json",
+      "checks": 14,
+      "failed": false
+    },
+    {
+      "file": "ip-resolution-flclash.json",
+      "checks": 28,
+      "failed": false
+    },
+    {
+      "file": "results-1.19.33.json",
+      "checks": 739,
+      "failed": false
+    },
+    {
+      "file": "results-1.19.34.json",
+      "checks": 739,
+      "failed": false
+    },
+    {
+      "file": "results-flclash.json",
+      "checks": 739,
+      "failed": false
+    }
+  ],
+  "totalNativeAssertions": 2501,
+  "offlineSourceValidationTests": 6,
+  "resources": {
+    "files": {
+      "geosite.dat": {
+        "sha256": "db0c704c3d2d4705729d49d09ec7347c0ec6304c45c856d5456063d4ac5ef1d7",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+      },
+      "geoip.dat": {
+        "sha256": "304ac8a1cbcc8166e4f5a4f32955e4d0fb77a1bd713583e371b30ee27f3659d8",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
+      },
+      "ASN.mmdb": {
+        "sha256": "3dceeef0f161aee0b48a3e71dd538798f5d95e9f4c2e0bc35f1c62874e22a4d5",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
+      },
+      "Country.mmdb": {
+        "sha256": "bbedba6ef8584c484e35acdee4153ecf4bc9aa5e22b25d3982870ec1e780f681",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country.mmdb"
+      },
+      "geoip.metadb": {
+        "sha256": "dabff40e7e8e472868341968ce6567d7d6bd9e3090d5a4bef77900f40ea438dc",
+        "url": "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb"
+      },
+      "telegram.mrs": {
+        "sha256": "d121af95b9aeca3d8c29b2112d5e6685b2a6716383df8ae31b5fbb3408c527b3",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/39ef714731b5523b471d6868f8e3e6e83d915611/geo/geoip/telegram.mrs"
+      },
+      "netflix-fixture.json": {
+        "sha256": "ef475b408c539094d96dd509e380f400eae8a091bc8fa957e716886cd0596a80",
+        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/39ef714731b5523b471d6868f8e3e6e83d915611/geo/geoip/netflix.list"
+      }
+    },
+    "cores": {
+      "1.19.33": {
+        "file": "mihomo-1.19.33.exe",
+        "sha256": "926bfea2ce48a247d6a7ce4cf641980e416202d5e40fe4ee5c949089ace0e197",
+        "archive_sha256": "7aaf636a4f2172dcd8ec34ac4f52797b059195e5afd6409508c963e545f8864d",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.33/mihomo-windows-amd64-compatible-v1.19.33.zip"
+      },
+      "1.19.34": {
+        "file": "mihomo-1.19.34.exe",
+        "sha256": "5a0231811a80b27477ebdee15684b41946d01afbd2114534e9a4b256125ca147",
+        "archive_sha256": "cd6738d4648cc1a5f48049a1343b697ab510889d648f045c5c780fc1ab443a79",
+        "url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.34/mihomo-windows-amd64-compatible-v1.19.34.zip"
+      },
+      "flclash": {
+        "file": "FlClashCore.exe",
+        "sha256": "d5097d4ea34f2975a7a7188dac9554d6b309c2abbf21a94c0a4111aca23bb8d0",
+        "archive_sha256": "e3c3c839784c50bbe406f2946f4f52147d418b3c28842ae8eb40404929490216",
+        "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.3/FlClash-0.9.3-windows-amd64.zip"
+      }
+    }
+  },
+  "panelMerge": {
+    "version": "3X-UI v3.11.0",
+    "source": "https://raw.githubusercontent.com/MHSanaei/3x-ui/v3.11.0/internal/sub/clash_service.go",
+    "fixtureSha256": "75d55b8345f4a88f51839d2b1d0d699ec51db596e49c756625a59e8a75e08c09"
+  },
+  "sourceAttribution": "rules/NOTICE.md",
+  "limitations": [
+    "A missing or outdated remote rule provider may still leave unclassified traffic to later rules. Native AI fallbacks cover recognized brands, not every future domain. This is not a universal fail-closed gate.",
+    "Type partitioning removes duplicated early/late exact-domain matching; independent remote sources still do not update as a transaction.",
+    "Shared Google/YouTube IPs cannot uniquely identify YouTube without a recognizable domain.",
+    "The complete requested AI source includes shared infrastructure. Its classification scope does not imply AI-exclusive ownership.",
+    "Manual DIRECT is intentionally available in scene groups. DNS, TUN, IPv6 and browser WebRTC behavior remain client-controlled.",
+    "Tests use public fixtures and loopback mocks; they do not validate real logins, region unlock, playback, public exits, system TUN or comprehensive WebRTC protection."
+  ],
+  "privacy": "No user subscription, real node or user IP was used.",
+  "references": [
+    "https://wiki.metacubex.one/config/rules/",
+    "https://github.com/MetaCubeX/meta-rules-dat",
+    "https://github.com/VPSDance/ai-proxy-rules",
+    "https://github.com/SukkaW/Surge/blob/master/Build/build-ai-cidr.ts",
+    "https://github.com/Aethersailor/Custom_OpenClash_Rules",
+    "https://github.com/hcloudlab/Hrules",
+    "https://github.com/n0de-sudo/Perfect-Rules"
+  ]
+}

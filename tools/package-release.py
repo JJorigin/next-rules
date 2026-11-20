@@ -11,11 +11,11 @@ if not version or any(c not in "0123456789." for c in version):
     raise ValueError("Invalid release version")
 destination = root / ".cache/release"
 destination.mkdir(parents=True, exist_ok=True)
-files = {root / "README.md", root / ".gitattributes", root / ".gitignore"}
-for folder in ("v2", "tools", "test", "rules/ai", "rules/media", "rules/licenses"):
+files = {root / "README.md", root / "next-rules.yaml", root / "next-rules.js", root / "MEDIA.md", root / ".gitattributes", root / ".gitignore"}
+for folder in ("v2", "tools", "test", "rules/ai", "rules/media", "rules/licenses", "old"):
     files.update(file for file in (root / folder).rglob("*")
                  if file.is_file() and "__pycache__" not in file.parts and file.suffix != ".pyc")
-files.update({root / "rules/sources.json", root / "rules/NOTICE.md"})
+files.update({root / "rules/sources.json", root / "rules/NOTICE.md", root / "rules/next-rules.yaml", root / "rules/next-rules.js"})
 archive = destination / ("Next-Rules-" + version + ".zip")
 with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as stream:
     for file in sorted(files):
