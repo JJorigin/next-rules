@@ -234,7 +234,12 @@ async function run() {
     for(const qtype of [28,65]) {
       const name='type-'+qtype+'-'+entry+'-'+mode+'.audit.iana.org';
       const response=await query(dnsPort,name,qtype);
-      if(qtype===28&&mode==='fake-ip')check(await h.requestThrough(mixedPort,'['+firstAddress(response)+']')==='default','IPv6 Fake-IP restores hostname and proxy route');
+      if (qtype === 28 && mode === 'fake-ip') {
+        const address = firstAddress(response);
+        assert.ok(address && address.startsWith('fdfe:dcba:9876:'), 'expected the isolated IPv6 Fake-IP answer, got ' + address);
+        const exit = await h.requestThrough(mixedPort, '[' + address + ']');
+        check(exit === 'default', 'IPv6 Fake-IP restores hostname and proxy route, got ' + exit);
+      }
       const records=events.filter(event=>event.domain===name);
       check(records.every(event=>event.role==='overseas'&&event.transport==='proxy'),'AAAA and HTTPS queries never use domestic/bootstrap resolvers');
       if(mode==='redir-host')check(records.length>0,'real-IP queries reach the proxy DNS upstream');
@@ -300,7 +305,11 @@ async function run() {
   observations.push({entry:'cold-start',classificationReady:false,safeToDeploy:false,
     nativeBrandFallback:'verified',sourceOnlyExceptionProtected:sourceOnly.length>0&&sourceOnly.every(event=>event.role==='overseas'&&event.transport==='proxy')});
 }
-run().catch(error=>{process.exitCode=1;console.error(error.stack);}).finally(async()=>{
+run().catch(error=>{
+  process.exitCode=1;
+  console.error(error.stack);
+  console.error(h.logs().trim().split(/\r?\n/).slice(-24).join('\n'));
+}).finally(async()=>{
   await h.cleanup();fs.writeFileSync(path.join(home,'core.log'),h.logs());
   const report={core:variant,checks,failed:Boolean(process.exitCode),tlsVerification:true,allDestinationsLoopback:true,observations,events};
   fs.writeFileSync(path.join(root,'.cache/dns-routing-'+variant+'.json'),JSON.stringify(report,null,2)+'\n');
