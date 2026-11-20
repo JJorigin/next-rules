@@ -15,6 +15,9 @@ const manifest = require(path.join(resources, 'manifest.json'));
 const binary = manifest.cores[variant];
 const exe = path.join(resources, binary.file);
 assert.equal(createHash('sha256').update(fs.readFileSync(exe)).digest('hex'), binary.sha256);
+// Mihomo otherwise disables IPv6 Fake-IP on runners with only loopback IPv6.
+// The subprocess tests use synthetic IPv6 addresses and IPv4 loopback sockets.
+process.env.SKIP_SYSTEM_IPV6_CHECK = '1';
 const home = fs.mkdtempSync(path.join(root, '.cache/dns-routing-' + variant + '-'));
 const h = require('./harness.cjs')({flavor: variant === 'flclash' ? 'flclash' : 'verge', exe, home});
 const group = require('../tools/v2-policy.cjs').group;
