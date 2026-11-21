@@ -29,6 +29,8 @@ const group = require('../tools/v2-policy.cjs').group;
 const results = [];
 const metadb = process.argv.includes('--metadb');
 const ipv6 = process.argv.includes('--ipv6');
+// Exercise synthetic IPv6 Fake-IP on runners without an IPv6 address outside loopback.
+if (ipv6) process.env.SKIP_SYSTEM_IPV6_CHECK = '1';
 let checks = 0;
 // Public vendor/resolver addresses below are simulated destinations, never contacted.
 const targets = {
@@ -83,7 +85,7 @@ async function fakeAnswer(port, domain) {
       socket.send(question, port, host);
     });
     assert.ok(answer.length > question.length && answer.readUInt16BE(0) === 0x1234 && answer.readUInt16BE(6) === 1,
-      'expected one address from the Fake-IP listener');
+      'expected one IPv' + (ipv6 ? '6' : '4') + ' Fake-IP answer for ' + domain);
     if (!ipv6) {
       const bytes = answer.subarray(-4);
       assert.deepEqual([...bytes.subarray(0, 2)], [198, 18], 'an IPv4 fake address was returned');
