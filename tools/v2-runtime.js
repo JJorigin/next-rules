@@ -1,8 +1,9 @@
 // Next-Rules 2.3 · Clash Verge Rev 订阅扩展脚本
-// 解析按代理、直连与节点域名分开；TUN 和 IPv6 开关由客户端管理。
+// DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
 const POLICY = /* GENERATED POLICY */ null;
 const OWNED_GROUPS = new Set(Object.values(POLICY.group));
+const UPDATED_AI_PROVIDERS = new Set(["next-rules-v2-ai-domain", "next-rules-v2-ai-context"]);
 const unique = (items) => [...new Set(items.filter(Boolean))];
 const asRecord = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const BLOCKED_TYPES = "Pass|Compatible|Dns|Reject|RejectDrop";
@@ -141,13 +142,20 @@ function isOwnedProvider(name, definition) {
   );
 }
 
+const providerBase = (name) => name.replace(/-(?:[2-9]|[1-9][0-9]+)$/, "");
+
 function retiredAiProvider(name, definition) {
-  return /^next-rules-v2-ai(?:-(?:[2-9]|[1-9][0-9]+))?$/.test(name) &&
+  const base = providerBase(name);
+  const previous = UPDATED_AI_PROVIDERS.has(base) ? POLICY.providers[base] : {
+    "next-rules-v2-ai": { format: "yaml", url: "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" },
+    "next-rules-v2-ai-ip": { format: "text", url: "https://ruleset.skk.moe/Clash/ip/ai.txt" }
+  }[base];
+  return previous &&
     definition && definition.type === "http" && definition.behavior === "classical" &&
-    definition.format === "yaml" && definition.interval === 86400 &&
+    definition.format === previous.format && definition.interval === 86400 &&
     Object.keys(definition).every(key => ["type", "behavior", "format", "interval", "url", "path", "proxy", "payload"].includes(key)) &&
-    definition.url === "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" &&
-    definition.path === "./providers/" + name + ".yaml" &&
+    definition.url === previous.url &&
+    definition.path === "./providers/" + name + "." + previous.format &&
     ownedGroupBase(definition.proxy) === POLICY.group.default;
 }
 
@@ -212,7 +220,9 @@ function ruleProviderRegistry(config, groupNames) {
 
 function providerDefinition(name, definition, groupNames = new Map()) {
   if (definition.type === "http") {
-    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: "./providers/" + name + "." + definition.format };
+    // 启动时内核优先读缓存。清单收紧后使用新路径，避免沿用旧条目。
+    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/" : "./providers/";
+    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: directory + name + "." + definition.format };
   }
   return { ...definition, payload: [...definition.payload] };
 }
@@ -275,7 +285,6 @@ function matcher(conditions, providerNames) {
 }
 
 function renderRules(providerNames, groupNames) {
-
   const result = [];
   for (const [condition, base, guard] of POLICY.routes) {
     const target = groupNames.get(base) || base;
@@ -292,73 +301,11 @@ function renderRules(providerNames, groupNames) {
   return result;
 }
 
-function baseDNS(previous = {}) {
-  // 保留监听、Fake-IP 和兼容性设置；替换会改变查询出口的上游及策略。
-  const kept = {};
-  for (const key of ["listen", "cache-algorithm", "cache-max-size", "ipv6", "ipv6-timeout", "use-hosts", "use-system-hosts",
-    "enhanced-mode", "fake-ip-range", "fake-ip-range6", "fake-ip-filter-mode", "fake-ip-filter", "fake-ip-ttl"]) {
-    if (Object.prototype.hasOwnProperty.call(previous, key)) kept[key] = previous[key];
-  }
-  const privatePrevious = asRecord(previous["nameserver-policy"])["geosite:private"];
-  const privateServers = typeof privatePrevious === "string" && privatePrevious
-    ? [privatePrevious] : Array.isArray(privatePrevious) && privatePrevious.length && privatePrevious.every(item => typeof item === "string" && item)
-      ? [...privatePrevious] : ["system"];
-  return {
-    enable: true,
-    "enhanced-mode": "fake-ip",
-    "fake-ip-range": "198.18.0.1/16",
-    "fake-ip-range6": "fdfe:dcba:9876::1/64",
-    "fake-ip-filter-mode": "blacklist",
-    "fake-ip-filter": ["+.lan", "+.local", "+.arpa", "time.*.com", "ntp.*.com", "+.pool.ntp.org",
-      "+.market.xiaomi.com", "localhost.ptlogin2.qq.com", "*.msftncsi.com", "www.msftconnecttest.com"],
-    ipv6: true,
-    ...kept,
-    "prefer-h3": false,
-    "respect-rules": false,
-    "default-nameserver": [...POLICY.dns.bootstrap],
-    "proxy-server-nameserver": [...POLICY.dns.direct],
-    "proxy-server-nameserver-policy": {},
-    "direct-nameserver": [...POLICY.dns.direct],
-    // 仅局域网分类使用本地解析；公共域名不加入系统 DNS 例外。
-    "direct-nameserver-follow-policy": true,
-    "nameserver-policy": {"geosite:private": privateServers},
-    fallback: []
-  };
-}
-
-function routedDNS(base, groupNames, registry) {
-  const serversFor = target => target === "DIRECT" ? [...POLICY.dns.direct]
-    : POLICY.dns.proxy.map(url => url + "#" + encodeURIComponent(groupNames.get(target) || target));
-  const nameserverPolicy = {...base["nameserver-policy"]};
-  const sections = [];
-  // 只用能在解析前判断的业务条件。局域网优先用本地解析，广告仍由业务规则处理。
-  for (const [condition, target] of POLICY.routes.slice(0, POLICY.dns.domainRuleCount)) {
-    if (condition === "GEOSITE,private" || condition === "GEOIP,private,no-resolve") continue;
-    const resolver = target === POLICY.group.ads ? POLICY.group.default : target;
-    const last = sections[sections.length - 1];
-    if (last && last.target === resolver) last.conditions.push(condition);
-    else sections.push({target: resolver, conditions: [condition]});
-  }
-  for (const [index, {target, conditions}] of sections.entries()) {
-    // 3X-UI 可重排映射键名，用编号保留原来的优先级。
-    const id = "next-rules-v2-dns-" + String(index).padStart(2, "0");
-    const payload = conditions.map(condition => {
-      if (Array.isArray(condition)) return matcher(condition, registry.names);
-      // 内置规则集支持逻辑条件内引用其他规则集。
-      return condition.startsWith("RULE-SET,") ? matcher([condition], registry.names) : condition;
-    });
-    const name = registry.add(id, {type: "inline", behavior: "classical", payload});
-    nameserverPolicy["rule-set:" + name] = serversFor(target);
-  }
-  return {...base, nameserver: serversFor(POLICY.group.default), "nameserver-policy": nameserverPolicy};
-}
-
 function remoteFragment() {
   const groupNames = new Map();
   const registry = ruleProviderRegistry({}, groupNames);
   for (const [name, definition] of Object.entries(POLICY.providers)) registry.add(name, definition);
   return {
-    dns: routedDNS(baseDNS(), groupNames, registry),
     "rule-providers": registry.providers,
     "proxy-groups": buildGroups(groupNames),
     rules: renderRules(new Map(), groupNames)
@@ -367,9 +314,6 @@ function remoteFragment() {
 
 function main(config) {
   if (!config || typeof config !== "object" || Array.isArray(config)) return config;
-  // 旧解析出口已被替换，不把旧 DNS 引用误认为仍需保留的策略组依赖。
-  const dnsBase = baseDNS(asRecord(config.dns));
-  config.dns = dnsBase;
   dropUnusedRetiredProviders(config);
   const inlineNodes = Array.isArray(config.proxies)
     ? config.proxies.filter((node) => (
@@ -385,7 +329,6 @@ function main(config) {
   for (const [name, definition] of Object.entries(POLICY.providers)) registry.add(name, definition);
 
   config["proxy-groups"] = [...buildGroups(groupNames, inlineNodes, providerNames), ...retained];
-  config.dns = routedDNS(dnsBase, groupNames, registry);
   config["rule-providers"] = registry.providers;
   config.rules = renderRules(registry.names, groupNames);
   return config;

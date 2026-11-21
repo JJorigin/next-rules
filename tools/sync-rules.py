@@ -1,4 +1,4 @@
-"""Synchronize complete upstream data and reproducible, type-only domain views."""
+"""Synchronize upstream sources and reproducible routing views."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import ipaddress
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 from urllib.parse import quote, urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
@@ -19,12 +20,48 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 AI_URL = "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml"
-AI_IP_URL = "https://ruleset.skk.moe/Clash/ip/ai.txt"
 VOICE_URL = "https://openai.com/chatgpt-voice.json"
 CRYPTO_URL = "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
 OWN_RAW = "https://raw.githubusercontent.com/JJorigin/next-rules/main/"
 DOMAIN_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-REGEX", "DOMAIN-KEYWORD", "GEOSITE"}
 NETWORK_TYPES = {"IP-CIDR", "IP-CIDR6", "IP-ASN"}
+SHARED_AI_HOSTS = {
+    "api.cloudflare.com",
+    "api.statsig.com",
+    "auth0.com",
+    "aws.dev",
+    "awsapps.com",
+    "awsstatic.com",
+    "byteoversea.com",
+    "challenges.cloudflare.com",
+    "client-telemetry.us-east-1.amazonaws.com",
+    "cloudflare.com",
+    "cognito-identity.us-east-1.amazonaws.com",
+    "console.aws.a2z.com",
+    "events.statsigapi.net",
+    "featuregates.org",
+    "intercom.io",
+    "intercomcdn.com",
+    "odc.officeapps.live.com",
+    "self.events.data.microsoft.com",
+    "sso.amazonaws.com",
+    "statsigapi.net",
+    "storage.googleapis.com",
+    "stripe.com",
+}
+SHARED_AI_SUFFIXES = ("msn.com", "msn.cn", "cloudflareinsights.com", "datadoghq.com", "datadoghq.eu", "sentry.io")
+# Datadog also serves browser telemetry from separate region-specific domains.
+DATADOG_BROWSER = re.compile(r"(?:^|\.)browser-intake(?:-[a-z0-9]+)?-datadoghq\.(?:com|eu)$")
+# Retain the Anthropic and OpenAI allocations carried by the upstream list.
+# A hosting company's ASN or an unverified address on its network is not an AI service.
+DEDICATED_AI_NETWORKS = {
+    ("IP-ASN", "399358"),
+    ("IP-ASN", "401518"),
+    ("IP-CIDR", "160.79.104.0/21"),
+    ("IP-CIDR6", "2607:6bc0::/32"),
+    ("IP-CIDR", "199.47.142.0/23"),
+    ("IP-CIDR6", "2604:f20::/32"),
+}
 AI_TYPES = DOMAIN_TYPES | NETWORK_TYPES | {
     "PROCESS-NAME", "PROCESS-NAME-WILDCARD", "PROCESS-NAME-REGEX",
     "PROCESS-PATH", "PROCESS-PATH-WILDCARD", "PROCESS-PATH-REGEX",
@@ -122,57 +159,60 @@ def render_yaml(rows: list[str], title: str, source: str) -> bytes:
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
-def voice_networks(value: object) -> list[ipaddress.IPv4Network | ipaddress.IPv6Network]:
-    result = []
+def voice_prefixes(data: bytes) -> list[str]:
+    document = json.loads(data)
+    rows = document.get("prefixes") if isinstance(document, dict) else None
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("Official voice data contains no prefixes")
+    prefixes = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("Invalid official voice prefix")
+        keys = {"ipv4Prefix", "ipv6Prefix"} & row.keys()
+        if len(keys) != 1:
+            raise ValueError("Each official voice entry must specify one address family")
+        key = keys.pop()
+        if not isinstance(row[key], str):
+            raise ValueError("Official voice prefixes must be strings")
+        network = ipaddress.ip_network(row[key])
+        if network.version != (4 if key == "ipv4Prefix" else 6) or not network.is_global or network.is_multicast or network.is_reserved:
+            raise ValueError("Invalid official voice address family or scope")
+        prefixes.append(str(network))
+    return list(dict.fromkeys(prefixes))
 
-    def walk(item: object) -> None:
-        if isinstance(item, dict):
-            for key, child in item.items():
-                if key in {"ipv4Prefix", "ipv6Prefix"}:
-                    result.append(ipaddress.ip_network(child, strict=False))
-                else:
-                    walk(child)
-        elif isinstance(item, list):
-            for child in item:
-                walk(child)
 
-    walk(value)
-    if not result:
-        raise ValueError("Official voice data contains no addresses")
-    return result
-
-
-def validate_voice(voice: bytes, rows: list[str]) -> int:
-    official = voice_networks(json.loads(voice))
-    networks = [ipaddress.ip_network(row.split(",")[1], strict=False)
-                for row in rows if row.startswith(("IP-CIDR,", "IP-CIDR6,"))]
-    merged = []
-    for version in (4, 6):
-        merged.extend(ipaddress.collapse_addresses(net for net in networks if net.version == version))
-    if any(not any(net.version == part.version and net.subnet_of(part) for part in merged)
-           for net in official):
-        raise ValueError("Maintained AI IP data does not cover the current official voice list")
-    return len(official)
+def is_ai_routing_rule(row: str) -> bool:
+    kind, _, value = row.partition(",")
+    value = value.split(",", 1)[0].lower().rstrip(".")
+    if kind in NETWORK_TYPES:
+        return (kind, value) in DEDICATED_AI_NETWORKS
+    if kind == "DOMAIN-KEYWORD":
+        return False
+    if kind in {"DOMAIN", "DOMAIN-SUFFIX"}:
+        return value not in SHARED_AI_HOSTS and not DATADOG_BROWSER.search(value) and not any(
+            value == suffix or value.endswith("." + suffix) for suffix in SHARED_AI_SUFFIXES
+        )
+    return True
 
 
 def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, bytes]:
     catalog = json.loads((ROOT / "v2/data/media-platforms.json").read_text(encoding="utf-8"))
     ai_rows = parse_rows(raw["ai"], "yaml", AI_TYPES)
-    exact = [row for row in ai_rows if row.split(",", 1)[0] in {"DOMAIN", "DOMAIN-SUFFIX"}]
-    regex = [row for row in ai_rows if row.startswith("DOMAIN-REGEX,")]
-    deferred = [row for row in ai_rows if row not in exact and row not in regex]
-    if not exact or Counter(exact + regex + deferred) != Counter(ai_rows):
+    active = [row for row in ai_rows if is_ai_routing_rule(row)]
+    excluded = [row for row in ai_rows if not is_ai_routing_rule(row)]
+    exact = [row for row in active if row.startswith(("DOMAIN,", "DOMAIN-SUFFIX,"))]
+    regex = [row for row in active if row.startswith("DOMAIN-REGEX,")]
+    deferred = [row for row in active if not row.startswith(("DOMAIN,", "DOMAIN-SUFFIX,", "DOMAIN-REGEX,"))]
+    if not exact or Counter(exact + regex + deferred + excluded) != Counter(ai_rows):
         raise ValueError("AI type partition is incomplete")
-    # Broad keywords, networks and processes stay intact in the complete source.
-    ai_ip = parse_rows(raw["ai-ip"], "text", NETWORK_TYPES | {"DOMAIN"})
-    official_count = validate_voice(raw["voice"], ai_ip)
+    voice = voice_prefixes(raw["voice"])
     crypto = parse_rows(raw["crypto"], "yaml", DOMAIN_TYPES)
     outputs = {
         "rules/ai/upstream-global.yaml": raw["ai"],
         "rules/ai/domains-exact.yaml": render_yaml(exact, "AI 服务域名", AI_URL),
         "rules/ai/domains-regex.yaml": render_yaml(regex, "AI 服务域名匹配", AI_URL),
         "rules/ai/context.yaml": render_yaml(deferred, "AI 服务补充条件", AI_URL),
-        "test/fixtures/ai-ip.txt": raw["ai-ip"],
+        "rules/ai/voice-ip.yaml": render_yaml(voice, "ChatGPT 语音 IP", VOICE_URL),
         "test/fixtures/openai-voice.json": raw["voice"],
         "test/fixtures/providers/crypto.yaml": raw["crypto"],
     }
@@ -180,12 +220,11 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
         "ai-context": {"url": OWN_RAW + "rules/ai/context.yaml", "behavior": "classical", "format": "yaml", "payload": deferred},
         "ai-domain": {"url": OWN_RAW + "rules/ai/domains-exact.yaml", "behavior": "classical", "format": "yaml", "payload": exact},
         "ai-regex": {"url": OWN_RAW + "rules/ai/domains-regex.yaml", "behavior": "classical", "format": "yaml", "payload": regex},
-        "ai-ip": {"url": AI_IP_URL, "behavior": "classical", "format": "text", "payload": ai_ip},
+        "ai-voice": {"url": OWN_RAW + "rules/ai/voice-ip.yaml", "behavior": "ipcidr", "format": "yaml", "payload": voice},
         "crypto": {"url": CRYPTO_URL, "behavior": "classical", "format": "yaml", "payload": crypto},
     }
     counts = {"ai_total": len(ai_rows), "ai_exact": len(exact), "ai_regex": len(regex),
-              "ai_deferred": len(deferred), "voice_official": official_count,
-              "ai_ip": len(ai_ip)}
+              "ai_deferred": len(deferred), "ai_excluded": len(excluded), "voice_official": len(voice)}
     for section in ("global", "apac"):
         for item in catalog[section]:
             if "url" not in item:
@@ -201,7 +240,10 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
             outputs[generated] = render_yaml(domains, item["name"] + " 域名", item["url"])
             cache[key] = {"url": item["url"], "behavior": "classical", "format": item.get("format", "yaml"), "payload": rows}
             cache[key + "-domain"] = {"url": OWN_RAW + generated, "behavior": "classical", "format": "yaml", "payload": domains}
-    outputs["v2/data/source-cache.json"] = json_bytes({"schema": 2, "upstream_ai": {"url": AI_URL, "payload": ai_rows}, "counts": counts, "providers": cache})
+    outputs["v2/data/source-cache.json"] = json_bytes({
+        "schema": 2, "upstream_ai": {"url": AI_URL, "payload": ai_rows, "excluded": excluded},
+        "counts": counts, "providers": cache,
+    })
     outputs["rules/sources.json"] = json_bytes({"schema": 1, "sources": source_info, "counts": counts})
     return outputs
 
@@ -211,7 +253,7 @@ def acquire() -> tuple[dict[str, bytes], dict[str, dict]]:
     catalog = json.loads((ROOT / "v2/data/media-platforms.json").read_text(encoding="utf-8"))
     # Pin the AI download to one commit so metadata and source cannot race.
     head = json.loads(fetch("https://api.github.com/repos/VPSDance/ai-proxy-rules/commits/main"))["sha"]
-    urls = {"ai": AI_URL.replace("/main/", "/" + quote(head, safe="") + "/"), "ai-ip": AI_IP_URL, "voice": VOICE_URL, "crypto": CRYPTO_URL}
+    urls = {"ai": AI_URL.replace("/main/", "/" + quote(head, safe="") + "/"), "voice": VOICE_URL, "crypto": CRYPTO_URL}
     for items in catalog.values():
         for item in items:
             if "url" in item:
@@ -231,7 +273,6 @@ def acquire() -> tuple[dict[str, bytes], dict[str, dict]]:
 def from_checkout() -> tuple[dict[str, bytes], dict[str, dict]]:
     info = json.loads((ROOT / "rules/sources.json").read_text(encoding="utf-8"))["sources"]
     data = {"ai": (ROOT / "rules/ai/upstream-global.yaml").read_bytes(),
-            "ai-ip": (ROOT / "test/fixtures/ai-ip.txt").read_bytes(),
             "voice": (ROOT / "test/fixtures/openai-voice.json").read_bytes(),
             "crypto": (ROOT / "test/fixtures/providers/crypto.yaml").read_bytes()}
     for key in info:

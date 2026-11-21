@@ -6,10 +6,6 @@
       "sha256": "a837e04a79752b8209e37829af58cda8214ad51fd4eb728191c2bd3dc0799ea7",
       "commit": "d8e216c8349a2de02d6322d99fa7d20f8cb4bd9d"
     },
-    "ai-ip": {
-      "url": "https://ruleset.skk.moe/Clash/ip/ai.txt",
-      "sha256": "0a302fbee593dca126b1bbc2f8921ba3a0afbe4e6c9aefb30909550e18945f01"
-    },
     "voice": {
       "url": "https://openai.com/chatgpt-voice.json",
       "sha256": "0852b8be430cb4ae4a68ff8c0169f05bcdc5ce2ab6649cb3fc02d057a50612e7"
@@ -49,10 +45,10 @@
   },
   "counts": {
     "ai_total": 350,
-    "ai_exact": 312,
+    "ai_exact": 284,
     "ai_regex": 1,
-    "ai_deferred": 37,
-    "voice_official": 411,
-    "ai_ip": 411
+    "ai_deferred": 29,
+    "ai_excluded": 36,
+    "voice_official": 411
   }
 }

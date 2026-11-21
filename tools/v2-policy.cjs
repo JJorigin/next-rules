@@ -47,11 +47,11 @@ function mediaRoutes(items, target, full = false) {
 }
 
 // 域名明确归类后先选对应服务，再判断普通地址，最后处理软件进程兜底。
-const domainRoutes = [
+const routes = [
   ["GEOSITE,private", "DIRECT"],
   ["GEOIP,private,no-resolve", "DIRECT"],
   ["GEOSITE,category-ads-all", group.ads],
-  // 域名视图由完整 AI 来源自动同步，不人工增删条目。
+  // AI 专用域名从上游同步，共用基础设施沿用常规规则。
   [use("ai-domain"), group.ai, true],
   // 常用海外 AI 品牌由服务分类库补充识别，不展开为域名清单。
   ...aiCategories
@@ -70,13 +70,12 @@ const domainRoutes = [
   ...mediaRoutes(media.global, group.media),
   ["GEOSITE,apple", group.apple, true],
   ["GEOSITE,telegram", group.telegram, true],
-  ["GEOSITE,microsoft", group.microsoft, true]
-];
-const routes = [
-  ...domainRoutes,
+  // 两类都命中的海外 AI 服务优先于微软通用流量。
+  [["GEOSITE,category-ai-!cn", "GEOSITE,microsoft"], group.ai, true],
+  ["GEOSITE,microsoft", group.microsoft, true],
   // 对尚未归类的域名解析一次，并先处理局域网地址，再检查专用服务网段。
   ["GEOIP,private", "DIRECT"],
-  [use("ai-ip") + ",no-resolve", group.ai, true],
+  [["NETWORK,UDP", "DST-PORT,3478", use("ai-voice") + ",no-resolve"], group.ai, true],
   [use("telegram-ip") + ",no-resolve", group.telegram, true],
   ["GEOIP,telegram,no-resolve", group.telegram, true],
   ...media.global.filter(item => item.geoip).map(item => ["GEOIP," + item.geoip + ",no-resolve", group.media, true]),
@@ -85,7 +84,7 @@ const routes = [
   ["GEOIP,CN", "DIRECT"],
   // 通用 AI 分类只补充未识别的境外目标。
   ["GEOSITE,category-ai-!cn", group.ai, true],
-  // 完整来源中的关键词、地址和进程条件由自动任务生成，普通国内目标已经先行直连。
+  // 专用地址和进程由自动任务同步，普通国内目标已经先行直连。
   [use("ai-context"), group.ai, true],
   ...mediaRoutes(media.apac.filter((item) => item.url), group.mediaAsia, true),
   ...mediaRoutes(media.global.filter((item) => item.url), group.media, true),
@@ -95,11 +94,4 @@ const routes = [
   ["MATCH", group.default]
 ];
 
-const dns = {
-  proxy: ["https://1.1.1.1/dns-query", "https://8.8.8.8/dns-query"],
-  direct: ["https://dns.alidns.com/dns-query#DIRECT", "https://doh.pub/dns-query#DIRECT"],
-  bootstrap: ["223.5.5.5", "119.29.29.29"],
-  domainRuleCount: domainRoutes.length
-};
-
-module.exports = { version: "2.3", group, providers, routes, dns };
+module.exports = { version: "2.3", group, providers, routes };

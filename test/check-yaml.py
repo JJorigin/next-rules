@@ -6,6 +6,8 @@ import yaml
 
 root = Path(__file__).resolve().parent.parent
 document = yaml.safe_load((root / "v2/next-rules.yaml").read_text(encoding="utf-8"))
+if set(document) != {"proxy-groups", "rule-providers", "rules"}:
+    raise ValueError("Remote routing must leave the subscription's resolver and network settings alone")
 for name in ['next-rules.yaml', 'rules/next-rules.yaml']:
     if (root / name).read_bytes() != (root / 'v2/next-rules.yaml').read_bytes():
         raise ValueError('Current and compatibility entry points differ: ' + name)

@@ -31,9 +31,7 @@ function fields(record, indentation) {
 const yaml = [
   "# Next-Rules " + policy.version + " · 3X-UI 远程路由",
   "# 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。",
-  "# 面板须允许远程 DNS 配置；TUN 和 IPv6 开关由客户端管理。",
-  "dns:",
-  fields(fragment.dns, "  "),
+  "# DNS、TUN 和 IPv6 沿用订阅与客户端设置。",
   "",
   "rule-providers:",
   ...Object.entries(fragment["rule-providers"]).map(([name, item]) => "  " + name + ":\n" + fields(item, "    ")),

@@ -116,19 +116,27 @@ async function run() {
     }
   }
   collect(voice);
-  const ipCases = {voiceFirst: voiceAddresses[0], voiceLast: voiceAddresses.at(-1), voiceAdded: '20.194.216.119', telegram: '149.154.160.1', google: '74.125.250.129'};
-  const ipOwner = key => key === 'telegram' ? 'telegram' : key === 'google' ? 'google' : 'ai';
+  const ipCases = {voiceFirst: voiceAddresses[0], voiceLast: voiceAddresses.at(-1), voiceMiddle: voiceAddresses[Math.floor(voiceAddresses.length / 2)], telegram: '149.154.160.1', google: '74.125.250.129'};
+  const tcpOwner = key => key.startsWith('voice') ? 'default' : key;
   for (const [key, value] of Object.entries(ipCases)) {
     const port = await reserve(() => net.createServer(), 'listen');
     tcpInlets[key] = port;
     tunnels.push({network: ['tcp'], address: host + ':' + port, target: address(value, 80)});
   }
-  const udpTargets = {'www.youtube.com': ['youtube', 443], 'tv.apple.com': ['media', 443], 'www.max.com': ['media', 443], 'www.hulu.jp': ['apac', 443], 'chatgpt.com': ['ai', 443], 'audit-default.iana.org': ['default', 443], ...Object.fromEntries(Object.entries(ipCases).map(([key, value]) => [value, [ipOwner(key), key === 'voiceAdded' ? 3478 : 443]]))};
+  const udpTargets = {
+    'www.youtube.com': ['youtube', 443], 'probe.googlevideo.com': ['youtube', 443],
+    'tv.apple.com': ['media', 443], 'www.max.com': ['media', 443], 'www.hulu.jp': ['apac', 443],
+    'chatgpt.com': ['ai', 443], 'audit-default.iana.org': ['default', 443],
+    ...Object.fromEntries(Object.entries(ipCases).map(([key, value]) => [value, key.startsWith('voice') ? ['ai', 3478] : [key, 443]]))
+  };
   for (const [target, [, targetPort]] of Object.entries(udpTargets)) {
     const port = await reserve(udpServer, 'bind');
     udpInlets[target] = port;
     tunnels.push({network: ['udp'], address: host + ':' + port, target: address(target, targetPort)});
   }
+  const unrelatedVoicePort = await reserve(udpServer, 'bind');
+  udpInlets['voice-other-port'] = unrelatedVoicePort;
+  tunnels.push({network: ['udp'], address: host + ':' + unrelatedVoicePort, target: address(ipCases.voiceFirst, 9999)});
   const processExecutables = {};
   for (const name of ['Cursor', 'cursor', 'Steam', 'steam', 'Discord', 'discord', 'WhatsApp', 'whatsapp', 'EpicGamesLauncher', 'epicgameslauncher']) {
     const directory = path.join(home, 'process-' + Object.keys(processExecutables).length);
@@ -150,9 +158,7 @@ async function run() {
         'override-destination': false, sniff: {HTTP: {ports: [80], 'override-destination': false}}}
     };
     const config = source === 'js' ? normalize(ctx.main(normalize(runtime))) : {...normalize(panel), ...runtime};
-    // Route classification uses identical controlled answers across entry points.
-    // The production DNS policy and its actual transport are tested in dns-routing.cjs.
-    config.dns = normalize(runtime.dns);
+    check(config.dns, runtime.dns, source + ': original DNS is used by the core');
     if (source === 'panel') config['proxy-groups'].find(g => g.name === 'PROXY').proxies = [...runtime.proxies.map(p => p.name), 'DIRECT'];
     if (!empty) config.rules = config.rules.map(rule => rule.replace(/,DIRECT(?=,|$)/g, ',' + nodeName('direct')));
     config['proxy-groups'].find(g => g.name === group.auto).url = 'http://' + host + ':' + healthPort;
@@ -213,7 +219,14 @@ async function run() {
     await selectAll();
     check(await controller.get(group.youtube), group.google, 'YouTube follows Google by default');
     const tests = {...require('./media-cases.cjs'),
-      'api.openai.com': 'ai', 'api.anthropic.com': 'ai', 'storage.googleapis.com': 'ai',
+      'api.openai.com': 'ai', 'api.anthropic.com': 'ai', 'storage.googleapis.com': 'google',
+      'www.msn.cn': 'direct', 'api.msn.com': 'microsoft', 'assets.msn.com': 'microsoft',
+      'img-s-msn-com.akamaized.net': 'microsoft', 'challenges.cloudflare.com': 'default',
+      'odc.officeapps.live.com': 'microsoft', 'login.microsoftonline.com': 'microsoft',
+      'audit.awsapps.com': 'default', 'codewhisperer.us-east-1.amazonaws.com': 'ai',
+      'browser-intake-us5-datadoghq.com': 'default', 'audit.byteoversea.com': 'default',
+      'auth0.openai.com': 'ai',
+      '104.131.0.1': 'default',
       'copilot.microsoft.com': 'ai', 'api.binance.com': 'crypto',
       'telegram.org': 'telegram', 'outlook.live.com': 'microsoft',
       'sentry-domestic.audit.iana.org': 'direct', 'domestic-probe.audit.iana.org': 'direct',
@@ -225,7 +238,11 @@ async function run() {
       check(tcp[target], expected, source + ': ' + target);
     }
     await controller.select(group.youtube, nodeName('youtube'));
-    for (const [target, expected] of [['www.youtube.com', 'youtube'], ['accounts.google.com', 'google'], ['gemini.google.com', 'ai']]) {
+    for (const [target, expected] of [
+      ['www.youtube.com', 'youtube'], ['probe.googlevideo.com', 'youtube'], ['i.ytimg.com', 'youtube'],
+      ['youtubei.googleapis.com', 'youtube'], ['yt3.googleusercontent.com', 'youtube'],
+      ['accounts.google.com', 'google'], ['gemini.google.com', 'ai']
+    ]) {
       check(await requestThrough(mixedPort, target), expected, source + ': independent ' + target);
     }
     const known = {};
@@ -237,7 +254,7 @@ async function run() {
         known[target + '/' + key] = actual;
       }
     }
-    for (const key of Object.keys(ipCases)) check(await requestAt(tcpInlets[key], ips.foreign), ipOwner(key), source + ': owned IP ' + key);
+    for (const key of Object.keys(ipCases)) check(await requestAt(tcpInlets[key], ips.foreign), tcpOwner(key), source + ': owned IP ' + key);
     const processResults = {};
     for (const [name, executable] of Object.entries(processExecutables)) {
       for (const [target, expected] of [['www.baidu.com', 'direct'], ['domestic-probe.audit.iana.org', 'direct'], ['sentry-domestic.audit.iana.org', 'direct'], [ips.cn, 'direct'], ['audit-unknown.iana.org', name.toLowerCase() === 'cursor' ? 'ai' : 'software'], ['www.youtube.com', 'youtube']]) {
@@ -247,6 +264,7 @@ async function run() {
       }
     }
     for (const [target, [expected]] of Object.entries(udpTargets)) check(await datagram(target), [expected], source + ': UDP ' + target);
+    check(await datagram('voice-other-port'), ['default'], source + ': an unrelated UDP port does not use the voice route');
     for (const name of [group.ai, group.google, group.youtube, group.media, group.mediaAsia, group.telegram, group.default]) await controller.select(name, 'TCP-only');
     for (const target of Object.keys(udpTargets)) check(await datagram(target), [], source + ': unsupported UDP must reject ' + target);
     await controller.setup(profile(source, true));
@@ -263,7 +281,7 @@ async function run() {
     const partialState = await loadedFileRules(['ai-domain']);
     check(partialState['next-rules-v2-ai-domain'].ruleCount, 0, source + ': precise AI view is missing');
     await selectAll();
-    for (const target of ['auditcn.chatgpt.com', 'gemini.google.com', 'www.baidu.com', 'www.deepseek.com', 'www.kimi.com', 'auditcn.kimi.ai', 'auditcn.moonshot.ai']) {
+    for (const target of ['auditcn.chatgpt.com', 'gemini.google.com', 'copilot.microsoft.com', 'www.baidu.com', 'www.deepseek.com', 'www.kimi.com', 'auditcn.kimi.ai', 'auditcn.moonshot.ai']) {
       check(await requestThrough(mixedPort, target), ['www.baidu.com','www.deepseek.com','www.kimi.com','auditcn.kimi.ai','auditcn.moonshot.ai'].includes(target) ? 'direct' : 'ai', source + ': native fallback with missing precise view ' + target);
     }
     // Pure remote references have no built-in data: record empty providers on a failed cold start.
@@ -283,9 +301,10 @@ async function run() {
     check(await requestThrough(mixedPort, 'domestic-probe.audit.iana.org'), 'direct', source + ': domestic direct still works after failed downloads');
     check(await requestAt(tcpInlets.telegram, ips.foreign), 'telegram', source + ': cold start Telegram GeoIP backup');
     const degraded = {};
-    for (const target of ['chatgpt.com', 'gemini.google.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
+    for (const target of ['chatgpt.com', 'gemini.google.com', 'copilot.microsoft.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
     check(degraded['chatgpt.com'], 'ai', source + ': native ChatGPT fallback after failed downloads');
     check(degraded['gemini.google.com'], 'ai', source + ': native Gemini fallback after failed downloads');
+    check(degraded['copilot.microsoft.com'], 'ai', source + ': native Copilot fallback after failed downloads');
     observations.push({source, tcp, known, processResults, failedColdStart: {providersEmpty: Object.keys(sourceCache.providers), classificationReady: false, observedRoutes: degraded}});
   }
   const supplied = profile('js');
@@ -294,7 +313,7 @@ async function run() {
   const providerInput = {...supplied, proxies: [nodes.find(node => node.name === nodeName('direct'))], 'proxy-groups': [], rules: [], 'rule-providers': {},
     'proxy-providers': {subscription: {type: 'file', path: providerFile}}};
   const withProvider = normalize(ctx.main(providerInput));
-  withProvider.dns = normalize(supplied.dns);
+  check(withProvider.dns, supplied.dns, 'local DNS is preserved with file node providers');
   withProvider.rules = withProvider.rules.map(row => row.replace(/,DIRECT(?=,|$)/g, ',' + nodeName('direct')));
   for (const [name, provider] of Object.entries(withProvider['rule-providers'])) {
     withProvider['rule-providers'][name] = supplied['rule-providers'][name];

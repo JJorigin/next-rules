@@ -15,7 +15,7 @@ Next-Rules 帮你给 AI、Google、YouTube 和流媒体等服务分别选线路�
 
 ### 3X-UI 全局路由规则 → Mihomo
 
-1. 在 **订阅设置 → Clash / Mihomo** 中开启 **启用路由**和 **Use DNS from remote rules**（使用远程规则中的 DNS）。若找不到第二项，请升级面板。
+1. 在 **订阅设置 → Clash / Mihomo** 中开启 **启用路由**。
 2. 将以下任意一个地址填入 **全局路由规则**，然后保存。
 
    **GitHub Raw**
@@ -72,20 +72,14 @@ FlClash Windows 如需按软件进程分流，请在客户端开启**查找进�
 
 ## DNS 与分流
 
-已识别的普通国内服务用本地线路解析。能按域名识别的场景使用对应组的线路解析。未识别的域名通过**默认代理**查询，再按结果分流。未收录的国内服务可能多一次代理查询，或者拿到不同的 CDN 地址。
-
-让订阅或脚本提供的 DNS 生效。
-
-- **3X-UI** 开启远程 DNS 开关后，在客户端刷新完整订阅。
-- **Clash Verge Rev** 在**设置 → DNS 覆写**中关闭当前订阅的覆写。
-- **FlClash Windows** 清除全局和当前订阅里已启用的 **DNS 覆写项**，保持**追加系统 DNS**关闭。
+DNS 由客户端的 Mihomo 按你的订阅或客户端设置处理。未收录的域名可能先查询真实地址，以判断是否该走国内直连。更新远程规则后，请刷新客户端的完整订阅。
 
 Windows 用户请手动开启 **TUN（虚拟网卡）**和**严格路由**。
 
 - 在 **Clash Verge Rev** 的**设置**中开启**虚拟网卡模式**。点旁边的齿轮，开启**自动设置全局路由**和**严格路由**。有 **DNS 模式**选项时保持 **Auto**。
 - 在 **FlClash Windows** 开启虚拟网卡，进入 **工具 → 进阶配置 → 网络 → 虚拟网卡 → 添加覆写项**，添加并开启**严格路由**。
 
-批量安装前，先在一台设备上确认国内服务直连、场景组出口和 DNS 检测结果。检查时可临时关闭浏览器自己的安全 DNS，测完再恢复。WebRTC 的直连出口在浏览器中另外管理。
+批量安装前，先在一台设备上确认国内服务直连、YouTube 播放、常用网站图片和 DNS 检测结果。WebRTC 的直连出口由浏览器设置管理。
 
 ## 规则更新
 
@@ -96,12 +90,12 @@ Windows 用户请手动开启 **TUN（虚拟网卡）**和**严格路由**。
 
 ## 兼容性与边界
 
-使用 Mihomo 1.19.33、1.19.34 和 FlClash Windows 0.9.4 的内核验证 DNS 与分流。其他客户端能否使用，取决于它的 Mihomo 内核和订阅支持。
+使用 Mihomo 1.19.33、1.19.34 和 FlClash Windows 0.9.4 的内核验证。公网 DNS 出口以你设备的测试结果为准。其他客户端能否使用，取决于它的 Mihomo 内核和订阅支持。
 
 ## 规则来源与鸣谢
 
 - 服务分类和地址数据参考了规则库及服务商公开资料。 [MetaCubeX 规则库](https://github.com/MetaCubeX/meta-rules-dat)
-- AI 名单引用以下项目；地址补充也覆盖语音连接。 [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) · [Sukka AI IP](https://ruleset.skk.moe/Clash/ip/ai.txt) · [OpenAI 网络说明](https://help.openai.com/en/articles/9247338-network-recommendations-for-chatgpt-errors-on-web-and-apps)
+- AI 服务参考 VPSDance 的分类。ChatGPT 语音地址从 OpenAI 的官方清单定期更新。 [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) · [OpenAI 网络说明](https://help.openai.com/en/articles/9247338-network-recommendations-for-chatgpt-errors-on-web-and-apps)
 - 分流设计参考了以下项目。 [Perfect-Rules](https://github.com/n0de-sudo/Perfect-Rules) · [Hrules](https://github.com/hcloudlab/Hrules) · [Custom OpenClash Rules](https://github.com/Aethersailor/Custom_OpenClash_Rules)
 - 部分流媒体规则引用或参考了以下项目。 [blackmatrix7](https://github.com/blackmatrix7/ios_rule_script) · [liandu2024](https://github.com/liandu2024/clash) · [Sukka](https://github.com/SukkaW/Surge)
 

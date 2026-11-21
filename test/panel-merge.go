@@ -55,11 +55,7 @@ func main() {
         groups := base["proxy-groups"].([]any)
         require(clashProxyGroupName(groups[0])=="🚀 默认代理 [自选]" && clashProxyGroupName(groups[len(groups)-1])=="PROXY", "panel group ordering")
         require(groups[0].(map[string]any)["empty-fallback"]=="REJECT", "empty fallback field is carried")
-        if allowClientDNS {
-            require(reflect.DeepEqual(base["dns"],fragment["dns"]), "opted-in remote DNS is delivered")
-        } else {
-            require(reflect.DeepEqual(beforeDNS,base["dns"]), "disabled remote DNS leaves client DNS unchanged")
-        }
+        require(reflect.DeepEqual(beforeDNS,base["dns"]), "remote routing preserves original DNS with either setting")
         require(reflect.DeepEqual(beforeTun,base["tun"]), "TUN survives")
         require(reflect.DeepEqual(beforeProxies,base["proxies"]), "panel nodes survive")
         updated, err := json.Marshal(fragment)

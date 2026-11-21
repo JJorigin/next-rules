@@ -1,38 +1,6 @@
 # Next-Rules 2.3 · 3X-UI 远程路由
 # 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。
-# 面板须允许远程 DNS 配置；TUN 和 IPv6 开关由客户端管理。
-dns:
-  enable: true
-  enhanced-mode: "fake-ip"
-  fake-ip-range: "198.18.0.1/16"
-  fake-ip-range6: "fdfe:dcba:9876::1/64"
-  fake-ip-filter-mode: "blacklist"
-  fake-ip-filter: ["+.lan","+.local","+.arpa","time.*.com","ntp.*.com","+.pool.ntp.org","+.market.xiaomi.com","localhost.ptlogin2.qq.com","*.msftncsi.com","www.msftconnecttest.com"]
-  ipv6: true
-  prefer-h3: false
-  respect-rules: false
-  default-nameserver: ["223.5.5.5","119.29.29.29"]
-  proxy-server-nameserver: ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
-  proxy-server-nameserver-policy: {}
-  direct-nameserver: ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
-  direct-nameserver-follow-policy: true
-  nameserver-policy:
-    "geosite:private": ["system"]
-    "rule-set:next-rules-v2-dns-00": ["https://1.1.1.1/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-01": ["https://1.1.1.1/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-02": ["https://1.1.1.1/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-03": ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
-    "rule-set:next-rules-v2-dns-04": ["https://1.1.1.1/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-05": ["https://1.1.1.1/dns-query#%F0%9F%93%BA%20YouTube%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%93%BA%20YouTube%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-06": ["https://1.1.1.1/dns-query#%F0%9F%94%8D%20%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%94%8D%20%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-07": ["https://1.1.1.1/dns-query#%F0%9F%92%B0%20%E5%B8%81%E5%9C%88%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%92%B0%20%E5%B8%81%E5%9C%88%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-08": ["https://1.1.1.1/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-09": ["https://1.1.1.1/dns-query#%F0%9F%8E%AC%20%E5%85%A8%E7%90%83%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8E%AC%20%E5%85%A8%E7%90%83%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-10": ["https://1.1.1.1/dns-query#%F0%9F%8D%8E%20%E8%8B%B9%E6%9E%9C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8D%8E%20%E8%8B%B9%E6%9E%9C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-11": ["https://1.1.1.1/dns-query#%F0%9F%92%AC%20%E7%94%B5%E6%8A%A5%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%92%AC%20%E7%94%B5%E6%8A%A5%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D"]
-    "rule-set:next-rules-v2-dns-12": ["https://1.1.1.1/dns-query#%E2%93%82%EF%B8%8F%20%E5%BE%AE%E8%BD%AF%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%E2%93%82%EF%B8%8F%20%E5%BE%AE%E8%BD%AF%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
-  fallback: []
-  nameserver: ["https://1.1.1.1/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D"]
+# DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
 rule-providers:
   next-rules-v2-ai-context:
@@ -42,7 +10,7 @@ rule-providers:
     url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-ai-context.yaml"
+    path: "./providers/ai/next-rules-v2-ai-context.yaml"
   next-rules-v2-ai-domain:
     type: "http"
     behavior: "classical"
@@ -50,7 +18,7 @@ rule-providers:
     url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-ai-domain.yaml"
+    path: "./providers/ai/next-rules-v2-ai-domain.yaml"
   next-rules-v2-ai-regex:
     type: "http"
     behavior: "classical"
@@ -59,14 +27,14 @@ rule-providers:
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
     path: "./providers/next-rules-v2-ai-regex.yaml"
-  next-rules-v2-ai-ip:
+  next-rules-v2-ai-voice:
     type: "http"
-    behavior: "classical"
-    format: "text"
-    url: "https://ruleset.skk.moe/Clash/ip/ai.txt"
+    behavior: "ipcidr"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/voice-ip.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-ai-ip.text"
+    path: "./providers/next-rules-v2-ai-voice.yaml"
   next-rules-v2-crypto:
     type: "http"
     behavior: "classical"
@@ -204,131 +172,6 @@ rule-providers:
     proxy: "🚀 默认代理 [自选]"
     path-in-bundle: "geo/geoip/telegram.mrs"
     path: "./providers/next-rules-v2-telegram-ip.mrs"
-  next-rules-v2-dns-00:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,category-ads-all"
-  next-rules-v2-dns-01:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "AND,((RULE-SET,next-rules-v2-ai-domain))"
-      - "GEOSITE,openai"
-      - "GEOSITE,anthropic"
-      - "GEOSITE,google-gemini"
-      - "GEOSITE,cursor"
-      - "GEOSITE,github-copilot"
-      - "GEOSITE,perplexity"
-      - "GEOSITE,poe"
-      - "GEOSITE,windsurf"
-      - "GEOSITE,elevenlabs"
-  next-rules-v2-dns-02:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,niconico"
-      - "GEOSITE,bilibili@!cn"
-      - "GEOSITE,iqiyi@!cn"
-  next-rules-v2-dns-03:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,apple-cn"
-      - "GEOSITE,microsoft@cn"
-      - "GEOSITE,steam@cn"
-      - "GEOSITE,CN"
-  next-rules-v2-dns-04:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "AND,((RULE-SET,next-rules-v2-ai-regex))"
-  next-rules-v2-dns-05:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,youtube"
-  next-rules-v2-dns-06:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,google"
-  next-rules-v2-dns-07:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "AND,((RULE-SET,next-rules-v2-crypto))"
-  next-rules-v2-dns-08:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,mytvsuper"
-      - "GEOSITE,now"
-      - "GEOSITE,viu"
-      - "GEOSITE,rthk"
-      - "GEOSITE,bahamut"
-      - "GEOSITE,litv"
-      - "GEOSITE,hamivideo"
-      - "GEOSITE,catchplay"
-      - "GEOSITE,kkbox"
-      - "AND,((RULE-SET,next-rules-v2-media-linetv-domain),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net))))"
-      - "AND,((RULE-SET,next-rules-v2-media-friday-domain),(NOT,((DOMAIN-SUFFIX,fetnet.net))))"
-      - "GEOSITE,abema"
-      - "GEOSITE,tver"
-      - "GEOSITE,unext"
-      - "GEOSITE,nhk"
-      - "GEOSITE,radiko"
-      - "AND,((RULE-SET,next-rules-v2-media-hulujp-domain))"
-      - "GEOSITE,hotstar"
-  next-rules-v2-dns-09:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,netflix"
-      - "GEOSITE,disney"
-      - "GEOSITE,hbo"
-      - "GEOSITE,primevideo"
-      - "GEOSITE,apple-tvplus"
-      - "GEOSITE,spotify"
-      - "GEOSITE,twitch"
-      - "GEOSITE,cbs"
-      - "GEOSITE,nbcuniversal"
-      - "GEOSITE,discoveryplus"
-      - "GEOSITE,bbc"
-      - "GEOSITE,amc"
-      - "GEOSITE,pbs"
-      - "GEOSITE,formula1"
-      - "GEOSITE,dazn"
-      - "GEOSITE,mubi"
-      - "GEOSITE,vimeo"
-      - "GEOSITE,dailymotion"
-      - "GEOSITE,plutotv"
-      - "GEOSITE,tubi"
-      - "GEOSITE,plex"
-      - "GEOSITE,sling"
-      - "GEOSITE,roku"
-      - "GEOSITE,deezer"
-      - "GEOSITE,soundcloud"
-      - "GEOSITE,tidal"
-      - "AND,((RULE-SET,next-rules-v2-media-channel4-domain))"
-      - "AND,((RULE-SET,next-rules-v2-media-itv-domain))"
-      - "AND,((RULE-SET,next-rules-v2-media-fubo-domain))"
-      - "AND,((RULE-SET,next-rules-v2-media-crunchyroll-domain))"
-  next-rules-v2-dns-10:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,apple"
-  next-rules-v2-dns-11:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,telegram"
-  next-rules-v2-dns-12:
-    type: "inline"
-    behavior: "classical"
-    payload:
-      - "GEOSITE,microsoft"
 
 proxy-groups:
   - name: "🚀 默认代理 [自选]"
@@ -575,11 +418,13 @@ rules:
   - "AND,((NETWORK,UDP),(GEOSITE,apple)),REJECT"
   - "GEOSITE,telegram,💬 电报专用 [自选]"
   - "AND,((NETWORK,UDP),(GEOSITE,telegram)),REJECT"
+  - "AND,((GEOSITE,category-ai-!cn),(GEOSITE,microsoft)),🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,category-ai-!cn),(GEOSITE,microsoft)),REJECT"
   - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
   - "AND,((NETWORK,UDP),(GEOSITE,microsoft)),REJECT"
   - "GEOIP,private,DIRECT"
-  - "RULE-SET,next-rules-v2-ai-ip,🤖 AI服务 [自选],no-resolve"
-  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-ip,no-resolve)),REJECT"
+  - "AND,((NETWORK,UDP),(DST-PORT,3478),(RULE-SET,next-rules-v2-ai-voice,no-resolve)),🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(DST-PORT,3478),(RULE-SET,next-rules-v2-ai-voice,no-resolve)),REJECT"
   - "RULE-SET,next-rules-v2-telegram-ip,💬 电报专用 [自选],no-resolve"
   - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-telegram-ip,no-resolve)),REJECT"
   - "GEOIP,telegram,💬 电报专用 [自选],no-resolve"

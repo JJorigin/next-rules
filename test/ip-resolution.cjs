@@ -17,10 +17,13 @@ const home = fs.mkdtempSync(path.join(root, '.cache/ip-resolution-' + variant + 
 const h = require('./harness.cjs')({flavor: variant === 'flclash' ? 'flclash' : 'verge', exe, home});
 const {host, bind, closers, close, udpServer, fakeOutbound, requestThrough} = h;
 const context = vm.createContext({});
-const code = process.argv.includes('--released') ? execFileSync('git', ['show', 'v2.1:v2/next-rules.js'], {cwd: root, encoding: 'utf8'}) : fs.readFileSync(path.join(root, 'v2/next-rules.js'), 'utf8');
+const released = process.argv.includes('--released');
+const code = released ? execFileSync('git', ['show', 'v2.1:v2/next-rules.js'], {cwd: root, encoding: 'utf8'}) : fs.readFileSync(path.join(root, 'v2/next-rules.js'), 'utf8');
 vm.runInContext(code, context);
 const fragment = JSON.parse(JSON.stringify(context.remoteFragment()));
-const cache = require('../v2/data/source-cache.json').providers;
+const cache = released
+  ? JSON.parse(execFileSync('git', ['show', 'v2.1:v2/data/source-cache.json'], {cwd: root, encoding: 'utf8'})).providers
+  : require('../v2/data/source-cache.json').providers;
 const group = require('../tools/v2-policy.cjs').group;
 const results = [];
 const metadb = process.argv.includes('--metadb');
@@ -28,7 +31,7 @@ const ipv6 = process.argv.includes('--ipv6');
 let checks = 0;
 // Public vendor/resolver addresses below are simulated destinations, never contacted.
 const targets = {
-  'late-voice.audit.iana.org': {ip: '20.194.216.119', wanted: 'ai'},
+  'late-voice.audit.iana.org': {ip: released ? '20.194.216.119' : cache['ai-voice'].payload.find(prefix=>!prefix.includes(':')).split('/')[0], wanted: released ? 'ai' : 'default'},
   'late-telegram.audit.iana.org': {ip: '149.154.160.1', wanted: 'telegram'},
   'late-netflix.audit.iana.org': {ip: '45.57.0.1', wanted: 'media'},
   'late-google.audit.iana.org': {ip: '74.125.250.129', wanted: 'google'},
@@ -38,7 +41,12 @@ const targets = {
 };
 if (ipv6) {
   const netflix = JSON.parse(fs.readFileSync(path.join(resources, 'netflix-fixture.json'), 'utf8'));
-  targets['late-voice.audit.iana.org'].ip = cache['ai-context'].payload.find(row => row.startsWith('IP-CIDR6,')).split(',')[1].split('/')[0];
+  // The IPv6 path uses a dedicated AI network. The current voice list is IPv4.
+  delete targets['late-voice.audit.iana.org'];
+  targets['late-ai-network.audit.iana.org'] = {
+    ip: cache['ai-context'].payload.find(row => row.startsWith('IP-CIDR6,')).split(',')[1].split('/')[0],
+    wanted: 'ai'
+  };
   targets['late-telegram.audit.iana.org'].ip = '2001:b28:f23d::1';
   targets['late-netflix.audit.iana.org'].ip = netflix.ipv6;
   targets['late-google.audit.iana.org'].ip = '2001:4860:4860::8888';
@@ -114,14 +122,26 @@ async function run() {
       assert.ok(loaded.every(item => (item.ruleCount ?? item.count ?? item.Count) > 0), 'file rule providers must finish loading');
     }
     for (const label of labels.filter(label => label !== 'direct')) await controller.select(group[label], 'Probe ' + label);
+    if (!released) {
+      for (const [domain, wanted] of [['api.openai.com', 'ai'], ['www.youtube.com', 'google']]) {
+        const start = lookups.length;
+        assert.equal(await requestThrough(mixedPort, domain), wanted, 'known service routes by domain');checks++;
+        assert.equal(lookups.slice(start).includes(domain), false, 'known service needs no routing DNS query');checks++;
+      }
+    }
     const routes = {};
     for (const [domain, item] of Object.entries(targets)) {
       const byIP = await requestThrough(mixedPort, ipv6 ? '[' + item.ip + ']' : item.ip);
+      const start = lookups.length;
       const byDomain = await requestThrough(mixedPort, domain);
-      routes[domain] = {byIP, byDomain, wanted: item.wanted};
+      const queried = lookups.slice(start).includes(domain);
+      routes[domain] = {byIP, byDomain, wanted: item.wanted, queried};
       if (!process.argv.includes('--observe')) {
         assert.equal(byIP, item.wanted, 'known IP ' + domain + '/geodata=' + geodata);checks++;
         assert.equal(byDomain, item.wanted, 'DNS-resolved IP ' + domain + '/geodata=' + geodata);checks++;
+        if (!released) {
+          assert.equal(queried, true, 'unclassified name needs routing DNS ' + domain);checks++;
+        }
       }
     }
     results.push({geodata, backend: geodata ? 'GeoIP.dat' : metadb ? 'MetaDB' : 'MMDB', routes});
