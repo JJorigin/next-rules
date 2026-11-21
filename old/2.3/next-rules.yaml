@@ -1,0 +1,614 @@
+# Next-Rules 2.3 · 3X-UI 远程路由
+# 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。
+# 面板须允许远程 DNS 配置；TUN 和 IPv6 开关由客户端管理。
+dns:
+  enable: true
+  enhanced-mode: "fake-ip"
+  fake-ip-range: "198.18.0.1/16"
+  fake-ip-range6: "fdfe:dcba:9876::1/64"
+  fake-ip-filter-mode: "blacklist"
+  fake-ip-filter: ["+.lan","+.local","+.arpa","time.*.com","ntp.*.com","+.pool.ntp.org","+.market.xiaomi.com","localhost.ptlogin2.qq.com","*.msftncsi.com","www.msftconnecttest.com"]
+  ipv6: true
+  prefer-h3: false
+  respect-rules: false
+  default-nameserver: ["223.5.5.5","119.29.29.29"]
+  proxy-server-nameserver: ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
+  proxy-server-nameserver-policy: {}
+  direct-nameserver: ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
+  direct-nameserver-follow-policy: true
+  nameserver-policy:
+    "geosite:private": ["system"]
+    "rule-set:next-rules-v2-dns-00": ["https://1.1.1.1/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-01": ["https://1.1.1.1/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-02": ["https://1.1.1.1/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-03": ["https://dns.alidns.com/dns-query#DIRECT","https://doh.pub/dns-query#DIRECT"]
+    "rule-set:next-rules-v2-dns-04": ["https://1.1.1.1/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%A4%96%20AI%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-05": ["https://1.1.1.1/dns-query#%F0%9F%93%BA%20YouTube%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%93%BA%20YouTube%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-06": ["https://1.1.1.1/dns-query#%F0%9F%94%8D%20%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%94%8D%20%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-07": ["https://1.1.1.1/dns-query#%F0%9F%92%B0%20%E5%B8%81%E5%9C%88%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%92%B0%20%E5%B8%81%E5%9C%88%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-08": ["https://1.1.1.1/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8C%8F%20%E4%BA%9A%E5%A4%AA%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-09": ["https://1.1.1.1/dns-query#%F0%9F%8E%AC%20%E5%85%A8%E7%90%83%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8E%AC%20%E5%85%A8%E7%90%83%E6%B5%81%E5%AA%92%E4%BD%93%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-10": ["https://1.1.1.1/dns-query#%F0%9F%8D%8E%20%E8%8B%B9%E6%9E%9C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%8D%8E%20%E8%8B%B9%E6%9E%9C%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-11": ["https://1.1.1.1/dns-query#%F0%9F%92%AC%20%E7%94%B5%E6%8A%A5%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%92%AC%20%E7%94%B5%E6%8A%A5%E4%B8%93%E7%94%A8%20%5B%E8%87%AA%E9%80%89%5D"]
+    "rule-set:next-rules-v2-dns-12": ["https://1.1.1.1/dns-query#%E2%93%82%EF%B8%8F%20%E5%BE%AE%E8%BD%AF%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%E2%93%82%EF%B8%8F%20%E5%BE%AE%E8%BD%AF%E6%9C%8D%E5%8A%A1%20%5B%E8%87%AA%E9%80%89%5D"]
+  fallback: []
+  nameserver: ["https://1.1.1.1/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D","https://8.8.8.8/dns-query#%F0%9F%9A%80%20%E9%BB%98%E8%AE%A4%E4%BB%A3%E7%90%86%20%5B%E8%87%AA%E9%80%89%5D"]
+
+rule-providers:
+  next-rules-v2-ai-context:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-ai-context.yaml"
+  next-rules-v2-ai-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-ai-domain.yaml"
+  next-rules-v2-ai-regex:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-regex.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-ai-regex.yaml"
+  next-rules-v2-ai-ip:
+    type: "http"
+    behavior: "classical"
+    format: "text"
+    url: "https://ruleset.skk.moe/Clash/ip/ai.txt"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-ai-ip.text"
+  next-rules-v2-crypto:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-crypto.yaml"
+  next-rules-v2-media-channel4:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-channel4.yaml"
+  next-rules-v2-media-channel4-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/channel4-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-channel4-domain.yaml"
+  next-rules-v2-media-itv:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-itv.yaml"
+  next-rules-v2-media-itv-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/itv-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-itv-domain.yaml"
+  next-rules-v2-media-fubo:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-fubo.yaml"
+  next-rules-v2-media-fubo-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/fubo-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-fubo-domain.yaml"
+  next-rules-v2-media-crunchyroll:
+    type: "http"
+    behavior: "classical"
+    format: "text"
+    url: "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-crunchyroll.text"
+  next-rules-v2-media-crunchyroll-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/crunchyroll-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-crunchyroll-domain.yaml"
+  next-rules-v2-media-linetv:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-linetv.yaml"
+  next-rules-v2-media-linetv-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/linetv-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-linetv-domain.yaml"
+  next-rules-v2-media-friday:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-friday.yaml"
+  next-rules-v2-media-friday-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/friday-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-friday-domain.yaml"
+  next-rules-v2-media-hulujp:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-hulujp.yaml"
+  next-rules-v2-media-hulujp-domain:
+    type: "http"
+    behavior: "classical"
+    format: "yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/hulujp-domains.yaml"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path: "./providers/next-rules-v2-media-hulujp-domain.yaml"
+  next-rules-v2-software:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "PROCESS-NAME-WILDCARD,*Discord*"
+      - "PROCESS-NAME-WILDCARD,*Steam*"
+      - "PROCESS-NAME-WILDCARD,*EpicGames*"
+      - "PROCESS-NAME-WILDCARD,*WhatsApp*"
+  next-rules-v2-telegram-ip:
+    type: "http"
+    behavior: "ipcidr"
+    format: "mrs"
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
+    interval: 86400
+    proxy: "🚀 默认代理 [自选]"
+    path-in-bundle: "geo/geoip/telegram.mrs"
+    path: "./providers/next-rules-v2-telegram-ip.mrs"
+  next-rules-v2-dns-00:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,category-ads-all"
+  next-rules-v2-dns-01:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "AND,((RULE-SET,next-rules-v2-ai-domain))"
+      - "GEOSITE,openai"
+      - "GEOSITE,anthropic"
+      - "GEOSITE,google-gemini"
+      - "GEOSITE,cursor"
+      - "GEOSITE,github-copilot"
+      - "GEOSITE,perplexity"
+      - "GEOSITE,poe"
+      - "GEOSITE,windsurf"
+      - "GEOSITE,elevenlabs"
+  next-rules-v2-dns-02:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,niconico"
+      - "GEOSITE,bilibili@!cn"
+      - "GEOSITE,iqiyi@!cn"
+  next-rules-v2-dns-03:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,apple-cn"
+      - "GEOSITE,microsoft@cn"
+      - "GEOSITE,steam@cn"
+      - "GEOSITE,CN"
+  next-rules-v2-dns-04:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "AND,((RULE-SET,next-rules-v2-ai-regex))"
+  next-rules-v2-dns-05:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,youtube"
+  next-rules-v2-dns-06:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,google"
+  next-rules-v2-dns-07:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "AND,((RULE-SET,next-rules-v2-crypto))"
+  next-rules-v2-dns-08:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,mytvsuper"
+      - "GEOSITE,now"
+      - "GEOSITE,viu"
+      - "GEOSITE,rthk"
+      - "GEOSITE,bahamut"
+      - "GEOSITE,litv"
+      - "GEOSITE,hamivideo"
+      - "GEOSITE,catchplay"
+      - "GEOSITE,kkbox"
+      - "AND,((RULE-SET,next-rules-v2-media-linetv-domain),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net))))"
+      - "AND,((RULE-SET,next-rules-v2-media-friday-domain),(NOT,((DOMAIN-SUFFIX,fetnet.net))))"
+      - "GEOSITE,abema"
+      - "GEOSITE,tver"
+      - "GEOSITE,unext"
+      - "GEOSITE,nhk"
+      - "GEOSITE,radiko"
+      - "AND,((RULE-SET,next-rules-v2-media-hulujp-domain))"
+      - "GEOSITE,hotstar"
+  next-rules-v2-dns-09:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,netflix"
+      - "GEOSITE,disney"
+      - "GEOSITE,hbo"
+      - "GEOSITE,primevideo"
+      - "GEOSITE,apple-tvplus"
+      - "GEOSITE,spotify"
+      - "GEOSITE,twitch"
+      - "GEOSITE,cbs"
+      - "GEOSITE,nbcuniversal"
+      - "GEOSITE,discoveryplus"
+      - "GEOSITE,bbc"
+      - "GEOSITE,amc"
+      - "GEOSITE,pbs"
+      - "GEOSITE,formula1"
+      - "GEOSITE,dazn"
+      - "GEOSITE,mubi"
+      - "GEOSITE,vimeo"
+      - "GEOSITE,dailymotion"
+      - "GEOSITE,plutotv"
+      - "GEOSITE,tubi"
+      - "GEOSITE,plex"
+      - "GEOSITE,sling"
+      - "GEOSITE,roku"
+      - "GEOSITE,deezer"
+      - "GEOSITE,soundcloud"
+      - "GEOSITE,tidal"
+      - "AND,((RULE-SET,next-rules-v2-media-channel4-domain))"
+      - "AND,((RULE-SET,next-rules-v2-media-itv-domain))"
+      - "AND,((RULE-SET,next-rules-v2-media-fubo-domain))"
+      - "AND,((RULE-SET,next-rules-v2-media-crunchyroll-domain))"
+  next-rules-v2-dns-10:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,apple"
+  next-rules-v2-dns-11:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,telegram"
+  next-rules-v2-dns-12:
+    type: "inline"
+    behavior: "classical"
+    payload:
+      - "GEOSITE,microsoft"
+
+proxy-groups:
+  - name: "🚀 默认代理 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Direct|Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]"]
+  - name: "🤖 AI服务 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "🔍 谷歌服务 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "📺 YouTube [自选]"
+    type: "select"
+    default-selected: "🔍 谷歌服务 [自选]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["🔍 谷歌服务 [自选]","♻️ 自动选择 [系统]","DIRECT"]
+  - name: "🎬 全球流媒体 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "🌏 亚太流媒体 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "💬 电报专用 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "Ⓜ️ 微软服务 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "🍎 苹果服务 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "💰 币圈专用 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "🖥️ 软件分流 [自选]"
+    type: "select"
+    default-selected: "♻️ 自动选择 [系统]"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Pass|Compatible|Dns|Reject|RejectDrop"
+    proxies: ["♻️ 自动选择 [系统]","DIRECT"]
+  - name: "♻️ 自动选择 [系统]"
+    type: "url-test"
+    empty-fallback: "REJECT"
+    exclude-filter: "(?i)(?:^|[|｜]|\\[海外\\])[^A-Za-z0-9\\u3400-\\u9FFF]*(?:官网(?:地址|网址)?|官方(?:网站|网址|频道|群组|交流群)|流量(?:剩余|已用|总量|重置)?|剩余(?:流量)?|可用流量|已用流量|总流量|到期(?:时间|日期)?|过期(?:时间|日期)?|有效期|套餐(?:信息|名称|到期)?|订阅(?:信息|地址|链接|更新)?|(?:下次)?重置(?:时间|日期)?|traffic|remaining(?:[ _-]+traffic)?|expire[sd]?|expiry|quota|bandwidth|subscription|reset|official[ _-]+(?:website|site|channel)|website)(?=$|[\\s:：=|｜0-9-])"
+    include-all: true
+    exclude-type: "Direct|Pass|Compatible|Dns|Reject|RejectDrop"
+    url: "https://cp.cloudflare.com/generate_204"
+    interval: 300
+    tolerance: 50
+    lazy: true
+  - name: "🛑 广告拦截 [系统]"
+    type: "select"
+    proxies: ["REJECT","DIRECT"]
+
+rules:
+  - "GEOSITE,private,DIRECT"
+  - "GEOIP,private,DIRECT,no-resolve"
+  - "GEOSITE,category-ads-all,🛑 广告拦截 [系统]"
+  - "RULE-SET,next-rules-v2-ai-domain,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-domain)),REJECT"
+  - "GEOSITE,openai,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,openai)),REJECT"
+  - "GEOSITE,anthropic,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,anthropic)),REJECT"
+  - "GEOSITE,google-gemini,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,google-gemini)),REJECT"
+  - "GEOSITE,cursor,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,cursor)),REJECT"
+  - "GEOSITE,github-copilot,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,github-copilot)),REJECT"
+  - "GEOSITE,perplexity,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,perplexity)),REJECT"
+  - "GEOSITE,poe,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,poe)),REJECT"
+  - "GEOSITE,windsurf,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,windsurf)),REJECT"
+  - "GEOSITE,elevenlabs,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,elevenlabs)),REJECT"
+  - "GEOSITE,niconico,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,niconico)),REJECT"
+  - "GEOSITE,bilibili@!cn,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,bilibili@!cn)),REJECT"
+  - "GEOSITE,iqiyi@!cn,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,iqiyi@!cn)),REJECT"
+  - "GEOSITE,apple-cn,DIRECT"
+  - "GEOSITE,microsoft@cn,DIRECT"
+  - "GEOSITE,steam@cn,DIRECT"
+  - "GEOSITE,CN,DIRECT"
+  - "RULE-SET,next-rules-v2-ai-regex,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-regex)),REJECT"
+  - "GEOSITE,youtube,📺 YouTube [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,youtube)),REJECT"
+  - "GEOSITE,google,🔍 谷歌服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,google)),REJECT"
+  - "RULE-SET,next-rules-v2-crypto,💰 币圈专用 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-crypto)),REJECT"
+  - "GEOSITE,mytvsuper,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,mytvsuper)),REJECT"
+  - "GEOSITE,now,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,now)),REJECT"
+  - "GEOSITE,viu,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,viu)),REJECT"
+  - "GEOSITE,rthk,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,rthk)),REJECT"
+  - "GEOSITE,bahamut,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,bahamut)),REJECT"
+  - "GEOSITE,litv,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,litv)),REJECT"
+  - "GEOSITE,hamivideo,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,hamivideo)),REJECT"
+  - "GEOSITE,catchplay,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,catchplay)),REJECT"
+  - "GEOSITE,kkbox,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,kkbox)),REJECT"
+  - "AND,((RULE-SET,next-rules-v2-media-linetv-domain),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-linetv-domain),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),REJECT"
+  - "AND,((RULE-SET,next-rules-v2-media-friday-domain),(NOT,((DOMAIN-SUFFIX,fetnet.net)))),🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-friday-domain),(NOT,((DOMAIN-SUFFIX,fetnet.net)))),REJECT"
+  - "GEOSITE,abema,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,abema)),REJECT"
+  - "GEOSITE,tver,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,tver)),REJECT"
+  - "GEOSITE,unext,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,unext)),REJECT"
+  - "GEOSITE,nhk,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,nhk)),REJECT"
+  - "GEOSITE,radiko,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,radiko)),REJECT"
+  - "RULE-SET,next-rules-v2-media-hulujp-domain,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-hulujp-domain)),REJECT"
+  - "GEOSITE,hotstar,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,hotstar)),REJECT"
+  - "GEOSITE,netflix,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,netflix)),REJECT"
+  - "GEOSITE,disney,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,disney)),REJECT"
+  - "GEOSITE,hbo,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,hbo)),REJECT"
+  - "GEOSITE,primevideo,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,primevideo)),REJECT"
+  - "GEOSITE,apple-tvplus,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,apple-tvplus)),REJECT"
+  - "GEOSITE,spotify,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,spotify)),REJECT"
+  - "GEOSITE,twitch,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,twitch)),REJECT"
+  - "GEOSITE,cbs,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,cbs)),REJECT"
+  - "GEOSITE,nbcuniversal,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,nbcuniversal)),REJECT"
+  - "GEOSITE,discoveryplus,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,discoveryplus)),REJECT"
+  - "GEOSITE,bbc,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,bbc)),REJECT"
+  - "GEOSITE,amc,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,amc)),REJECT"
+  - "GEOSITE,pbs,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,pbs)),REJECT"
+  - "GEOSITE,formula1,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,formula1)),REJECT"
+  - "GEOSITE,dazn,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,dazn)),REJECT"
+  - "GEOSITE,mubi,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,mubi)),REJECT"
+  - "GEOSITE,vimeo,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,vimeo)),REJECT"
+  - "GEOSITE,dailymotion,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,dailymotion)),REJECT"
+  - "GEOSITE,plutotv,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,plutotv)),REJECT"
+  - "GEOSITE,tubi,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,tubi)),REJECT"
+  - "GEOSITE,plex,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,plex)),REJECT"
+  - "GEOSITE,sling,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,sling)),REJECT"
+  - "GEOSITE,roku,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,roku)),REJECT"
+  - "GEOSITE,deezer,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,deezer)),REJECT"
+  - "GEOSITE,soundcloud,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,soundcloud)),REJECT"
+  - "GEOSITE,tidal,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,tidal)),REJECT"
+  - "RULE-SET,next-rules-v2-media-channel4-domain,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-channel4-domain)),REJECT"
+  - "RULE-SET,next-rules-v2-media-itv-domain,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-itv-domain)),REJECT"
+  - "RULE-SET,next-rules-v2-media-fubo-domain,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-fubo-domain)),REJECT"
+  - "RULE-SET,next-rules-v2-media-crunchyroll-domain,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-crunchyroll-domain)),REJECT"
+  - "GEOSITE,apple,🍎 苹果服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,apple)),REJECT"
+  - "GEOSITE,telegram,💬 电报专用 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,telegram)),REJECT"
+  - "GEOSITE,microsoft,Ⓜ️ 微软服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,microsoft)),REJECT"
+  - "GEOIP,private,DIRECT"
+  - "RULE-SET,next-rules-v2-ai-ip,🤖 AI服务 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-ip,no-resolve)),REJECT"
+  - "RULE-SET,next-rules-v2-telegram-ip,💬 电报专用 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-telegram-ip,no-resolve)),REJECT"
+  - "GEOIP,telegram,💬 电报专用 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(GEOIP,telegram,no-resolve)),REJECT"
+  - "GEOIP,netflix,🎬 全球流媒体 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(GEOIP,netflix,no-resolve)),REJECT"
+  - "GEOIP,google,🔍 谷歌服务 [自选],no-resolve"
+  - "AND,((NETWORK,UDP),(GEOIP,google,no-resolve)),REJECT"
+  - "GEOIP,CN,DIRECT"
+  - "GEOSITE,category-ai-!cn,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,category-ai-!cn)),REJECT"
+  - "RULE-SET,next-rules-v2-ai-context,🤖 AI服务 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-ai-context)),REJECT"
+  - "AND,((RULE-SET,next-rules-v2-media-linetv),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-linetv),(NOT,((DOMAIN-SUFFIX,line-cdn.net))),(NOT,((DOMAIN-SUFFIX,line-scdn.net)))),REJECT"
+  - "AND,((RULE-SET,next-rules-v2-media-friday),(NOT,((DOMAIN-SUFFIX,fetnet.net)))),🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-friday),(NOT,((DOMAIN-SUFFIX,fetnet.net)))),REJECT"
+  - "RULE-SET,next-rules-v2-media-hulujp,🌏 亚太流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-hulujp)),REJECT"
+  - "RULE-SET,next-rules-v2-media-channel4,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-channel4)),REJECT"
+  - "RULE-SET,next-rules-v2-media-itv,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-itv)),REJECT"
+  - "RULE-SET,next-rules-v2-media-fubo,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-fubo)),REJECT"
+  - "RULE-SET,next-rules-v2-media-crunchyroll,🎬 全球流媒体 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-media-crunchyroll)),REJECT"
+  - "RULE-SET,next-rules-v2-software,🖥️ 软件分流 [自选]"
+  - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-software)),REJECT"
+  - "NETWORK,UDP,🚀 默认代理 [自选]"
+  - "NETWORK,UDP,REJECT"
+  - "MATCH,🚀 默认代理 [自选]"

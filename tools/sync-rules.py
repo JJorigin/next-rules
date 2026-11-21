@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 AI_URL = "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml"
 VOICE_URL = "https://openai.com/chatgpt-voice.json"
 CRYPTO_URL = "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
+CRYPTO_FILE = "rules/crypto.yaml"
 OWN_RAW = "https://raw.githubusercontent.com/JJorigin/next-rules/main/"
 DOMAIN_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-REGEX", "DOMAIN-KEYWORD", "GEOSITE"}
 NETWORK_TYPES = {"IP-CIDR", "IP-CIDR6", "IP-ASN"}
@@ -110,7 +111,7 @@ def json_bytes(value: object) -> bytes:
 def fetch(url: str) -> bytes:
     if not url.startswith("https://"):
         raise ValueError("Upstream requests must use HTTPS")
-    headers = {"User-Agent": "Next-Rules-source-sync/2.1"}
+    headers = {"User-Agent": "Next-Rules-source-sync"}
     token = os.environ.get("NEXT_RULES_GITHUB_TOKEN")
     if token and urlsplit(url).hostname == "api.github.com":
         headers["Authorization"] = "Bearer " + token
@@ -207,6 +208,8 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
         raise ValueError("AI type partition is incomplete")
     voice = voice_prefixes(raw["voice"])
     crypto = parse_rows(raw["crypto"], "yaml", DOMAIN_TYPES)
+    ai_context_url = OWN_RAW + "rules/ai/context.yaml"
+    ai_domain_url = OWN_RAW + "rules/ai/domains-exact.yaml"
     outputs = {
         "rules/ai/upstream-global.yaml": raw["ai"],
         "rules/ai/domains-exact.yaml": render_yaml(exact, "AI 服务域名", AI_URL),
@@ -214,14 +217,18 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
         "rules/ai/context.yaml": render_yaml(deferred, "AI 服务补充条件", AI_URL),
         "rules/ai/voice-ip.yaml": render_yaml(voice, "ChatGPT 语音 IP", VOICE_URL),
         "test/fixtures/openai-voice.json": raw["voice"],
-        "test/fixtures/providers/crypto.yaml": raw["crypto"],
+        CRYPTO_FILE: raw["crypto"],
     }
     cache = {
-        "ai-context": {"url": OWN_RAW + "rules/ai/context.yaml", "behavior": "classical", "format": "yaml", "payload": deferred},
-        "ai-domain": {"url": OWN_RAW + "rules/ai/domains-exact.yaml", "behavior": "classical", "format": "yaml", "payload": exact},
+        # A different URL keeps a cached 2.3 response from populating the new local cache.
+        "ai-context": {"url": ai_context_url + "?v=2.4", "legacyUrl": ai_context_url,
+                       "behavior": "classical", "format": "yaml", "payload": deferred},
+        "ai-domain": {"url": ai_domain_url + "?v=2.4", "legacyUrl": ai_domain_url,
+                      "behavior": "classical", "format": "yaml", "payload": exact},
         "ai-regex": {"url": OWN_RAW + "rules/ai/domains-regex.yaml", "behavior": "classical", "format": "yaml", "payload": regex},
         "ai-voice": {"url": OWN_RAW + "rules/ai/voice-ip.yaml", "behavior": "ipcidr", "format": "yaml", "payload": voice},
-        "crypto": {"url": CRYPTO_URL, "behavior": "classical", "format": "yaml", "payload": crypto},
+        "crypto": {"url": OWN_RAW + CRYPTO_FILE, "legacyUrl": CRYPTO_URL,
+                   "behavior": "classical", "format": "yaml", "payload": crypto},
     }
     counts = {"ai_total": len(ai_rows), "ai_exact": len(exact), "ai_regex": len(regex),
               "ai_deferred": len(deferred), "ai_excluded": len(excluded), "voice_official": len(voice)}
@@ -230,15 +237,17 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
             if "url" not in item:
                 continue
             key = "media-" + item["id"]
-            rows = parse_rows(raw[key], item.get("format", "yaml"), AI_TYPES)
+            format = item.get("format", "yaml")
+            rows = parse_rows(raw[key], format, AI_TYPES)
             domains = [row for row in rows if row.split(",", 1)[0] in DOMAIN_TYPES]
             if not domains:
                 raise ValueError("No domain rules for " + key)
-            snapshot = "test/fixtures/providers/" + key + (".txt" if item.get("format") == "text" else ".yaml")
+            snapshot = "rules/media/upstream/" + item["id"] + (".txt" if format == "text" else ".yaml")
             outputs[snapshot] = raw[key]
             generated = "rules/media/" + item["id"] + "-domains.yaml"
             outputs[generated] = render_yaml(domains, item["name"] + " 域名", item["url"])
-            cache[key] = {"url": item["url"], "behavior": "classical", "format": item.get("format", "yaml"), "payload": rows}
+            cache[key] = {"url": OWN_RAW + snapshot, "legacyUrl": item["url"],
+                          "behavior": "classical", "format": format, "payload": rows}
             cache[key + "-domain"] = {"url": OWN_RAW + generated, "behavior": "classical", "format": "yaml", "payload": domains}
     outputs["v2/data/source-cache.json"] = json_bytes({
         "schema": 2, "upstream_ai": {"url": AI_URL, "payload": ai_rows, "excluded": excluded},
@@ -274,10 +283,10 @@ def from_checkout() -> tuple[dict[str, bytes], dict[str, dict]]:
     info = json.loads((ROOT / "rules/sources.json").read_text(encoding="utf-8"))["sources"]
     data = {"ai": (ROOT / "rules/ai/upstream-global.yaml").read_bytes(),
             "voice": (ROOT / "test/fixtures/openai-voice.json").read_bytes(),
-            "crypto": (ROOT / "test/fixtures/providers/crypto.yaml").read_bytes()}
+            "crypto": (ROOT / CRYPTO_FILE).read_bytes()}
     for key in info:
         if key.startswith("media-"):
-            prefix = ROOT / ("test/fixtures/providers/" + key)
+            prefix = ROOT / ("rules/media/upstream/" + key.removeprefix("media-"))
             paths = [Path(str(prefix) + suffix) for suffix in (".yaml", ".txt")]
             data[key] = next(file for file in paths if file.exists()).read_bytes()
     for key, contents in data.items():

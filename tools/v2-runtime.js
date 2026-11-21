@@ -1,4 +1,4 @@
-// Next-Rules 2.3 · Clash Verge Rev 订阅扩展脚本
+// Next-Rules 2.4 · Clash Verge Rev 订阅扩展脚本
 // DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
 const POLICY = /* GENERATED POLICY */ null;
@@ -144,9 +144,10 @@ function isOwnedProvider(name, definition) {
 
 const providerBase = (name) => name.replace(/-(?:[2-9]|[1-9][0-9]+)$/, "");
 
-function retiredAiProvider(name, definition) {
+function isRetiredProvider(name, definition) {
   const base = providerBase(name);
-  const previous = UPDATED_AI_PROVIDERS.has(base) ? POLICY.providers[base] : {
+  const current = POLICY.providers[base];
+  const previous = current?.legacyUrl ? {format: current.format, url: current.legacyUrl} : {
     "next-rules-v2-ai": { format: "yaml", url: "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" },
     "next-rules-v2-ai-ip": { format: "text", url: "https://ruleset.skk.moe/Clash/ip/ai.txt" }
   }[base];
@@ -161,7 +162,7 @@ function retiredAiProvider(name, definition) {
 
 function dropUnusedRetiredProviders(config) {
   const providers = asRecord(config["rule-providers"]);
-  const names = Object.keys(providers).filter(name => retiredAiProvider(name, providers[name]));
+  const names = Object.keys(providers).filter(name => isRetiredProvider(name, providers[name]));
   if (!names.length) return;
   const used = new Set(), visited = new WeakSet();
   const inspect = value => {
@@ -221,8 +222,10 @@ function ruleProviderRegistry(config, groupNames) {
 function providerDefinition(name, definition, groupNames = new Map()) {
   if (definition.type === "http") {
     // 启动时内核优先读缓存。清单收紧后使用新路径，避免沿用旧条目。
-    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/" : "./providers/";
-    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: directory + name + "." + definition.format };
+    const {legacyUrl, ...provider} = definition;
+    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/"
+      : legacyUrl ? "./providers/verified/" : "./providers/";
+    return { ...provider, proxy: groupNames.get(provider.proxy) || provider.proxy, path: directory + name + "." + provider.format };
   }
   return { ...definition, payload: [...definition.payload] };
 }

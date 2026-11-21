@@ -63,6 +63,17 @@ class SourceValidation(unittest.TestCase):
         self.assertNotIn('ai', cache['providers'])
         self.assertEqual(cache['providers']['ai-voice']['payload'], sync.voice_prefixes(raw['voice']))
 
+    def test_clients_use_the_reviewed_media_and_crypto_sources(self):
+        raw, metadata = sync.from_checkout()
+        generated = sync.build(raw, metadata)
+        providers = json.loads(generated["v2/data/source-cache.json"])["providers"]
+        for key in ("crypto", *(key for key in raw if key.startswith("media-"))):
+            with self.subTest(key=key):
+                provider = providers[key]
+                self.assertTrue(provider["url"].startswith(sync.OWN_RAW + "rules/"))
+                self.assertEqual(provider["legacyUrl"], metadata[key]["url"])
+                self.assertEqual(generated[provider["url"].removeprefix(sync.OWN_RAW)], raw[key])
+
     def test_shared_domains_and_networks_stay_out_of_ai_routes(self):
         for row in [
             "DOMAIN,assets.msn.com", "DOMAIN-SUFFIX,msn.com",

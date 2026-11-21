@@ -22,6 +22,7 @@ const media = require("../v2/data/media-platforms.json");
 const http = (source) => ({
   type: "http", behavior: source.behavior, format: source.format, url: source.url,
   interval: 86400, proxy: group.default,
+  ...(source.legacyUrl ? {legacyUrl: source.legacyUrl} : {}),
   ...(source["path-in-bundle"] ? {"path-in-bundle": source["path-in-bundle"]} : {})
 });
 const providers = Object.fromEntries(Object.entries(cache.providers)
@@ -65,6 +66,7 @@ const routes = [
   ["GEOSITE,youtube", group.youtube, true],
   ["GEOSITE,google", group.google, true],
   [use("crypto"), group.crypto, true],
+  ["GEOSITE,category-cryptocurrency", group.crypto, true],
   // 专用地区服务先于总分类；Apple TV+ 先于通用苹果服务。
   ...mediaRoutes(media.apac.filter((item) => !item.beforeCN), group.mediaAsia),
   ...mediaRoutes(media.global, group.media),
@@ -94,4 +96,4 @@ const routes = [
   ["MATCH", group.default]
 ];
 
-module.exports = { version: "2.3", group, providers, routes };
+module.exports = { version: "2.4", group, providers, routes };

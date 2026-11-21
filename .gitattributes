@@ -1,6 +1,8 @@
 * text=auto eol=lf
 *.mrs binary
 rules/ai/upstream-global.yaml -text
+rules/crypto.yaml -text
+rules/media/upstream/** -text
 test/fixtures/** -text
 rules/licenses/** -text
 # Historical snapshots retain their original bytes and whitespace.

@@ -403,7 +403,8 @@
   },
   "providers": {
     "ai-context": {
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml?v=2.4",
+      "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -439,7 +440,8 @@
       ]
     },
     "ai-domain": {
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.4",
+      "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1156,7 +1158,8 @@
       ]
     },
     "crypto": {
-      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/crypto.yaml",
+      "legacyUrl": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1167,7 +1170,8 @@
       ]
     },
     "media-channel4": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/channel4.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1185,7 +1189,8 @@
       ]
     },
     "media-itv": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/itv.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1205,7 +1210,8 @@
       ]
     },
     "media-fubo": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/fubo.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1223,7 +1229,8 @@
       ]
     },
     "media-crunchyroll": {
-      "url": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/crunchyroll.txt",
+      "legacyUrl": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list",
       "behavior": "classical",
       "format": "text",
       "payload": [
@@ -1243,7 +1250,8 @@
       ]
     },
     "media-linetv": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/linetv.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1274,7 +1282,8 @@
       ]
     },
     "media-friday": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/friday.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [
@@ -1292,7 +1301,8 @@
       ]
     },
     "media-hulujp": {
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/hulujp.yaml",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml",
       "behavior": "classical",
       "format": "yaml",
       "payload": [

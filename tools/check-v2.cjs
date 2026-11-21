@@ -109,7 +109,8 @@ for (const [section, owner] of [["global", group.media], ["apac", group.mediaAsi
     else {
       const provider = remote["rule-providers"]["next-rules-v2-media-" + item.id];
       assert.equal(provider.type, "http", item.name);
-      assert.equal(provider.url, item.url, item.name);
+      const extension = item.format === "text" ? "txt" : "yaml";
+      assert.equal(provider.url, "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/" + item.id + "." + extension, item.name);
       assert.equal(provider.interval, 86400, item.name);
       assert.ok(rules.some((rule) => rule.includes("RULE-SET,next-rules-v2-media-" + item.id) && rule.endsWith("," + owner)), item.name);
     }
@@ -166,7 +167,7 @@ const sourceCache = require("../v2/data/source-cache.json");
 const aiProvider = remote["rule-providers"]["next-rules-v2-ai-context"];
 const ai = sourceCache.upstream_ai.payload;
 assert.equal(aiProvider.type, "http");
-assert.equal(aiProvider.url, "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml");
+assert.equal(aiProvider.url, "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml?v=2.4");
 assert.equal(sourceCache.upstream_ai.url, "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml");
 assert.ok(!Object.hasOwn(aiProvider, "payload"), "the AI list is fetched remotely instead of embedded in the template");
 for (const host of ["openai.com", "chatgpt.com", "claude.ai", "gemini.google.com", "cursor.com", "copilot.microsoft.com"]) {
@@ -204,6 +205,7 @@ for (const [name, provider] of Object.entries(remote["rule-providers"])) {
   assert.equal(provider.proxy, group.default, name + " download uses the explicit proxy");
   assert.equal(provider.interval, 86400);
   assert.ok(!Object.hasOwn(provider, "payload"), name + " must not embed domain or IP snapshots");
+  assert.ok(!Object.hasOwn(provider, "legacyUrl"), name + " must not expose internal metadata to Mihomo");
 }
 const resolutionIndex = rules.indexOf("GEOIP,private,DIRECT");
 for (const condition of [voiceRule, "RULE-SET,next-rules-v2-telegram-ip," + group.telegram + ",no-resolve", "GEOIP,netflix," + group.media + ",no-resolve"]) {
@@ -214,11 +216,15 @@ const outdated = normalize(local);
 outdated["rule-providers"]["next-rules-v2-ai-context"].payload = ["DOMAIN,old.example"];
 assert.deepEqual(normalize(ctx.main(outdated)), local);
 const staleCacheProfile = normalize(local);
-for (const id of ["next-rules-v2-ai-domain", "next-rules-v2-ai-context"]) {
-  staleCacheProfile["rule-providers"][id].path = "./providers/" + id + ".yaml";
-  assert.notEqual(remote["rule-providers"][id].path, staleCacheProfile["rule-providers"][id].path);
+for (const [id, item] of Object.entries(sourceCache.providers)) {
+  if (!item.legacyUrl) continue;
+  const name = "next-rules-v2-" + id;
+  const previous = staleCacheProfile["rule-providers"][name];
+  previous.url = item.legacyUrl;
+  previous.path = "./providers/" + name + "." + item.format;
+  assert.notEqual(remote["rule-providers"][name].path, previous.path);
 }
-assert.deepEqual(normalize(ctx.main(normalize(staleCacheProfile))), local, "upgrading replaces both stale AI cache paths");
+assert.deepEqual(normalize(ctx.main(normalize(staleCacheProfile))), local, "upgrading replaces the old URLs and their cache paths");
 const previousDns = {"nameserver-policy": {"rule-set:next-rules-v2-ai-domain": ["system"]}};
 const staleWithDns = normalize(ctx.main({...normalize(staleCacheProfile), dns: previousDns}));
 assert.deepEqual(staleWithDns.dns, previousDns);
@@ -294,4 +300,4 @@ for(const entry of archived.files){
   assert.equal(require('node:crypto').createHash('sha256').update(data).digest('hex'),entry.sha256,entry.path);
 }
 
-console.log("Next-Rules 2.3 policy checks passed.");
+console.log("Next-Rules policy checks passed.");

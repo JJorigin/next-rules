@@ -80,7 +80,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add next-rules.yaml next-rules.js MEDIA.md rules/next-rules.yaml rules/next-rules.js rules/ai rules/media rules/sources.json v2/data/source-cache.json v2/next-rules.yaml v2/next-rules.js v2/MEDIA.md test/fixtures
+          git add next-rules.yaml next-rules.js MEDIA.md rules/next-rules.yaml rules/next-rules.js rules/ai rules/media rules/crypto.yaml rules/sources.json v2/data/source-cache.json v2/next-rules.yaml v2/next-rules.js v2/MEDIA.md test/fixtures
           git commit -m 'chore: refresh verified upstream rule data'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git push origin HEAD:main

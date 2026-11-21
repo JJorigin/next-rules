@@ -301,10 +301,11 @@ async function run() {
     check(await requestThrough(mixedPort, 'domestic-probe.audit.iana.org'), 'direct', source + ': domestic direct still works after failed downloads');
     check(await requestAt(tcpInlets.telegram, ips.foreign), 'telegram', source + ': cold start Telegram GeoIP backup');
     const degraded = {};
-    for (const target of ['chatgpt.com', 'gemini.google.com', 'copilot.microsoft.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
+    for (const target of ['chatgpt.com', 'gemini.google.com', 'copilot.microsoft.com', 'api.binance.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);
     check(degraded['chatgpt.com'], 'ai', source + ': native ChatGPT fallback after failed downloads');
     check(degraded['gemini.google.com'], 'ai', source + ': native Gemini fallback after failed downloads');
     check(degraded['copilot.microsoft.com'], 'ai', source + ': native Copilot fallback after failed downloads');
+    check(degraded['api.binance.com'], 'crypto', source + ': native crypto fallback after failed downloads');
     observations.push({source, tcp, known, processResults, failedColdStart: {providersEmpty: Object.keys(sourceCache.providers), classificationReady: false, observedRoutes: degraded}});
   }
   const supplied = profile('js');

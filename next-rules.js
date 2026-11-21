@@ -1,8 +1,8 @@
-// Next-Rules 2.3 · Clash Verge Rev 订阅扩展脚本
+// Next-Rules 2.4 · Clash Verge Rev 订阅扩展脚本
 // DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
 const POLICY = {
-  "version": "2.3",
+  "version": "2.4",
   "group": {
     "auto": "♻️ 自动选择 [系统]",
     "default": "🚀 默认代理 [自选]",
@@ -23,17 +23,19 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml?v=2.4",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml"
     },
     "next-rules-v2-ai-domain": {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.4",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml"
     },
     "next-rules-v2-ai-regex": {
       "type": "http",
@@ -55,17 +57,19 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/crypto.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
     },
     "next-rules-v2-media-channel4": {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/channel4.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml"
     },
     "next-rules-v2-media-channel4-domain": {
       "type": "http",
@@ -79,9 +83,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/itv.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml"
     },
     "next-rules-v2-media-itv-domain": {
       "type": "http",
@@ -95,9 +100,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/fubo.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml"
     },
     "next-rules-v2-media-fubo-domain": {
       "type": "http",
@@ -111,9 +117,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "text",
-      "url": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/crunchyroll.txt",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list"
     },
     "next-rules-v2-media-crunchyroll-domain": {
       "type": "http",
@@ -127,9 +134,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/linetv.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml"
     },
     "next-rules-v2-media-linetv-domain": {
       "type": "http",
@@ -143,9 +151,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/friday.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml"
     },
     "next-rules-v2-media-friday-domain": {
       "type": "http",
@@ -159,9 +168,10 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/hulujp.yaml",
       "interval": 86400,
-      "proxy": "🚀 默认代理 [自选]"
+      "proxy": "🚀 默认代理 [自选]",
+      "legacyUrl": "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml"
     },
     "next-rules-v2-media-hulujp-domain": {
       "type": "http",
@@ -302,6 +312,11 @@ const POLICY = {
     ],
     [
       "RULE-SET,next-rules-v2-crypto",
+      "💰 币圈专用 [自选]",
+      true
+    ],
+    [
+      "GEOSITE,category-cryptocurrency",
       "💰 币圈专用 [自选]",
       true
     ],
@@ -825,9 +840,10 @@ function isOwnedProvider(name, definition) {
 
 const providerBase = (name) => name.replace(/-(?:[2-9]|[1-9][0-9]+)$/, "");
 
-function retiredAiProvider(name, definition) {
+function isRetiredProvider(name, definition) {
   const base = providerBase(name);
-  const previous = UPDATED_AI_PROVIDERS.has(base) ? POLICY.providers[base] : {
+  const current = POLICY.providers[base];
+  const previous = current?.legacyUrl ? {format: current.format, url: current.legacyUrl} : {
     "next-rules-v2-ai": { format: "yaml", url: "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" },
     "next-rules-v2-ai-ip": { format: "text", url: "https://ruleset.skk.moe/Clash/ip/ai.txt" }
   }[base];
@@ -842,7 +858,7 @@ function retiredAiProvider(name, definition) {
 
 function dropUnusedRetiredProviders(config) {
   const providers = asRecord(config["rule-providers"]);
-  const names = Object.keys(providers).filter(name => retiredAiProvider(name, providers[name]));
+  const names = Object.keys(providers).filter(name => isRetiredProvider(name, providers[name]));
   if (!names.length) return;
   const used = new Set(), visited = new WeakSet();
   const inspect = value => {
@@ -902,8 +918,10 @@ function ruleProviderRegistry(config, groupNames) {
 function providerDefinition(name, definition, groupNames = new Map()) {
   if (definition.type === "http") {
     // 启动时内核优先读缓存。清单收紧后使用新路径，避免沿用旧条目。
-    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/" : "./providers/";
-    return { ...definition, proxy: groupNames.get(definition.proxy) || definition.proxy, path: directory + name + "." + definition.format };
+    const {legacyUrl, ...provider} = definition;
+    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/"
+      : legacyUrl ? "./providers/verified/" : "./providers/";
+    return { ...provider, proxy: groupNames.get(provider.proxy) || provider.proxy, path: directory + name + "." + provider.format };
   }
   return { ...definition, payload: [...definition.payload] };
 }

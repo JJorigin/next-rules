@@ -1,4 +1,4 @@
-# Next-Rules 2.3 · 3X-UI 远程路由
+# Next-Rules 2.4 · 3X-UI 远程路由
 # 在面板中启用路由并填写此文件地址，客户端使用面板生成的完整订阅。
 # DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
@@ -7,7 +7,7 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/context.yaml?v=2.4"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
     path: "./providers/ai/next-rules-v2-ai-context.yaml"
@@ -15,7 +15,7 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.4"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
     path: "./providers/ai/next-rules-v2-ai-domain.yaml"
@@ -39,18 +39,18 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/crypto.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-crypto.yaml"
+    path: "./providers/verified/next-rules-v2-crypto.yaml"
   next-rules-v2-media-channel4:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/All4/All4.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/channel4.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-channel4.yaml"
+    path: "./providers/verified/next-rules-v2-media-channel4.yaml"
   next-rules-v2-media-channel4-domain:
     type: "http"
     behavior: "classical"
@@ -63,10 +63,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ITV/ITV.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/itv.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-itv.yaml"
+    path: "./providers/verified/next-rules-v2-media-itv.yaml"
   next-rules-v2-media-itv-domain:
     type: "http"
     behavior: "classical"
@@ -79,10 +79,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/FuboTV/FuboTV.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/fubo.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-fubo.yaml"
+    path: "./providers/verified/next-rules-v2-media-fubo.yaml"
   next-rules-v2-media-fubo-domain:
     type: "http"
     behavior: "classical"
@@ -95,10 +95,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://raw.githubusercontent.com/liandu2024/clash/main/list/Crunchyroll.list"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/crunchyroll.txt"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-crunchyroll.text"
+    path: "./providers/verified/next-rules-v2-media-crunchyroll.text"
   next-rules-v2-media-crunchyroll-domain:
     type: "http"
     behavior: "classical"
@@ -111,10 +111,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/LineTV/LineTV.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/linetv.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-linetv.yaml"
+    path: "./providers/verified/next-rules-v2-media-linetv.yaml"
   next-rules-v2-media-linetv-domain:
     type: "http"
     behavior: "classical"
@@ -127,10 +127,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/friDay/friDay.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/friday.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-friday.yaml"
+    path: "./providers/verified/next-rules-v2-media-friday.yaml"
   next-rules-v2-media-friday-domain:
     type: "http"
     behavior: "classical"
@@ -143,10 +143,10 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "yaml"
-    url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/HuluJP/HuluJP.yaml"
+    url: "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/media/upstream/hulujp.yaml"
     interval: 86400
     proxy: "🚀 默认代理 [自选]"
-    path: "./providers/next-rules-v2-media-hulujp.yaml"
+    path: "./providers/verified/next-rules-v2-media-hulujp.yaml"
   next-rules-v2-media-hulujp-domain:
     type: "http"
     behavior: "classical"
@@ -318,6 +318,8 @@ rules:
   - "AND,((NETWORK,UDP),(GEOSITE,google)),REJECT"
   - "RULE-SET,next-rules-v2-crypto,💰 币圈专用 [自选]"
   - "AND,((NETWORK,UDP),(RULE-SET,next-rules-v2-crypto)),REJECT"
+  - "GEOSITE,category-cryptocurrency,💰 币圈专用 [自选]"
+  - "AND,((NETWORK,UDP),(GEOSITE,category-cryptocurrency)),REJECT"
   - "GEOSITE,mytvsuper,🌏 亚太流媒体 [自选]"
   - "AND,((NETWORK,UDP),(GEOSITE,mytvsuper)),REJECT"
   - "GEOSITE,now,🌏 亚太流媒体 [自选]"
