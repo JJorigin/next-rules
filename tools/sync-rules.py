@@ -41,8 +41,10 @@ SHARED_AI_HOSTS = {
     "console.aws.a2z.com",
     "events.statsigapi.net",
     "featuregates.org",
+    "in.appcenter.ms",
     "intercom.io",
     "intercomcdn.com",
+    "lf3-static.bytednsdoc.com",
     "odc.officeapps.live.com",
     "self.events.data.microsoft.com",
     "sso.amazonaws.com",
@@ -220,10 +222,10 @@ def build(raw: dict[str, bytes], source_info: dict[str, dict]) -> dict[str, byte
         CRYPTO_FILE: raw["crypto"],
     }
     cache = {
-        # A different URL keeps a cached 2.3 response from populating the new local cache.
+        # URL and local path migrations keep old AI views out of the current cache.
         "ai-context": {"url": ai_context_url + "?v=2.4", "legacyUrl": ai_context_url,
                        "behavior": "classical", "format": "yaml", "payload": deferred},
-        "ai-domain": {"url": ai_domain_url + "?v=2.4", "legacyUrl": ai_domain_url,
+        "ai-domain": {"url": ai_domain_url + "?v=2.5", "legacyUrl": ai_domain_url,
                       "behavior": "classical", "format": "yaml", "payload": exact},
         "ai-regex": {"url": OWN_RAW + "rules/ai/domains-regex.yaml", "behavior": "classical", "format": "yaml", "payload": regex},
         "ai-voice": {"url": OWN_RAW + "rules/ai/voice-ip.yaml", "behavior": "ipcidr", "format": "yaml", "payload": voice},

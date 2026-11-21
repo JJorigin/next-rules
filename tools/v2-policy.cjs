@@ -38,7 +38,8 @@ providers[prefix + "telegram-ip"] = http({
   "path-in-bundle": "geo/geoip/telegram.mrs"
 });
 
-const use = (id) => "RULE-SET," + prefix + id;
+// 即使上游以后增加了 IP 条件，分流也只使用已知的目标地址。
+const use = (id) => "RULE-SET," + prefix + id + ",no-resolve";
 function mediaRoutes(items, target, full = false) {
   return items.flatMap((item) => {
     const condition = item.geosite ? "GEOSITE," + item.geosite : use("media-" + item.id + (full ? "" : "-domain"));
@@ -75,18 +76,16 @@ const routes = [
   // 两类都命中的海外 AI 服务优先于微软通用流量。
   [["GEOSITE,category-ai-!cn", "GEOSITE,microsoft"], group.ai, true],
   ["GEOSITE,microsoft", group.microsoft, true],
-  // 对尚未归类的域名解析一次，并先处理局域网地址，再检查专用服务网段。
-  ["GEOIP,private", "DIRECT"],
-  [["NETWORK,UDP", "DST-PORT,3478", use("ai-voice") + ",no-resolve"], group.ai, true],
-  [use("telegram-ip") + ",no-resolve", group.telegram, true],
+  // 已知的专用服务地址优先于普通国内地址；这里不为分流发起 DNS 查询。
+  [["NETWORK,UDP", "DST-PORT,3478", use("ai-voice")], group.ai, true],
+  [use("telegram-ip"), group.telegram, true],
   ["GEOIP,telegram,no-resolve", group.telegram, true],
   ...media.global.filter(item => item.geoip).map(item => ["GEOIP," + item.geoip + ",no-resolve", group.media, true]),
   ["GEOIP,google,no-resolve", group.google, true],
-  // 未归类域名允许解析，以免国内地址被后面的进程兜底送往代理。
-  ["GEOIP,CN", "DIRECT"],
+  ["GEOIP,CN,no-resolve", "DIRECT"],
   // 通用 AI 分类只补充未识别的境外目标。
   ["GEOSITE,category-ai-!cn", group.ai, true],
-  // 专用地址和进程由自动任务同步，普通国内目标已经先行直连。
+  // 专用地址和进程由自动任务同步，已识别的国内目标已经先行直连。
   [use("ai-context"), group.ai, true],
   ...mediaRoutes(media.apac.filter((item) => item.url), group.mediaAsia, true),
   ...mediaRoutes(media.global.filter((item) => item.url), group.media, true),
@@ -96,4 +95,4 @@ const routes = [
   ["MATCH", group.default]
 ];
 
-module.exports = { version: "2.4", group, providers, routes };
+module.exports = { version: "2.5", group, providers, routes };

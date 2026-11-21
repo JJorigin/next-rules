@@ -167,6 +167,27 @@
       "commit": "39ea8daf8d84edf0d81694f95a0e6c6521ba81c8",
       "source": "README.md",
       "sha256": "5a4af963a4085f550049b5da15c9dd7392b58515223b9d307dfbcd917616d5d0"
+    },
+    {
+      "path": "old/2.4/next-rules.yaml",
+      "tag": "v2.4",
+      "commit": "c60ced602df9e5dc89f6f40fa690793c74cb6a36",
+      "source": "v2/next-rules.yaml",
+      "sha256": "835c04a38bb5f091fcb87eb255692c78690cf763dbdcbcd3f987de0dfbc48047"
+    },
+    {
+      "path": "old/2.4/next-rules.js",
+      "tag": "v2.4",
+      "commit": "c60ced602df9e5dc89f6f40fa690793c74cb6a36",
+      "source": "v2/next-rules.js",
+      "sha256": "818fead5f31a97c34340365f378c85324935a6aa411f4d479ca922efed350594"
+    },
+    {
+      "path": "old/2.4/ORIGINAL_README.md",
+      "tag": "v2.4",
+      "commit": "c60ced602df9e5dc89f6f40fa690793c74cb6a36",
+      "source": "README.md",
+      "sha256": "0f15ce5ad1c5b0033811710bb225645fd4e0c6e8d494bc41cb6fd050de49541a"
     }
   ]
 }

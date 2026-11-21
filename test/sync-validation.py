@@ -81,6 +81,7 @@ class SourceValidation(unittest.TestCase):
             "DOMAIN,logs.datadoghq.com", "DOMAIN-KEYWORD,openai", "IP-ASN,14061,no-resolve",
             "DOMAIN,browser-intake-us5-datadoghq.com", "DOMAIN,rum.browser-intake-datadoghq.eu",
             "DOMAIN,odc.officeapps.live.com", "DOMAIN-SUFFIX,byteoversea.com",
+            "DOMAIN,in.appcenter.ms", "DOMAIN-SUFFIX,lf3-static.bytednsdoc.com",
             "DOMAIN-SUFFIX,awsapps.com", "DOMAIN,cognito-identity.us-east-1.amazonaws.com",
             "DOMAIN-SUFFIX,auth0.com", "DOMAIN-SUFFIX,stripe.com", "DOMAIN,events.statsigapi.net",
         ]:

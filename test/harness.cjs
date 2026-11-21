@@ -191,6 +191,7 @@ async function sendDatagram(dstPort, packet) {
 async function fakeOutbound(label) {
   const udp = await udpDestination();
   const packets = new Set();
+  const domains = new Set();
   udp.socket.on('message', (data) => packets.add(data.subarray(-16).toString('hex')));
   const sockets = new Set();
   const server = net.createServer((socket) => {
@@ -211,6 +212,9 @@ async function fakeOutbound(label) {
       const requestLength = buffer[3] === 1 ? 10 : buffer[3] === 4 ? 22 : 7 + buffer[4];
       if (buffer.length < requestLength) return;
       const command = buffer[1];
+      if (command === 1 && buffer[3] === 3) {
+        domains.add(buffer.subarray(5, 5 + buffer[4]).toString('utf8'));
+      }
       buffer = buffer.subarray(requestLength);
       const accepted = Buffer.from([5, 0, 0, 1, 127, 0, 0, 1, 0, 0]);
       if (command === 3) {
@@ -246,7 +250,7 @@ async function fakeOutbound(label) {
     for (const socket of sockets) socket.destroy();
     return close(server);
   });
-  return { port, packets };
+  return { port, packets, domains };
 }
 
 function requestThrough(port, target, executable) {

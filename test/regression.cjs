@@ -222,6 +222,7 @@ async function run() {
       'api.openai.com': 'ai', 'api.anthropic.com': 'ai', 'storage.googleapis.com': 'google',
       'www.msn.cn': 'direct', 'api.msn.com': 'microsoft', 'assets.msn.com': 'microsoft',
       'img-s-msn-com.akamaized.net': 'microsoft', 'challenges.cloudflare.com': 'default',
+      'in.appcenter.ms': 'direct', 'lf3-static.bytednsdoc.com': 'direct',
       'odc.officeapps.live.com': 'microsoft', 'login.microsoftonline.com': 'microsoft',
       'audit.awsapps.com': 'default', 'codewhisperer.us-east-1.amazonaws.com': 'ai',
       'browser-intake-us5-datadoghq.com': 'default', 'audit.byteoversea.com': 'default',
@@ -229,7 +230,7 @@ async function run() {
       '104.131.0.1': 'default',
       'copilot.microsoft.com': 'ai', 'api.binance.com': 'crypto',
       'telegram.org': 'telegram', 'outlook.live.com': 'microsoft',
-      'sentry-domestic.audit.iana.org': 'direct', 'domestic-probe.audit.iana.org': 'direct',
+      'sentry-domestic.audit.iana.org': 'default', 'domestic-probe.audit.iana.org': 'default',
       'audit-unknown.iana.org': 'default',
       'ad.qq.com': 'blocked', 'sdk.e.qq.com': 'blocked', 'ad.mi.com': 'blocked', 'ad.xiaomi.com': 'blocked'};
     const tcp = {};
@@ -257,7 +258,10 @@ async function run() {
     for (const key of Object.keys(ipCases)) check(await requestAt(tcpInlets[key], ips.foreign), tcpOwner(key), source + ': owned IP ' + key);
     const processResults = {};
     for (const [name, executable] of Object.entries(processExecutables)) {
-      for (const [target, expected] of [['www.baidu.com', 'direct'], ['domestic-probe.audit.iana.org', 'direct'], ['sentry-domestic.audit.iana.org', 'direct'], [ips.cn, 'direct'], ['audit-unknown.iana.org', name.toLowerCase() === 'cursor' ? 'ai' : 'software'], ['www.youtube.com', 'youtube']]) {
+      const processFallback = name.toLowerCase() === 'cursor' ? 'ai' : 'software';
+      for (const [target, expected] of [['www.baidu.com', 'direct'], [ips.cn, 'direct'],
+        ['domestic-probe.audit.iana.org', processFallback], ['sentry-domestic.audit.iana.org', processFallback],
+        ['audit-unknown.iana.org', processFallback], ['www.youtube.com', 'youtube']]) {
         const result = await requestThrough(mixedPort, target, executable);
         check(result, expected, source + ': actual process ' + name + '/' + target);
         processResults[name + '/' + target] = result;
@@ -298,7 +302,9 @@ async function run() {
     for (const id of Object.keys(sourceCache.providers).filter(id => sourceCache.providers[id].payload.length)) {
       check(unavailable['next-rules-v2-' + id].ruleCount, 0, source + ': failed first download leaves provider empty ' + id);
     }
-    check(await requestThrough(mixedPort, 'domestic-probe.audit.iana.org'), 'direct', source + ': domestic direct still works after failed downloads');
+    check(await requestThrough(mixedPort, 'www.baidu.com'), 'direct', source + ': known domestic domain after failed downloads');
+    check(await requestAt(tcpInlets.cn, 'domestic-probe.audit.iana.org'), 'direct', source + ': known domestic IP after failed downloads');
+    check(await requestThrough(mixedPort, 'domestic-probe.audit.iana.org'), 'default', source + ': domain-only fallback after failed downloads');
     check(await requestAt(tcpInlets.telegram, ips.foreign), 'telegram', source + ': cold start Telegram GeoIP backup');
     const degraded = {};
     for (const target of ['chatgpt.com', 'gemini.google.com', 'copilot.microsoft.com', 'api.binance.com', 'www.linetv.tw']) degraded[target] = await requestThrough(mixedPort, target);

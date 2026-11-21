@@ -1,8 +1,8 @@
-// Next-Rules 2.4 · Clash Verge Rev 订阅扩展脚本
+// Next-Rules 2.5 · Clash Verge Rev 订阅扩展脚本
 // DNS、TUN 和 IPv6 沿用订阅与客户端设置。
 
 const POLICY = {
-  "version": "2.4",
+  "version": "2.5",
   "group": {
     "auto": "♻️ 自动选择 [系统]",
     "default": "🚀 默认代理 [自选]",
@@ -32,7 +32,7 @@ const POLICY = {
       "type": "http",
       "behavior": "classical",
       "format": "yaml",
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.4",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.5",
       "interval": 86400,
       "proxy": "🚀 默认代理 [自选]",
       "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml"
@@ -215,7 +215,7 @@ const POLICY = {
       "🛑 广告拦截 [系统]"
     ],
     [
-      "RULE-SET,next-rules-v2-ai-domain",
+      "RULE-SET,next-rules-v2-ai-domain,no-resolve",
       "🤖 AI服务 [自选]",
       true
     ],
@@ -296,7 +296,7 @@ const POLICY = {
       "DIRECT"
     ],
     [
-      "RULE-SET,next-rules-v2-ai-regex",
+      "RULE-SET,next-rules-v2-ai-regex,no-resolve",
       "🤖 AI服务 [自选]",
       true
     ],
@@ -311,7 +311,7 @@ const POLICY = {
       true
     ],
     [
-      "RULE-SET,next-rules-v2-crypto",
+      "RULE-SET,next-rules-v2-crypto,no-resolve",
       "💰 币圈专用 [自选]",
       true
     ],
@@ -367,7 +367,7 @@ const POLICY = {
     ],
     [
       [
-        "RULE-SET,next-rules-v2-media-linetv-domain",
+        "RULE-SET,next-rules-v2-media-linetv-domain,no-resolve",
         "NOT,((DOMAIN-SUFFIX,line-cdn.net))",
         "NOT,((DOMAIN-SUFFIX,line-scdn.net))"
       ],
@@ -376,7 +376,7 @@ const POLICY = {
     ],
     [
       [
-        "RULE-SET,next-rules-v2-media-friday-domain",
+        "RULE-SET,next-rules-v2-media-friday-domain,no-resolve",
         "NOT,((DOMAIN-SUFFIX,fetnet.net))"
       ],
       "🌏 亚太流媒体 [自选]",
@@ -408,7 +408,7 @@ const POLICY = {
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-hulujp-domain",
+      "RULE-SET,next-rules-v2-media-hulujp-domain,no-resolve",
       "🌏 亚太流媒体 [自选]",
       true
     ],
@@ -548,22 +548,22 @@ const POLICY = {
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-channel4-domain",
+      "RULE-SET,next-rules-v2-media-channel4-domain,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-itv-domain",
+      "RULE-SET,next-rules-v2-media-itv-domain,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-fubo-domain",
+      "RULE-SET,next-rules-v2-media-fubo-domain,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-crunchyroll-domain",
+      "RULE-SET,next-rules-v2-media-crunchyroll-domain,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
@@ -589,10 +589,6 @@ const POLICY = {
       "GEOSITE,microsoft",
       "Ⓜ️ 微软服务 [自选]",
       true
-    ],
-    [
-      "GEOIP,private",
-      "DIRECT"
     ],
     [
       [
@@ -624,7 +620,7 @@ const POLICY = {
       true
     ],
     [
-      "GEOIP,CN",
+      "GEOIP,CN,no-resolve",
       "DIRECT"
     ],
     [
@@ -633,13 +629,13 @@ const POLICY = {
       true
     ],
     [
-      "RULE-SET,next-rules-v2-ai-context",
+      "RULE-SET,next-rules-v2-ai-context,no-resolve",
       "🤖 AI服务 [自选]",
       true
     ],
     [
       [
-        "RULE-SET,next-rules-v2-media-linetv",
+        "RULE-SET,next-rules-v2-media-linetv,no-resolve",
         "NOT,((DOMAIN-SUFFIX,line-cdn.net))",
         "NOT,((DOMAIN-SUFFIX,line-scdn.net))"
       ],
@@ -648,39 +644,39 @@ const POLICY = {
     ],
     [
       [
-        "RULE-SET,next-rules-v2-media-friday",
+        "RULE-SET,next-rules-v2-media-friday,no-resolve",
         "NOT,((DOMAIN-SUFFIX,fetnet.net))"
       ],
       "🌏 亚太流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-hulujp",
+      "RULE-SET,next-rules-v2-media-hulujp,no-resolve",
       "🌏 亚太流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-channel4",
+      "RULE-SET,next-rules-v2-media-channel4,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-itv",
+      "RULE-SET,next-rules-v2-media-itv,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-fubo",
+      "RULE-SET,next-rules-v2-media-fubo,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-media-crunchyroll",
+      "RULE-SET,next-rules-v2-media-crunchyroll,no-resolve",
       "🎬 全球流媒体 [自选]",
       true
     ],
     [
-      "RULE-SET,next-rules-v2-software",
+      "RULE-SET,next-rules-v2-software,no-resolve",
       "🖥️ 软件分流 [自选]",
       true
     ],
@@ -699,7 +695,8 @@ const POLICY = {
   ]
 };
 const OWNED_GROUPS = new Set(Object.values(POLICY.group));
-const UPDATED_AI_PROVIDERS = new Set(["next-rules-v2-ai-domain", "next-rules-v2-ai-context"]);
+const AI_DOMAIN_PROVIDER = "next-rules-v2-ai-domain";
+const AI_CONTEXT_PROVIDER = "next-rules-v2-ai-context";
 const unique = (items) => [...new Set(items.filter(Boolean))];
 const asRecord = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const BLOCKED_TYPES = "Pass|Compatible|Dns|Reject|RejectDrop";
@@ -847,13 +844,16 @@ function isRetiredProvider(name, definition) {
     "next-rules-v2-ai": { format: "yaml", url: "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml" },
     "next-rules-v2-ai-ip": { format: "text", url: "https://ruleset.skk.moe/Clash/ip/ai.txt" }
   }[base];
-  return previous &&
-    definition && definition.type === "http" && definition.behavior === "classical" &&
-    definition.format === previous.format && definition.interval === 86400 &&
-    Object.keys(definition).every(key => ["type", "behavior", "format", "interval", "url", "path", "proxy", "payload"].includes(key)) &&
-    definition.url === previous.url &&
-    definition.path === "./providers/" + name + "." + previous.format &&
-    ownedGroupBase(definition.proxy) === POLICY.group.default;
+  if (!previous || !definition || definition.type !== "http" || definition.behavior !== "classical" ||
+      definition.format !== previous.format || definition.interval !== 86400 ||
+      ownedGroupBase(definition.proxy) !== POLICY.group.default ||
+      !Object.keys(definition).every(key => ["type", "behavior", "format", "interval", "url", "path", "proxy", "payload"].includes(key))) {
+    return false;
+  }
+  const filename = name + "." + previous.format;
+  if (definition.url === previous.url && definition.path === "./providers/" + filename) return true;
+  return base === AI_DOMAIN_PROVIDER && definition.url === previous.url + "?v=2.4" &&
+    definition.path === "./providers/ai/" + filename;
 }
 
 function dropUnusedRetiredProviders(config) {
@@ -919,7 +919,9 @@ function providerDefinition(name, definition, groupNames = new Map()) {
   if (definition.type === "http") {
     // 启动时内核优先读缓存。清单收紧后使用新路径，避免沿用旧条目。
     const {legacyUrl, ...provider} = definition;
-    const directory = UPDATED_AI_PROVIDERS.has(providerBase(name)) ? "./providers/ai/"
+    const base = providerBase(name);
+    const directory = base === AI_DOMAIN_PROVIDER ? "./providers/ai-v2.5/"
+      : base === AI_CONTEXT_PROVIDER ? "./providers/ai/"
       : legacyUrl ? "./providers/verified/" : "./providers/";
     return { ...provider, proxy: groupNames.get(provider.proxy) || provider.proxy, path: directory + name + "." + provider.format };
   }

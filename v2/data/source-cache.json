@@ -372,12 +372,14 @@
       "DOMAIN-KEYWORD,sentry",
       "DOMAIN-KEYWORD,sift",
       "DOMAIN-SUFFIX,byteoversea.com",
+      "DOMAIN-SUFFIX,lf3-static.bytednsdoc.com",
       "DOMAIN,api.cloudflare.com",
       "DOMAIN,odc.officeapps.live.com",
       "DOMAIN,api.msn.com",
       "DOMAIN,api.statsig.com",
       "DOMAIN,assets.msn.com",
       "DOMAIN,browser-intake-datadoghq.com",
+      "DOMAIN,in.appcenter.ms",
       "DOMAIN,self.events.data.microsoft.com",
       "DOMAIN,static.cloudflareinsights.com",
       "DOMAIN-SUFFIX,auth0.com",
@@ -395,10 +397,10 @@
   },
   "counts": {
     "ai_total": 350,
-    "ai_exact": 284,
+    "ai_exact": 282,
     "ai_regex": 1,
     "ai_deferred": 29,
-    "ai_excluded": 36,
+    "ai_excluded": 38,
     "voice_official": 411
   },
   "providers": {
@@ -440,7 +442,7 @@
       ]
     },
     "ai-domain": {
-      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.4",
+      "url": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml?v=2.5",
       "legacyUrl": "https://raw.githubusercontent.com/JJorigin/next-rules/main/rules/ai/domains-exact.yaml",
       "behavior": "classical",
       "format": "yaml",
@@ -499,7 +501,6 @@
         "DOMAIN-SUFFIX,ciciai.com",
         "DOMAIN-SUFFIX,ciciaicdn.com",
         "DOMAIN-SUFFIX,coze.com",
-        "DOMAIN-SUFFIX,lf3-static.bytednsdoc.com",
         "DOMAIN-SUFFIX,marscode.com",
         "DOMAIN-SUFFIX,sf16-short-sg.bytedapm.com",
         "DOMAIN-SUFFIX,starling.zijieapi.com",
@@ -528,7 +529,6 @@
         "DOMAIN,copilotprodattachments.blob.core.windows.net",
         "DOMAIN,gateway.bingviz.microsoft.net",
         "DOMAIN,gateway.bingviz.microsoftapp.net",
-        "DOMAIN,in.appcenter.ms",
         "DOMAIN,production-copilot-host-westus.webpubsub.azure.com",
         "DOMAIN,sydney.bing.com",
         "DOMAIN-SUFFIX,algolia.net",
