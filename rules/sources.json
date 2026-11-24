@@ -8,7 +8,7 @@
     },
     "voice": {
       "url": "https://openai.com/chatgpt-voice.json",
-      "sha256": "0852b8be430cb4ae4a68ff8c0169f05bcdc5ce2ab6649cb3fc02d057a50612e7"
+      "sha256": "b794a112a504d35587e671edfd6de3aae14e05f4f581c077cf1d33d3cf4fec91"
     },
     "crypto": {
       "url": "https://cdn.jsdelivr.net/gh/n0de-sudo/Perfect-Rules@main/Clash/rules/crypto.yaml",
@@ -49,6 +49,6 @@
     "ai_regex": 1,
     "ai_deferred": 29,
     "ai_excluded": 38,
-    "voice_official": 411
+    "voice_official": 444
   }
 }
