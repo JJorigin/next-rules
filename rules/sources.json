@@ -3,8 +3,8 @@
   "sources": {
     "ai": {
       "url": "https://raw.githubusercontent.com/VPSDance/ai-proxy-rules/main/rules/clash/global.yaml",
-      "sha256": "a837e04a79752b8209e37829af58cda8214ad51fd4eb728191c2bd3dc0799ea7",
-      "commit": "d8e216c8349a2de02d6322d99fa7d20f8cb4bd9d"
+      "sha256": "cd73ce9f555473564e1924b168b599fef916c6a794c25df5c78dc857822165fe",
+      "commit": "9012734cca02bdeaef6875e9074139f490800eb0"
     },
     "voice": {
       "url": "https://openai.com/chatgpt-voice.json",
@@ -44,8 +44,8 @@
     }
   },
   "counts": {
-    "ai_total": 350,
-    "ai_exact": 282,
+    "ai_total": 351,
+    "ai_exact": 283,
     "ai_regex": 1,
     "ai_deferred": 29,
     "ai_excluded": 38,
